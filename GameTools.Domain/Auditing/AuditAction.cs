@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GameTools.Domain.Auditing
+﻿namespace GameTools.Domain.Auditing
 {
     public enum AuditAction
     {

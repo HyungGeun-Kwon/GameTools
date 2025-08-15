@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GameTools.Domain.Common;
+﻿using GameTools.Domain.Common;
+using GameTools.Domain.Common.Rules;
 
 namespace GameTools.Domain.Entities
 {
@@ -31,22 +27,24 @@ namespace GameTools.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be null or empty.", nameof(name));
             name = name.Trim();
-            if (name.Length > 100) throw new ArgumentException("Name cannot exceed 100 characters.", nameof(name));
+            if (name.Length > ItemRules.NameMax)
+                throw new ArgumentException($"Name length must be <= {ItemRules.NameMax}.", nameof(name));
 
             Name = name;
         }
 
         public void SetPrice(int price)
         {
-            if (price < 0) throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
-
-
+            if (price < ItemRules.PriceMin)
+                throw new ArgumentOutOfRangeException(nameof(price), $"Price must be >= {ItemRules.PriceMin}.");
             Price = price;
         }
 
         private void SetDescription(string? description)
         {
-            if (description is { Length: > 500 }) throw new ArgumentException("Description cannot exceed 500 characters.", nameof(description));
+            if (description is { Length: > ItemRules.DescriptionMax })
+                throw new ArgumentException($"Description length must be <= {ItemRules.DescriptionMax}.", nameof(description));
+
             Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
         }
 

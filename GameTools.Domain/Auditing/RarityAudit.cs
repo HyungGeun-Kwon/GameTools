@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace GameTools.Domain.Auditing
 {
     public class RarityAudit : AuditBase<long>
     {
         public byte RarityId { get; set; }
-        public byte RarityIdSnapShot { get; set; }
 
         private RarityAudit() { } // EF Core
 
@@ -28,7 +22,6 @@ namespace GameTools.Domain.Auditing
             if (rarityIdSnapshot == 0) throw new ArgumentOutOfRangeException(nameof(rarityIdSnapshot));
 
             RarityId = rarityId;
-            RarityIdSnapShot = rarityIdSnapshot;
         }
 
         // INSERT: AfterJson만 필요

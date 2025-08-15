@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace GameTools.Domain.Auditing
 {
     public class ItemAudit : AuditBase<long>
     {
         public int ItemId { get; set; }
-        public int ItemIdSnapShot { get; set; }
 
         private ItemAudit() { } // EF Core
 
@@ -28,7 +22,6 @@ namespace GameTools.Domain.Auditing
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(itemIdSnapshot);
 
             ItemId = itemId;
-            ItemIdSnapShot = itemIdSnapshot;
         }
         // INSERT: AfterJson만 필요
         public static ItemAudit ForInsert(

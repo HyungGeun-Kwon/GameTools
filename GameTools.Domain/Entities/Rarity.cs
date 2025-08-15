@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using GameTools.Domain.Common;
+﻿using GameTools.Domain.Common;
+using GameTools.Domain.Common.Rules;
 
 namespace GameTools.Domain.Entities
 {
@@ -14,6 +9,8 @@ namespace GameTools.Domain.Entities
 
         public string Grade { get; private set; } = default!;
         public string ColorCode { get; private set; } = default!;
+
+        public static int GradeMaxLength => 32;
 
         public IReadOnlyCollection<Item> Items => _items.AsReadOnly();
 
@@ -30,6 +27,10 @@ namespace GameTools.Domain.Entities
             if (string.IsNullOrWhiteSpace(grade))
                 throw new ArgumentException("Grade cannot be null or empty.", nameof(grade));
 
+            grade = grade.Trim();
+            if (grade.Length > RarityRules.GradeMax)
+                throw new ArgumentException($"Grade length must be <= {RarityRules.GradeMax}.", nameof(grade));
+
             Grade = grade;
         }
 
@@ -38,8 +39,9 @@ namespace GameTools.Domain.Entities
             if (string.IsNullOrWhiteSpace(colorCode))
                 throw new ArgumentException("Color code cannot be null or empty.", nameof(colorCode));
 
-            colorCode = colorCode.Trim().ToUpperInvariant();
-            if (!Regex.IsMatch(colorCode, "^#[0-9A-F]{6}$")) throw new ArgumentException("Color code must be '#RRGGBB'.", nameof(colorCode));
+            colorCode = RarityRules.NormalizeColor(colorCode);
+            if (!RarityRules.ColorHexRegex.IsMatch(colorCode))
+                throw new ArgumentException("Color must be '#RRGGBB' (uppercase).", nameof(colorCode));
 
             ColorCode = colorCode;
         }
