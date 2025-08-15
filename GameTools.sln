@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36327.8 d17.14
+VisualStudioVersion = 17.14.36327.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Wpf", "GameTools.Wpf\GameTools.Wpf.csproj", "{3460CB83-7F79-4813-B317-6ECC75AE87D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Console", "GameTools.Console\GameTools.Console.csproj", "{635615AE-AFC6-41B2-BB8F-657897DE7ACA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Application", "GameTools.Application\GameTools.Application.csproj", "{49F595FE-B8D9-44F0-8529-01E4BE1C8C09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Domain", "GameTools.Domain\GameTools.Domain.csproj", "{4E219C58-5CB2-410A-B817-4F0F612DE118}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Infrastructure", "GameTools.Infrastructure\GameTools.Infrastructure.csproj", "{0C20D75B-2AF6-4FC7-A4C1-340C25D09EC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Api", "GameTools.Api\GameTools.Api.csproj", "{DB8189DA-5DEA-4871-B93A-97EB950ED6BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +25,26 @@ Global
 		{3460CB83-7F79-4813-B317-6ECC75AE87D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3460CB83-7F79-4813-B317-6ECC75AE87D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3460CB83-7F79-4813-B317-6ECC75AE87D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{635615AE-AFC6-41B2-BB8F-657897DE7ACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{635615AE-AFC6-41B2-BB8F-657897DE7ACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{635615AE-AFC6-41B2-BB8F-657897DE7ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{635615AE-AFC6-41B2-BB8F-657897DE7ACA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49F595FE-B8D9-44F0-8529-01E4BE1C8C09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49F595FE-B8D9-44F0-8529-01E4BE1C8C09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49F595FE-B8D9-44F0-8529-01E4BE1C8C09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49F595FE-B8D9-44F0-8529-01E4BE1C8C09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E219C58-5CB2-410A-B817-4F0F612DE118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E219C58-5CB2-410A-B817-4F0F612DE118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E219C58-5CB2-410A-B817-4F0F612DE118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E219C58-5CB2-410A-B817-4F0F612DE118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C20D75B-2AF6-4FC7-A4C1-340C25D09EC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C20D75B-2AF6-4FC7-A4C1-340C25D09EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C20D75B-2AF6-4FC7-A4C1-340C25D09EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C20D75B-2AF6-4FC7-A4C1-340C25D09EC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB8189DA-5DEA-4871-B93A-97EB950ED6BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB8189DA-5DEA-4871-B93A-97EB950ED6BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB8189DA-5DEA-4871-B93A-97EB950ED6BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB8189DA-5DEA-4871-B93A-97EB950ED6BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
