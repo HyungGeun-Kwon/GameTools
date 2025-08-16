@@ -40,7 +40,7 @@ namespace GameTools.Domain.Entities
             Price = price;
         }
 
-        private void SetDescription(string? description)
+        public void SetDescription(string? description)
         {
             if (description is { Length: > ItemRules.DescriptionMax })
                 throw new ArgumentException($"Description length must be <= {ItemRules.DescriptionMax}.", nameof(description));
@@ -48,7 +48,7 @@ namespace GameTools.Domain.Entities
             Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
         }
 
-        private void SetRarity(Rarity rarity)
+        public void SetRarity(Rarity rarity)
         {
             ArgumentNullException.ThrowIfNull(rarity);
 
