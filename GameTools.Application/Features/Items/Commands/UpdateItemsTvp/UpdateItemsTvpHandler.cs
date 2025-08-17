@@ -1,4 +1,5 @@
-﻿using GameTools.Application.Abstractions.WriteStore;
+﻿using GameTools.Application.Abstractions.Users;
+using GameTools.Application.Abstractions.WriteStore;
 using GameTools.Application.Features.Items.Commands.Common;
 using MediatR;
 
@@ -12,7 +13,7 @@ namespace GameTools.Application.Features.Items.Commands.UpdateItemsTvp
             var rows = request.Rows.Select(r => new ItemUpdateRow(
                 r.Id, r.Name, r.Price, r.Description, r.RarityId, Convert.FromBase64String(r.RowVersionBase64)));
 
-            var results = await writeStore.UpdateManyTvpAsync(rows, request.Actor, ct);
+            var results = await writeStore.UpdateManyTvpAsync(rows, ct);
 
             return results
                 .Select(r => new UpdateItemResult(

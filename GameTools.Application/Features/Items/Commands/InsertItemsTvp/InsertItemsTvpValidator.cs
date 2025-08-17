@@ -15,7 +15,6 @@ namespace GameTools.Application.Features.Items.Commands.InsertItemsTvp
                 row.RuleFor(r => r.Description).MaximumLength(ItemRules.DescriptionMax);
                 row.RuleFor(r => r.RarityId).GreaterThan((byte)0);
             });
-            RuleFor(x => x.Actor).NotEmpty().MaximumLength(64);
         }
     }
 }

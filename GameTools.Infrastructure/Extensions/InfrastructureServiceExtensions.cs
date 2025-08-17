@@ -18,7 +18,8 @@ namespace GameTools.Infrastructure.Extensions
             var cs = config.GetConnectionString("Default")
                 ?? "Server=localhost;Database=GameDb;Trusted_Connection=True;TrustServerCertificate=True";
 
-            services.AddDbContext<AppDbContext>((opt) => opt.UseSqlServer(cs, sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
+            services.AddDbContext<AppDbContext>((opt) 
+                => opt.UseSqlServer(cs, sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

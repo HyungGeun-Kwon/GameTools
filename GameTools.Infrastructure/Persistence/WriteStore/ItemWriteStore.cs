@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.Common;
+using GameTools.Application.Abstractions.Users;
 using GameTools.Application.Abstractions.WriteStore;
 using GameTools.Application.Features.Items.Commands.Common;
 using GameTools.Domain.Entities;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Infrastructure.Persistence.WriteStore
 {
-    public sealed class ItemWriteStore(AppDbContext db) : IItemWriteStore
+    public sealed class ItemWriteStore(AppDbContext db, ICurrentUser currentUser) : IItemWriteStore
     {
         public async Task<Item?> GetByIdAsync(int id, CancellationToken ct)
             => await db.Items.FindAsync([id], ct);
@@ -21,14 +22,14 @@ namespace GameTools.Infrastructure.Persistence.WriteStore
             => db.Items.Remove(entity);
 
         public async Task<IReadOnlyList<(int Id, byte[] NewRowVersion)>> InsertManyTvpAsync(
-            IEnumerable<ItemInsertRow> rows, string actor, CancellationToken ct)
+            IEnumerable<ItemInsertRow> rows, CancellationToken ct)
         {
             var table = TvpTableFactory.CreateItemInsertDataTable(rows);
 
             await using var conn = db.Database.GetDbConnection();
             if (conn.State != ConnectionState.Open) await conn.OpenAsync(ct);
 
-            await SetSessionActorAsync(conn, actor, ct);
+            await SetSessionActorAsync(conn, ct);
 
             await using var cmd = conn.CreateCommand();
             cmd.CommandText = TvpNames.ItemInsertProc;
@@ -53,14 +54,14 @@ namespace GameTools.Infrastructure.Persistence.WriteStore
         }
 
         public async Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, UpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
-            IEnumerable<ItemUpdateRow> rows, string actor, CancellationToken ct)
+            IEnumerable<ItemUpdateRow> rows, CancellationToken ct)
         {
             var table = TvpTableFactory.CreateItemUpdateDataTable(rows);
 
             await using var conn = db.Database.GetDbConnection();
             if (conn.State != ConnectionState.Open) await conn.OpenAsync(ct);
 
-            await SetSessionActorAsync(conn, actor, ct);
+            await SetSessionActorAsync(conn, ct);
 
             await using var cmd = conn.CreateCommand();
             cmd.CommandText = TvpNames.ItemUpdateProc;
@@ -89,13 +90,13 @@ namespace GameTools.Infrastructure.Persistence.WriteStore
 
         // 세션 컨텍스트에 Actor 설정 (트리거 감사용)
         // 같은 커넥션에서 SP 호출 전에 매번 실행
-        private static async Task SetSessionActorAsync(DbConnection conn, string actor, CancellationToken ct)
+        private async Task SetSessionActorAsync(DbConnection conn, CancellationToken ct)
         {
             await using var cmd = conn.CreateCommand();
             cmd.CommandText = "EXEC sys.sp_set_session_context @key=N'actor', @value=@p0";
             var p0 = cmd.CreateParameter();
             p0.ParameterName = "@p0";
-            p0.Value = string.IsNullOrWhiteSpace(actor) ? "system" : actor;
+            p0.Value = string.IsNullOrWhiteSpace(currentUser.UserIdOrName) ? "unknown" : currentUser.UserIdOrName;
             cmd.Parameters.Add(p0);
             await cmd.ExecuteNonQueryAsync(ct);
         }

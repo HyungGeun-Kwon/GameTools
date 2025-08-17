@@ -17,7 +17,6 @@ namespace GameTools.Application.Features.Items.Commands.UpdateItemsTvp
                 row.RuleFor(r => r.RarityId).GreaterThan((byte)0);
                 row.RuleFor(r => r.RowVersionBase64).NotEmpty();
             });
-            RuleFor(x => x.Actor).NotEmpty().MaximumLength(64);
         }
     }
 }

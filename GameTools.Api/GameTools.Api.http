@@ -1,6 +1,65 @@
-@GameTools.Api_HostAddress = http://localhost:5094
+@host = http://localhost:5008
+@json = application/json
 
-GET {{GameTools.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Swagger JSON(동작 확인용)
+GET {{host}}/swagger/v1/swagger.json
+Accept: {{json}}
 
-###
+### 아이템 단건 조회
+GET {{host}}/api/items/1
+Accept: {{json}}
+
+### 아이템 페이지 조회(쿼리 파라미터)
+GET {{host}}/api/items?page=1&size=20&search=&rarityId=
+Accept: {{json}}
+
+### 아이템 생성
+POST {{host}}/api/items
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "name": "Iron Sword",
+  "price": 100,
+  "description": "basic",
+  "rarityId": 2
+}
+
+### 아이템 수정(전체 교체: PUT)
+PUT {{host}}/api/items/1
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "name": "Steel Sword",
+  "price": 120,
+  "description": "upgraded",
+  "rarityId": 2
+}
+
+### 아이템 삭제
+DELETE {{host}}/api/items/1
+
+### TVP 배치 삽입
+POST {{host}}/api/items/tvp/insert
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "items": [
+    { "name": "A", "price": 10, "description": null, "rarityId": 1 },
+    { "name": "B", "price": 20, "description": "bulk", "rarityId": 2 }
+  ]
+}
+
+### TVP 배치 수정
+POST {{host}}/api/items/tvp/update
+Content-Type: {{json}}
+Accept: {{json}}
+
+{
+  "items": [
+    { "id": 1, "name": "A2", "price": 15, "description": null, "rarityId": 1 },
+    { "id": 2, "name": "B2", "price": 25, "description": "bulk+", "rarityId": 2 }
+  ]
+}
