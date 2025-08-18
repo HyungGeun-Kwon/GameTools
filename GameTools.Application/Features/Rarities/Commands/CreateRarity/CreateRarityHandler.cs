@@ -10,10 +10,10 @@ namespace GameTools.Application.Features.Rarities.Commands.CreateRarity
     {
         public async Task<RarityDto> Handle(CreateRarityCommand request, CancellationToken ct)
         {
-            var rarity = new Rarity(request.Grade, request.NormalizedColorCode);
+            var rarity = new Rarity(request.RarityCreateDto.Grade, request.NormalizedColorCode);
             await rarityWriteStore.AddAsync(rarity, ct);
             await uow.SaveChangesAsync(ct);
-            return new RarityDto(rarity.Id, rarity.Grade, rarity.ColorCode);
+            return new RarityDto(rarity.Id, rarity.Grade, rarity.ColorCode, Convert.ToBase64String(rarity.RowVersion));
         }
     }
 }

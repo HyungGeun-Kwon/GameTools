@@ -7,8 +7,8 @@ namespace GameTools.Application.Features.Items.Commands.UpdateItemsTvp
     {
         public UpdateItemsTvpValidator()
         {
-            RuleFor(x => x.Rows).NotEmpty();
-            RuleForEach(x => x.Rows).ChildRules(row =>
+            RuleFor(x => x.ItemUpdateDtos).NotEmpty();
+            RuleForEach(x => x.ItemUpdateDtos).ChildRules(row =>
             {
                 row.RuleFor(r => r.Id).GreaterThan(0);
                 row.RuleFor(r => r.Name).NotEmpty().MaximumLength(ItemRules.NameMax);

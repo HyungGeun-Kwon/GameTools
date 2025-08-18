@@ -12,6 +12,7 @@ namespace GameTools.Domain.Entities
         // FK
         public byte RarityId { get; private set; }
         public Rarity Rarity { get; private set; } = null!;
+        public byte[] RowVersion { get; private set; } = default!;
 
         private Item() { } // EF Core
 

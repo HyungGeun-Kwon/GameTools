@@ -14,6 +14,8 @@ namespace GameTools.Domain.Entities
 
         public IReadOnlyCollection<Item> Items => _items.AsReadOnly();
 
+        public byte[] RowVersion { get; private set; } = default!;
+
         private Rarity() { } // EF Core
 
         public Rarity(string grade, string colorCode)

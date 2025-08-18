@@ -1,22 +1,17 @@
-﻿using GameTools.Application.Abstractions.Users;
-using GameTools.Application.Abstractions.WriteStore;
-using GameTools.Application.Features.Items.Commands.Common;
+﻿using GameTools.Application.Abstractions.WriteStore;
 using MediatR;
 
 namespace GameTools.Application.Features.Items.Commands.UpdateItemsTvp
 {
     public sealed class UpdateItemsTvpHandler(IItemWriteStore writeStore)
-        : IRequestHandler<UpdateItemsTvpCommand, IReadOnlyList<UpdateItemResult>>
+        : IRequestHandler<UpdateItemsTvpCommand, IReadOnlyList<UpdatedItemsTvpResult>>
     {
-        public async Task<IReadOnlyList<UpdateItemResult>> Handle(UpdateItemsTvpCommand request, CancellationToken ct)
+        public async Task<IReadOnlyList<UpdatedItemsTvpResult>> Handle(UpdateItemsTvpCommand request, CancellationToken ct)
         {
-            var rows = request.Rows.Select(r => new ItemUpdateRow(
-                r.Id, r.Name, r.Price, r.Description, r.RarityId, Convert.FromBase64String(r.RowVersionBase64)));
-
-            var results = await writeStore.UpdateManyTvpAsync(rows, ct);
+            IReadOnlyList<(int Id, byte[]? NewRowVersion, UpdateStatusCode StatusCode)> results = await writeStore.UpdateManyTvpAsync(request.ItemUpdateDtos, ct);
 
             return results
-                .Select(r => new UpdateItemResult(
+                .Select(r => new UpdatedItemsTvpResult(
                     r.Id,
                     r.StatusCode,
                     r.NewRowVersion is null ? null : Convert.ToBase64String(r.NewRowVersion)))

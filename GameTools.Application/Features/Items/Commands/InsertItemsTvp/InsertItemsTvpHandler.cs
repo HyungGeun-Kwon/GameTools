@@ -1,20 +1,21 @@
 ﻿using GameTools.Application.Abstractions.Users;
 using GameTools.Application.Abstractions.WriteStore;
-using GameTools.Application.Features.Items.Commands.Common;
 using MediatR;
 
 namespace GameTools.Application.Features.Items.Commands.InsertItemsTvp
 {
     public sealed class InsertItemsTvpHandler(IItemWriteStore writeStore)
-        : IRequestHandler<InsertItemsTvpCommand, IReadOnlyList<InsertedItemResult>>
+        : IRequestHandler<InsertItemsTvpCommand, IReadOnlyList<InsertedItemsTvpResult>>
     {
-        public async Task<IReadOnlyList<InsertedItemResult>> Handle(InsertItemsTvpCommand request, CancellationToken ct)
+        public async Task<IReadOnlyList<InsertedItemsTvpResult>> Handle(InsertItemsTvpCommand request, CancellationToken ct)
         {
-            var rows = request.Rows.Select(r => new ItemInsertRow(r.Name, r.Price, r.Description, r.RarityId));
-            var inserted = await writeStore.InsertManyTvpAsync(rows, ct);
+            IReadOnlyList<(int Id, byte[] NewRowVersion)> insertedList = await writeStore.InsertManyTvpAsync(request.ItemCreateDtos, ct);
 
-            return inserted
-                .Select(tuple => new InsertedItemResult(tuple.Id, Convert.ToBase64String(tuple.NewRowVersion)))
+            return insertedList
+                .Select(insertedItem 
+                    => new InsertedItemsTvpResult(
+                        insertedItem.Id,
+                        Convert.ToBase64String(insertedItem.NewRowVersion)))
                 .ToList();
         }
     }

@@ -3,8 +3,8 @@ using MediatR;
 
 namespace GameTools.Application.Features.Rarities.Commands.CreateRarity
 {
-    public record CreateRarityCommand(string Grade, string ColorCode) : IRequest<RarityDto>
+    public record CreateRarityCommand(RarityCreateDto RarityCreateDto) : IRequest<RarityDto>
     {
-        public string NormalizedColorCode => (ColorCode ?? "").Trim().ToUpperInvariant();
+        public string NormalizedColorCode => (RarityCreateDto.ColorCode ?? "").Trim().ToUpperInvariant();
     }
 }

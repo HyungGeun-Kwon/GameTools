@@ -1,4 +1,6 @@
-﻿namespace GameTools.Application.Abstractions.WriteStore
+﻿using GameTools.Domain.Entities;
+
+namespace GameTools.Application.Abstractions.WriteStore
 {
     public interface IWriteStore<TEntity, TKey> where TEntity : class
     {

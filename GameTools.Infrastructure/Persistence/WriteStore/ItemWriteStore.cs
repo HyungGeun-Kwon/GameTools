@@ -3,6 +3,7 @@ using System.Data.Common;
 using GameTools.Application.Abstractions.Users;
 using GameTools.Application.Abstractions.WriteStore;
 using GameTools.Application.Features.Items.Commands.Common;
+using GameTools.Application.Features.Items.Dtos;
 using GameTools.Domain.Entities;
 using GameTools.Infrastructure.Persistence.Tvp;
 using Microsoft.Data.SqlClient;
@@ -20,11 +21,17 @@ namespace GameTools.Infrastructure.Persistence.WriteStore
 
         public void Remove(Item entity)
             => db.Items.Remove(entity);
+        
+        public void SetOriginalRowVersion(Item entity, string base64)
+        {
+            var bytes = Convert.FromBase64String(base64);
+            db.Entry(entity).Property(e => e.RowVersion).OriginalValue = bytes;
+        }
 
         public async Task<IReadOnlyList<(int Id, byte[] NewRowVersion)>> InsertManyTvpAsync(
-            IEnumerable<ItemInsertRow> rows, CancellationToken ct)
+            IEnumerable<ItemCreateDto> itemCreateDtos, CancellationToken ct)
         {
-            var table = TvpTableFactory.CreateItemInsertDataTable(rows);
+            var table = TvpTableFactory.CreateItemInsertDataTable(itemCreateDtos);
 
             await using var conn = db.Database.GetDbConnection();
             if (conn.State != ConnectionState.Open) await conn.OpenAsync(ct);
@@ -54,7 +61,7 @@ namespace GameTools.Infrastructure.Persistence.WriteStore
         }
 
         public async Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, UpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
-            IEnumerable<ItemUpdateRow> rows, CancellationToken ct)
+            IEnumerable<ItemUpdateDto> rows, CancellationToken ct)
         {
             var table = TvpTableFactory.CreateItemUpdateDataTable(rows);
 

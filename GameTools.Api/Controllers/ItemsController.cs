@@ -54,18 +54,18 @@ namespace GameTools.Api.Controllers
 
         // TVP
         [HttpPost("tvp/insert")]
-        public async Task<ActionResult<IReadOnlyList<InsertedItemResult>>> InsertManyTvp(
+        public async Task<ActionResult<IReadOnlyList<InsertedItemsTvpResult>>> InsertManyTvp(
             [FromBody] InsertItemsTvpCommand cmd, CancellationToken ct)
         {
-            IReadOnlyList<InsertedItemResult> result = await mediator.Send(cmd, ct);
+            IReadOnlyList<InsertedItemsTvpResult> result = await mediator.Send(cmd, ct);
             return Ok(result);
         }
 
         [HttpPost("tvp/update")]
-        public async Task<ActionResult<IReadOnlyList<UpdateItemResult>>> UpdateManyTvp(
+        public async Task<ActionResult<IReadOnlyList<UpdatedItemsTvpResult>>> UpdateManyTvp(
             [FromBody] UpdateItemsTvpCommand cmd, CancellationToken ct)
         {
-            IReadOnlyList<UpdateItemResult> result = await mediator.Send(cmd, ct);
+            IReadOnlyList<UpdatedItemsTvpResult> result = await mediator.Send(cmd, ct);
             return Ok(result);
         }
     }

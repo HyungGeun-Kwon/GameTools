@@ -7,10 +7,11 @@ namespace GameTools.Application.Features.Items.Commands.CreateItem
     {
         public CreateItemValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(ItemRules.NameMax);
-            RuleFor(x => x.Price).GreaterThanOrEqualTo(ItemRules.PriceMin);
-            RuleFor(x => x.Description).MaximumLength(ItemRules.DescriptionMax);
-            RuleFor(x => x.RarityId).GreaterThan((byte)0);
+            RuleFor(x => x.ItemCreateDto).NotEmpty();
+            RuleFor(x => x.ItemCreateDto.Name).NotEmpty().MaximumLength(ItemRules.NameMax);
+            RuleFor(x => x.ItemCreateDto.Price).GreaterThanOrEqualTo(ItemRules.PriceMin);
+            RuleFor(x => x.ItemCreateDto.Description).MaximumLength(ItemRules.DescriptionMax);
+            RuleFor(x => x.ItemCreateDto.RarityId).GreaterThan((byte)0);
         }
     }
 }

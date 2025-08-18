@@ -1,11 +1,11 @@
 ﻿using System.Data;
-using GameTools.Application.Features.Items.Commands.Common;
+using GameTools.Application.Features.Items.Dtos;
 
 namespace GameTools.Infrastructure.Persistence.Tvp
 {
     public static class TvpTableFactory
     {
-        public static DataTable CreateItemInsertDataTable(IEnumerable<ItemInsertRow> rows)
+        public static DataTable CreateItemInsertDataTable(IEnumerable<ItemCreateDto> itemCreateDtos)
         {
             var dt = new DataTable();
             dt.Columns.Add("Name", typeof(string));
@@ -13,13 +13,13 @@ namespace GameTools.Infrastructure.Persistence.Tvp
             dt.Columns.Add("Description", typeof(string));
             dt.Columns.Add("RarityId", typeof(byte));
 
-            foreach (var r in rows)
+            foreach (var r in itemCreateDtos)
                 dt.Rows.Add(r.Name, r.Price, r.Description ?? (object)DBNull.Value, r.RarityId);
 
             return dt;
         }
 
-        public static DataTable CreateItemUpdateDataTable(IEnumerable<ItemUpdateRow> rows)
+        public static DataTable CreateItemUpdateDataTable(IEnumerable<ItemUpdateDto> itemUpdateDtos)
         {
             var dt = new DataTable();
             dt.Columns.Add("Id", typeof(int));
@@ -29,7 +29,7 @@ namespace GameTools.Infrastructure.Persistence.Tvp
             dt.Columns.Add("RarityId", typeof(byte));
             dt.Columns.Add("RowVersionOriginal", typeof(byte[]));
 
-            foreach (var r in rows)
+            foreach (var r in itemUpdateDtos)
                 dt.Rows.Add(r.Id, r.Name, r.Price, r.Description ?? (object)DBNull.Value, r.RarityId);
 
             return dt;

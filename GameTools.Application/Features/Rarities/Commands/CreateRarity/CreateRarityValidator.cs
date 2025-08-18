@@ -7,7 +7,8 @@ namespace GameTools.Application.Features.Rarities.Commands.CreateRarity
     {
         public CreateRarityValidator()
         {
-            RuleFor(x => x.Grade)
+            RuleFor(x => x.RarityCreateDto).NotEmpty();
+            RuleFor(x => x.RarityCreateDto.Grade)
                 .NotEmpty()
                 .MaximumLength(RarityRules.GradeMax);
             RuleFor(x => x.NormalizedColorCode)

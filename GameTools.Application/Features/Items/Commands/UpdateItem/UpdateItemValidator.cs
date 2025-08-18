@@ -7,11 +7,12 @@ namespace GameTools.Application.Features.Items.Commands.UpdateItem
     {
         public UpdateItemValidator()
         {
-            RuleFor(x => x.Id).GreaterThan(0);
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(ItemRules.NameMax);
-            RuleFor(x => x.Price).GreaterThanOrEqualTo(ItemRules.PriceMin);
-            RuleFor(x => x.Description).MaximumLength(ItemRules.DescriptionMax);
-            RuleFor(x => x.RarityId).GreaterThan((byte)0);
+            RuleFor(x => x.ItemUpdateDto).NotEmpty();
+            RuleFor(x => x.ItemUpdateDto.Id).GreaterThan(0);
+            RuleFor(x => x.ItemUpdateDto.Name).NotEmpty().MaximumLength(ItemRules.NameMax);
+            RuleFor(x => x.ItemUpdateDto.Price).GreaterThanOrEqualTo(ItemRules.PriceMin);
+            RuleFor(x => x.ItemUpdateDto.Description).MaximumLength(ItemRules.DescriptionMax);
+            RuleFor(x => x.ItemUpdateDto.RarityId).GreaterThan((byte)0);
         }
     }
 }

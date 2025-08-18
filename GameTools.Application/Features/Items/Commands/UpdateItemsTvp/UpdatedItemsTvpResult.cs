@@ -2,5 +2,5 @@
 
 namespace GameTools.Application.Features.Items.Commands.UpdateItemsTvp
 {
-    public sealed record UpdateItemResult(int Id, UpdateStatusCode StatusCode, string? NewRowVersionBase64);
+    public sealed record UpdatedItemsTvpResult(int Id, UpdateStatusCode StatusCode, string? NewRowVersionBase64);
 }

@@ -7,6 +7,7 @@
         string? Description,
         byte RarityId,
         string RarityGrade,
-        string RarityColorCode
+        string RarityColorCode,
+        string RowVersionBase64
     );
 }

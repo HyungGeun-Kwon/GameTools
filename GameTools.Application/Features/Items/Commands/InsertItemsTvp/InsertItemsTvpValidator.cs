@@ -7,13 +7,13 @@ namespace GameTools.Application.Features.Items.Commands.InsertItemsTvp
     {
         public InsertItemsTvpValidator()
         {
-            RuleFor(x => x.Rows).NotEmpty();
-            RuleForEach(x => x.Rows).ChildRules(row =>
+            RuleFor(x => x.ItemCreateDtos).NotEmpty();
+            RuleForEach(x => x.ItemCreateDtos).ChildRules(row =>
             {
-                row.RuleFor(r => r.Name).NotEmpty().MaximumLength(ItemRules.NameMax);
-                row.RuleFor(r => r.Price).GreaterThanOrEqualTo(ItemRules.PriceMin);
-                row.RuleFor(r => r.Description).MaximumLength(ItemRules.DescriptionMax);
-                row.RuleFor(r => r.RarityId).GreaterThan((byte)0);
+                row.RuleFor(i => i.Name).NotEmpty().MaximumLength(ItemRules.NameMax);
+                row.RuleFor(i => i.Price).GreaterThanOrEqualTo(ItemRules.PriceMin);
+                row.RuleFor(i => i.Description).MaximumLength(ItemRules.DescriptionMax);
+                row.RuleFor(i => i.RarityId).GreaterThan((byte)0);
             });
         }
     }

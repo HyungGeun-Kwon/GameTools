@@ -14,10 +14,6 @@ namespace GameTools.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-
-            // 버전 불일치 시 : DbUpdateConcurrencyException
-            modelBuilder.Entity<Item>().Property<byte[]>("RowVersion").IsRowVersion();
-            modelBuilder.Entity<Rarity>().Property<byte[]>("RowVersion").IsRowVersion();
         }
     }
 }
