@@ -17,6 +17,7 @@ namespace GameTools.Infrastructure.Persistence.Configurations
                 "LEN([ColorCode]) = 7 AND LEFT([ColorCode],1) = '#' " +
                 "AND [ColorCode] = UPPER([ColorCode]) " +
                 "AND [ColorCode] LIKE '#[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]'");
+                t.HasTrigger("trg_Rarity_Audit");
             });
 
             b.HasKey(r => r.Id);

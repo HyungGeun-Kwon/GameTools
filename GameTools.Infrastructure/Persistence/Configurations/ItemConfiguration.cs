@@ -13,6 +13,7 @@ namespace GameTools.Infrastructure.Persistence.Configurations
             {
                 // 제약 Price >= 0
                 t.HasCheckConstraint("CK_Item_Price_NonNegative", "[Price] >= 0");
+                t.HasTrigger("trg_Item_Audit");
             });
 
             b.HasKey(i => i.Id);
