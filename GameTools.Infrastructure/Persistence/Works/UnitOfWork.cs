@@ -12,19 +12,28 @@ namespace GameTools.Infrastructure.Persistence.Works
             if (!db.Database.IsRelational())
                 return await db.SaveChangesAsync(ct); // InMemory일 경우.
 
-            await using var conn = db.Database.GetDbConnection();
-            if (conn.State != ConnectionState.Open)
-                await conn.OpenAsync(ct); // SaveChanges 전에 Actor 설정
+            var conn = db.Database.GetDbConnection();
 
-            await using (var cmd = conn.CreateCommand()) 
-            { 
+            var openedHere = false;
+            if (conn.State != ConnectionState.Open)
+            {
+                await db.Database.OpenConnectionAsync(ct);
+                openedHere = true;
+            }
+
+            try
+            {
+                await using var cmd = conn.CreateCommand();
                 cmd.CommandText = "EXEC sys.sp_set_session_context @key=N'actor', @value=@p0";
                 var p0 = cmd.CreateParameter();
                 p0.ParameterName = "@p0";
-                p0.Value = currentUser.UserIdOrName ?? "system";
+                p0.Value = currentUser.UserIdOrName ?? "unknown";
                 cmd.Parameters.Add(p0);
                 await cmd.ExecuteNonQueryAsync(ct);
+
+                return await db.SaveChangesAsync(ct);
             }
-            return await db.SaveChangesAsync(ct); }
+            finally { if (openedHere) await db.Database.CloseConnectionAsync(); }
         }
+    }
 }

@@ -186,10 +186,11 @@ namespace GameTools.Test.DataBase.ItemTest
 
             var rarity = serverDb.SeedRarity();
 
-            var cmd = new CreateItemCommand(new ItemCreateDto("Item1", 100, rarity.Id, "First"));
+            var cmd1 = new CreateItemCommand(new ItemCreateDto("Item1", 100, rarity.Id, "First"));
+            var cmd2 = new CreateItemCommand(new ItemCreateDto("Item1", 100, rarity.Id, "First"));
             
-            var create1 = await handler.Handle(cmd, CancellationToken.None);
-            var act = async () => await handler.Handle(cmd, CancellationToken.None);
+            var create1 = await handler.Handle(cmd1, CancellationToken.None);
+            var act = async () => await handler.Handle(cmd2, CancellationToken.None);
 
             await act.Should().ThrowAsync<Exception>();
         }

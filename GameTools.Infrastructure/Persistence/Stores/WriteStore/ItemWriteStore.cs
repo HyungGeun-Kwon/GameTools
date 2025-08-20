@@ -20,7 +20,7 @@ namespace GameTools.Infrastructure.Persistence.Stores.WriteStore
 
         public void Remove(Item entity)
             => db.Items.Remove(entity);
-        
+
         public void SetOriginalRowVersion(Item entity, string base64)
         {
             var bytes = Convert.FromBase64String(base64);
@@ -32,31 +32,44 @@ namespace GameTools.Infrastructure.Persistence.Stores.WriteStore
         {
             var table = TvpTableFactory.CreateItemInsertDataTable(itemCreateDtos);
 
-            await using var conn = db.Database.GetDbConnection();
-            if (conn.State != ConnectionState.Open) await conn.OpenAsync(ct);
+            var conn = db.Database.GetDbConnection();
 
-            await SetSessionActorAsync(conn, ct);
-
-            await using var cmd = conn.CreateCommand();
-            cmd.CommandText = TvpNames.ItemInsertProc;
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            var p = new SqlParameter("@Rows", SqlDbType.Structured)
+            var openedHere = false;
+            if (conn.State != ConnectionState.Open)
             {
-                TypeName = TvpNames.ItemInsertType,
-                Value = table
-            };
-            cmd.Parameters.Add(p);
-
-            var result = new List<(int, byte[])>();
-            await using var reader = await cmd.ExecuteReaderAsync(ct);
-            while (await reader.ReadAsync(ct))
-            {
-                var id = reader.GetInt32(0);
-                var rv = (byte[])reader.GetValue(1); // varbinary(8)
-                result.Add((id, rv));
+                await conn.OpenAsync(ct);
+                openedHere = true;
             }
-            return result;
+
+            try
+            {
+                await SetSessionActorAsync(conn, ct);
+
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText = TvpNames.ItemInsertProc;
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                var p = new SqlParameter("@Rows", SqlDbType.Structured)
+                {
+                    TypeName = TvpNames.ItemInsertType,
+                    Value = table
+                };
+                cmd.Parameters.Add(p);
+
+                var result = new List<(int, byte[])>();
+                await using var reader = await cmd.ExecuteReaderAsync(ct);
+                while (await reader.ReadAsync(ct))
+                {
+                    var id = reader.GetInt32(0);
+                    var rv = (byte[])reader.GetValue(1); // varbinary(8)
+                    result.Add((id, rv));
+                }
+                return result;
+            }
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
         }
 
         public async Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, UpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
