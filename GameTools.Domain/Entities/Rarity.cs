@@ -1,4 +1,5 @@
-﻿using GameTools.Domain.Common;
+﻿using System.ComponentModel.DataAnnotations;
+using GameTools.Domain.Common;
 using GameTools.Domain.Common.Rules;
 
 namespace GameTools.Domain.Entities
@@ -14,6 +15,7 @@ namespace GameTools.Domain.Entities
 
         public IReadOnlyCollection<Item> Items => _items.AsReadOnly();
 
+        [Timestamp]
         public byte[] RowVersion { get; private set; } = default!;
 
         private Rarity() { } // EF Core

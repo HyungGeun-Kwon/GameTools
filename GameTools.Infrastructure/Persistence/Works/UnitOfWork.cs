@@ -9,6 +9,9 @@ namespace GameTools.Infrastructure.Persistence.Works
     {
         public async Task<int> SaveChangesAsync(CancellationToken ct = default)
         {
+            if (!db.Database.IsRelational())
+                return await db.SaveChangesAsync(ct); // InMemory일 경우.
+
             await using var conn = db.Database.GetDbConnection();
             if (conn.State != ConnectionState.Open)
                 await conn.OpenAsync(ct); // SaveChanges 전에 Actor 설정

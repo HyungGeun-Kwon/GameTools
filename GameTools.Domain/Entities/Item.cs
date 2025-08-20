@@ -1,4 +1,5 @@
-﻿using GameTools.Domain.Common;
+﻿using System.ComponentModel.DataAnnotations;
+using GameTools.Domain.Common;
 using GameTools.Domain.Common.Rules;
 
 namespace GameTools.Domain.Entities
@@ -9,10 +10,13 @@ namespace GameTools.Domain.Entities
         public int Price { get; private set; }
         public string? Description { get; private set; }
 
+        [Timestamp]
+        public byte[] RowVersion { get; private set; } = default!;
+
         // FK
         public byte RarityId { get; private set; }
         public Rarity Rarity { get; private set; } = null!;
-        public byte[] RowVersion { get; private set; } = default!;
+
 
         private Item() { } // EF Core
 

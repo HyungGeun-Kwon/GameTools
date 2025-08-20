@@ -24,6 +24,10 @@ namespace GameTools.Infrastructure.Persistence.Configurations
             b.Property(r => r.Id)
              .UseIdentityColumn();
 
+            b.Property(i => i.RowVersion)
+                .IsRequired()
+                .IsRowVersion();
+
             b.Property(r => r.Grade)
              .IsRequired()
              .HasMaxLength(RarityRules.GradeMax);

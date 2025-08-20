@@ -1,4 +1,5 @@
-﻿using GameTools.Domain.Common.Rules;
+﻿using System.Reflection.Emit;
+using GameTools.Domain.Common.Rules;
 using GameTools.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,6 +19,10 @@ namespace GameTools.Infrastructure.Persistence.Configurations
 
             b.HasKey(i => i.Id);
             b.Property(i => i.Id).UseIdentityColumn(); // 자동증가
+
+            b.Property(i => i.RowVersion)
+                .IsRequired()
+                .IsRowVersion();
 
             // Columns
             b.Property(i => i.Name)

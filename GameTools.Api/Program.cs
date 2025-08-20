@@ -42,6 +42,7 @@ app.Run();
 
 // 마이그레이션
 // dotnet ef migrations add 마이그레이션이름 -p GameTools.Infrastructure/GameTools.Infrastructure.csproj -s GameTools.Api/GameTools.Api.csproj
+// dotnet ef migrations add FixRowVersionConcurrency -p GameTools.Infrastructure/GameTools.Infrastructure.csproj -s GameTools.Api/GameTools.Api.csproj
 
 // DB에 반영
 // dotnet ef database update -p GameTools.Infrastructure/GameTools.Infrastructure.csproj -s GameTools.Api/GameTools.Api.csproj
