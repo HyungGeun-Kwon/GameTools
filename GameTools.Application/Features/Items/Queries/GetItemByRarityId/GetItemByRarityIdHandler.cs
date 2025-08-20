@@ -4,9 +4,9 @@ using MediatR;
 
 namespace GameTools.Application.Features.Items.Queries.GetItemById
 {
-    public sealed class GetItemByRarityIdHandler(IItemReadStore itemReadStore) : IRequestHandler<GetItemByRarityIdQuery, List<ItemDto>>
+    public sealed class GetItemByRarityIdHandler(IItemReadStore itemReadStore) : IRequestHandler<GetItemByRarityIdQuery, IReadOnlyList<ItemDto>>
     {
-        public async Task<List<ItemDto>> Handle(GetItemByRarityIdQuery request, CancellationToken ct)
+        public async Task<IReadOnlyList<ItemDto>> Handle(GetItemByRarityIdQuery request, CancellationToken ct)
             => await itemReadStore.GetByRarityIdAsync(request.RarityId, ct);
     }
 }

@@ -15,7 +15,7 @@ namespace GameTools.Infrastructure.Persistence.Stores.ReadStore
                 .Select(i => new ItemDto(i.Id, i.Name, i.Price, i.Description, i.RarityId, i.Rarity.Grade, i.Rarity.ColorCode, Convert.ToBase64String(i.RowVersion)))
                 .FirstOrDefaultAsync(ct);
 
-        public async Task<List<ItemDto>> GetByRarityIdAsync(byte rarityId, CancellationToken ct)
+        public async Task<IReadOnlyList<ItemDto>> GetByRarityIdAsync(byte rarityId, CancellationToken ct)
             => await db.Items.AsNoTracking()
                 .Where(i => i.RarityId == rarityId)
                 .Select(i => new ItemDto(i.Id, i.Name, i.Price, i.Description, i.RarityId, i.Rarity.Grade, i.Rarity.ColorCode, Convert.ToBase64String(i.RowVersion)))

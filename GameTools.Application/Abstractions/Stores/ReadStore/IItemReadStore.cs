@@ -7,6 +7,6 @@ namespace GameTools.Application.Abstractions.Stores.ReadStore
     public interface IItemReadStore : IReadStore<ItemDto, int>
     {
         Task<PagedResult<ItemDto>> GetPageAsync(GetItemsPageQueryParams getItemsPageQueryParams, CancellationToken ct);
-        Task<List<ItemDto>> GetByRarityIdAsync(byte rarityId, CancellationToken ct);
+        Task<IReadOnlyList<ItemDto>> GetByRarityIdAsync(byte rarityId, CancellationToken ct);
     }
 }

@@ -3,5 +3,5 @@ using MediatR;
 
 namespace GameTools.Application.Features.Rarities.Queries.GetRarities
 {
-    public sealed record GetRaritiesQuery : IRequest<List<RarityDto>>;
+    public sealed record GetRaritiesQuery : IRequest<IReadOnlyList<RarityDto>>;
 }

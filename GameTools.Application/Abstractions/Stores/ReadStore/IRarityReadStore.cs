@@ -4,6 +4,6 @@ namespace GameTools.Application.Abstractions.Stores.ReadStore
 {
     public interface IRarityReadStore : IReadStore<RarityDto, byte>
     {
-        Task<List<RarityDto>> GetAllAsync(CancellationToken ct);
+        Task<IReadOnlyList<RarityDto>> GetAllAsync(CancellationToken ct);
     }
 }

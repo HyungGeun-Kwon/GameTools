@@ -5,9 +5,9 @@ using MediatR;
 namespace GameTools.Application.Features.Rarities.Queries.GetRarities
 {
     public sealed class GetRaritiesHandler(IRarityReadStore rarityReadStore)
-        : IRequestHandler<GetRaritiesQuery, List<RarityDto>>
+        : IRequestHandler<GetRaritiesQuery, IReadOnlyList<RarityDto>>
     {
-        public async Task<List<RarityDto>> Handle(GetRaritiesQuery request, CancellationToken ct)
+        public async Task<IReadOnlyList<RarityDto>> Handle(GetRaritiesQuery request, CancellationToken ct)
             => await rarityReadStore.GetAllAsync(ct);
     }
 }
