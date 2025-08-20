@@ -7,9 +7,16 @@ namespace GameTools.Application.Features.Items.Queries.GetItemPage
     {
         public GetItemsPageValidator()
         {
-            RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(1);
-            RuleFor(x => x.PageSize).InclusiveBetween(1, PagingRules.MaxPageSize);
-            RuleFor(x => x.RarityId).GreaterThan((byte)0).When(x => x.RarityId.HasValue);
+            RuleFor(x => x.GetItemsPageQueryParams.Pagination).NotNull();
+
+            RuleFor(x => x.GetItemsPageQueryParams.Pagination)
+                .SetValidator(new PaginationValidator());
+
+            When(x => x.GetItemsPageQueryParams.Filter is not null, () =>
+            {
+                RuleFor(x => x.GetItemsPageQueryParams.Filter!)
+                    .SetValidator(new ItemFilterValidator());
+            });
         }
     }
 }

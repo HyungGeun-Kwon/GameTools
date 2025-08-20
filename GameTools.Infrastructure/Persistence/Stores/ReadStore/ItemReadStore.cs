@@ -1,6 +1,7 @@
 ﻿using GameTools.Application.Abstractions.Stores.ReadStore;
 using GameTools.Application.Common.Paging;
 using GameTools.Application.Features.Items.Dtos;
+using GameTools.Application.Features.Items.Queries.GetItemPage;
 using GameTools.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,9 +21,14 @@ namespace GameTools.Infrastructure.Persistence.Stores.ReadStore
                 .Select(i => new ItemDto(i.Id, i.Name, i.Price, i.Description, i.RarityId, i.Rarity.Grade, i.Rarity.ColorCode, Convert.ToBase64String(i.RowVersion)))
                 .ToListAsync(ct);
 
-        public async Task<PagedResult<ItemDto>> GetPageAsync(int page, int size, string? search, byte? rarityId, CancellationToken ct)
+        public async Task<PagedResult<ItemDto>> GetPageAsync(GetItemsPageQueryParams getItemsPageQueryParams, CancellationToken ct)
         {
             IQueryable<Item> query = db.Items.AsNoTracking().AsQueryable();
+
+            var search = getItemsPageQueryParams.Filter?.Search;
+            var rarityId = getItemsPageQueryParams.Filter?.RarityId;
+            var page = getItemsPageQueryParams.Pagination.PageNumber;
+            var size = getItemsPageQueryParams.Pagination.PageSize;
 
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(i => i.Name.Contains(search.Trim()));

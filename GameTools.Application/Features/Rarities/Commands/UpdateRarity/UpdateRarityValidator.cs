@@ -7,8 +7,9 @@ namespace GameTools.Application.Features.Rarities.Commands.UpdateRarity
     {
         public UpdateRarityValidator()
         {
-            RuleFor(x => x.Id).GreaterThan((byte)0);
-            RuleFor(x => x.Grade).NotEmpty().MaximumLength(RarityRules.GradeMax);
+            RuleFor(x => x.RarityUpdateDto).NotEmpty();
+            RuleFor(x => x.RarityUpdateDto.Id).GreaterThan((byte)0);
+            RuleFor(x => x.RarityUpdateDto.Grade).NotEmpty().MaximumLength(RarityRules.GradeMax);
 
             RuleFor(x => x.NormalizedColorCode)
                 .NotEmpty()
