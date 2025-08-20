@@ -1,7 +1,7 @@
-﻿using GameTools.Application.Abstractions.WriteStore;
+﻿using GameTools.Application.Abstractions.Stores.WriteStore;
 using GameTools.Domain.Entities;
 
-namespace GameTools.Infrastructure.Persistence.WriteStore
+namespace GameTools.Infrastructure.Persistence.Stores.WriteStore
 {
     public sealed class RarityWriteStore(AppDbContext db) : IRarityWriteStore
     {
@@ -13,5 +13,11 @@ namespace GameTools.Infrastructure.Persistence.WriteStore
 
         public void Remove(Rarity entity)
             => db.Rarities.Remove(entity);
+
+        public void SetOriginalRowVersion(Rarity entity, string base64)
+        {
+            var bytes = Convert.FromBase64String(base64);
+            db.Entry(entity).Property(e => e.RowVersion).OriginalValue = bytes;
+        }
     }
 }

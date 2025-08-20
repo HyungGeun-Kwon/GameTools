@@ -1,10 +1,10 @@
-﻿using GameTools.Application.Abstractions.ReadStore;
+﻿using GameTools.Application.Abstractions.Stores.ReadStore;
+using GameTools.Application.Abstractions.Stores.WriteStore;
 using GameTools.Application.Abstractions.Works;
-using GameTools.Application.Abstractions.WriteStore;
 using GameTools.Infrastructure.Persistence;
-using GameTools.Infrastructure.Persistence.ReadStore;
+using GameTools.Infrastructure.Persistence.Stores.ReadStore;
+using GameTools.Infrastructure.Persistence.Stores.WriteStore;
 using GameTools.Infrastructure.Persistence.Works;
-using GameTools.Infrastructure.Persistence.WriteStore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

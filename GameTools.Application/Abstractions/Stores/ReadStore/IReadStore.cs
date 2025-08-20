@@ -1,4 +1,4 @@
-﻿namespace GameTools.Application.Abstractions.ReadStore
+﻿namespace GameTools.Application.Abstractions.Stores.ReadStore
 {
     public interface IReadStore<TEntity, TKey> where TEntity : class
     {

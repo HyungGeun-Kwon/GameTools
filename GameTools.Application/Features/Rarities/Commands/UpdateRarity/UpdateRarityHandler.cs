@@ -1,7 +1,6 @@
-﻿using GameTools.Application.Abstractions.Works;
-using GameTools.Application.Abstractions.WriteStore;
+﻿using GameTools.Application.Abstractions.Stores.WriteStore;
+using GameTools.Application.Abstractions.Works;
 using GameTools.Application.Features.Rarities.Dtos;
-using GameTools.Domain.Entities;
 using MediatR;
 
 namespace GameTools.Application.Features.Rarities.Commands.UpdateRarity

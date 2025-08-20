@@ -1,7 +1,7 @@
 ﻿using GameTools.Application.Common.Paging;
 using GameTools.Application.Features.Items.Dtos;
 
-namespace GameTools.Application.Abstractions.ReadStore
+namespace GameTools.Application.Abstractions.Stores.ReadStore
 {
     public interface IItemReadStore : IReadStore<ItemDto, int>
     {

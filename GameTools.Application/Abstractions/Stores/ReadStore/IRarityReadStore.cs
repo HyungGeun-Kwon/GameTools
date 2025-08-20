@@ -1,6 +1,6 @@
 ﻿using GameTools.Application.Features.Rarities.Dtos;
 
-namespace GameTools.Application.Abstractions.ReadStore
+namespace GameTools.Application.Abstractions.Stores.ReadStore
 {
     public interface IRarityReadStore : IReadStore<RarityDto, byte>
     {

@@ -1,4 +1,4 @@
-﻿using GameTools.Application.Abstractions.WriteStore;
+﻿using GameTools.Application.Abstractions.Stores.WriteStore;
 
 namespace GameTools.Application.Features.Items.Commands.UpdateItemsTvp
 {

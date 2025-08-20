@@ -1,4 +1,4 @@
-﻿namespace GameTools.Application.Abstractions.WriteStore
+﻿namespace GameTools.Application.Abstractions.Stores.WriteStore
 {
     public enum UpdateStatusCode : byte
     {

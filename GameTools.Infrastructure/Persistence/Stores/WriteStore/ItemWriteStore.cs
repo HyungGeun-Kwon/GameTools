@@ -1,15 +1,14 @@
 ﻿using System.Data;
 using System.Data.Common;
+using GameTools.Application.Abstractions.Stores.WriteStore;
 using GameTools.Application.Abstractions.Users;
-using GameTools.Application.Abstractions.WriteStore;
-using GameTools.Application.Features.Items.Commands.Common;
 using GameTools.Application.Features.Items.Dtos;
 using GameTools.Domain.Entities;
 using GameTools.Infrastructure.Persistence.Tvp;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace GameTools.Infrastructure.Persistence.WriteStore
+namespace GameTools.Infrastructure.Persistence.Stores.WriteStore
 {
     public sealed class ItemWriteStore(AppDbContext db, ICurrentUser currentUser) : IItemWriteStore
     {

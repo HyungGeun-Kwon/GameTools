@@ -1,4 +1,4 @@
-﻿using GameTools.Application.Abstractions.ReadStore;
+﻿using GameTools.Application.Abstractions.Stores.ReadStore;
 using GameTools.Application.Common.Paging;
 using GameTools.Application.Features.Items.Dtos;
 using MediatR;

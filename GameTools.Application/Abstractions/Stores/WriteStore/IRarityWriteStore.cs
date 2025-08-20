@@ -1,6 +1,6 @@
 ﻿using GameTools.Domain.Entities;
 
-namespace GameTools.Application.Abstractions.WriteStore
+namespace GameTools.Application.Abstractions.Stores.WriteStore
 {
     public interface IRarityWriteStore : IWriteStore<Rarity, byte>
     {

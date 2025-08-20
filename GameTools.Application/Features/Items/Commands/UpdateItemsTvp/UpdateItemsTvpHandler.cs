@@ -1,4 +1,4 @@
-﻿using GameTools.Application.Abstractions.WriteStore;
+﻿using GameTools.Application.Abstractions.Stores.WriteStore;
 using MediatR;
 
 namespace GameTools.Application.Features.Items.Commands.UpdateItemsTvp

@@ -1,8 +1,7 @@
-﻿using GameTools.Application.Features.Items.Commands.Common;
-using GameTools.Application.Features.Items.Dtos;
+﻿using GameTools.Application.Features.Items.Dtos;
 using GameTools.Domain.Entities;
 
-namespace GameTools.Application.Abstractions.WriteStore
+namespace GameTools.Application.Abstractions.Stores.WriteStore
 {
     public interface IItemWriteStore : IWriteStore<Item, int>
     {
