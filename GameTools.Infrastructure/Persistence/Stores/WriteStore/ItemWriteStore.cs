@@ -77,34 +77,47 @@ namespace GameTools.Infrastructure.Persistence.Stores.WriteStore
         {
             var table = TvpTableFactory.CreateItemUpdateDataTable(rows);
 
-            await using var conn = db.Database.GetDbConnection();
-            if (conn.State != ConnectionState.Open) await conn.OpenAsync(ct);
+            var conn = db.Database.GetDbConnection();
 
-            await SetSessionActorAsync(conn, ct);
-
-            await using var cmd = conn.CreateCommand();
-            cmd.CommandText = TvpNames.ItemUpdateProc;
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            var p = new SqlParameter("@Rows", SqlDbType.Structured)
+            var openedHere = false;
+            if (conn.State != ConnectionState.Open)
             {
-                TypeName = TvpNames.ItemUpdateType,
-                Value = table
-            };
-            cmd.Parameters.Add(p);
-
-            var result = new List<(int, byte[]?, UpdateStatusCode)>();
-            await using var reader = await cmd.ExecuteReaderAsync(ct);
-            while (await reader.ReadAsync(ct))
-            {
-                var id = reader.GetInt32(0);
-                var isNull = await reader.IsDBNullAsync(1, ct);
-                var newRv = isNull ? null : (byte[])reader.GetValue(1);
-                var statusCode = (UpdateStatusCode)reader.GetByte(2);
-
-                result.Add((id, newRv, statusCode));
+                await conn.OpenAsync(ct);
+                openedHere = true;
             }
-            return result;
+
+            try
+            {
+                await SetSessionActorAsync(conn, ct);
+
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText = TvpNames.ItemUpdateProc;
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                var p = new SqlParameter("@Rows", SqlDbType.Structured)
+                {
+                    TypeName = TvpNames.ItemUpdateType,
+                    Value = table
+                };
+                cmd.Parameters.Add(p);
+
+                var result = new List<(int, byte[]?, UpdateStatusCode)>();
+                await using var reader = await cmd.ExecuteReaderAsync(ct);
+                while (await reader.ReadAsync(ct))
+                {
+                    var id = reader.GetInt32(0);
+                    var isNull = await reader.IsDBNullAsync(1, ct);
+                    var newRv = isNull ? null : (byte[])reader.GetValue(1);
+                    var statusCode = (UpdateStatusCode)reader.GetByte(2);
+
+                    result.Add((id, newRv, statusCode));
+                }
+                return result;
+            }
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
         }
 
         // 세션 컨텍스트에 Actor 설정 (트리거 감사용)

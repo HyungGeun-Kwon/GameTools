@@ -14,8 +14,7 @@ namespace GameTools.Test.Utils
         public static async Task<SqlServerTestDb> CreateAsync(bool migrate = true)
         {
             var dbName = "gt_tests_" + Guid.NewGuid().ToString("N");
-            var cs = $"Server=(localdb)\\MSSQLLocalDB;Initial Catalog={dbName};" +
-                     $"Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
+            var cs = $"Server=(localdb)\\MSSQLLocalDB;Database={dbName};Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true";
 
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseSqlServer(cs)
@@ -48,7 +47,7 @@ namespace GameTools.Test.Utils
 
         public async ValueTask DisposeAsync()
         {
-            // DB/파일까지 삭제 → 흔적 안 남음
+            // DB/파일까지 삭제
             await Db.Database.EnsureDeletedAsync();
             await Db.DisposeAsync();
         }

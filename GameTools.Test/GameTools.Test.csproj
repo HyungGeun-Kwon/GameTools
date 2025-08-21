@@ -25,10 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataBase\RarityTest\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\GameTools.Application\GameTools.Application.csproj" />
     <ProjectReference Include="..\GameTools.Domain\GameTools.Domain.csproj" />
     <ProjectReference Include="..\GameTools.Infrastructure\GameTools.Infrastructure.csproj" />

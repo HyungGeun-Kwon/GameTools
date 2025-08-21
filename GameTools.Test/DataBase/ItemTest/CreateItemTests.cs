@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using GameTools.Application.Features.Items.Commands.CreateItem;
 using GameTools.Application.Features.Items.Dtos;
+using GameTools.Domain.Auditing;
+using GameTools.Domain.Common.Rules;
 using GameTools.Domain.Entities;
 using GameTools.Infrastructure.Persistence;
 using GameTools.Infrastructure.Persistence.Stores.WriteStore;
@@ -19,8 +21,10 @@ namespace GameTools.Test.DataBase.ItemTest
             await using var db = TestDataBase.CreateTestDbContext();
 
             var rarity = TestDataBase.SeedRarity(db);
-            
-            await CreateItemSuccess(db, rarity);
+
+            var itemCreateDto = new ItemCreateDto("ItemInMem", 456, rarity.Id, "SqlServer");
+
+            var _ = await CreateItem(db, itemCreateDto, rarity);
         }
 
         [Fact]
@@ -31,26 +35,41 @@ namespace GameTools.Test.DataBase.ItemTest
             var db = serverDb.Db;
             var rarity = serverDb.SeedRarity();
 
-            await CreateItemSuccess(db, rarity);
+            var itemCreateDto = new ItemCreateDto("ItemSql", 456, rarity.Id, "SqlServer");
+
+            var utcNow = DateTime.UtcNow;
+            ItemDto itemDto = await CreateItem(db, itemCreateDto, rarity);
+
+            var itemaudits = await db.Set<ItemAudit>().Select(ia => ia).ToListAsync();
+
+            itemaudits.Count.Should().Be(1);
+            itemaudits[0].AuditId.Should().BeGreaterThan(0);
+            itemaudits[0].Action.Should().Be(AuditAction.Insert);
+            itemaudits[0].ItemId.Should().Be(itemDto.Id);
+            itemaudits[0].BeforeJson.Should().BeNullOrEmpty();
+            itemaudits[0].AfterJson.Should().NotBeNullOrEmpty();
+            itemaudits[0].ChangedBy.Should().Be(new TestCurrentUser().UserIdOrName);
+            itemaudits[0].ChangedAtUtc.Should().BeOnOrAfter(utcNow);
         }
 
-        private async Task CreateItemSuccess(AppDbContext db, Rarity rarity)
+        private async Task<ItemDto> CreateItem(AppDbContext db, ItemCreateDto itemCreateDto, Rarity rarity)
         {
             var handler = CreateHandler(db);
 
-            var cmd = new CreateItemCommand(new ItemCreateDto("ItemSql", 456, rarity.Id, "SqlServer"));
+            var cmd = new CreateItemCommand(itemCreateDto);
 
             var result = await handler.Handle(cmd, CancellationToken.None);
 
             // 반환 DTO 기본값 검증
             result.Id.Should().BeGreaterThan(0);
-            result.Name.Should().Be("ItemSql");
+            result.Name.Should().Be(itemCreateDto.Name);
             result.RowVersionBase64.Should().NotBeNullOrEmpty();
 
             // 실제 저장된 엔티티 검증
             await AssertDtoMatchesEntityAsync(db, result, rarity);
-        }
 
+            return result;
+        }
 
         [Fact]
         public async Task CreateItem_AllowsNullDescription()
@@ -70,27 +89,10 @@ namespace GameTools.Test.DataBase.ItemTest
             saved.Description.Should().BeNull();
         }
 
-        [Fact]
-        public async Task CreateItem_FailWhenNameIsNullOrEmpty()
-        {
-            await using var db = TestDataBase.CreateTestDbContext();
-            var handler = CreateHandler(db);
-
-            var rarity = TestDataBase.SeedRarity(db);
-
-            // 이름 null/empty -> 검증 실패.
-            var cmdNull = new CreateItemCommand(new ItemCreateDto(null, 100, rarity.Id));
-            var cmdEmpty = new CreateItemCommand(new ItemCreateDto("", 100, rarity.Id));
-
-            var actNull = async () => await handler.Handle(cmdNull, CancellationToken.None);
-            var actEmpty = async () => await handler.Handle(cmdEmpty, CancellationToken.None);
-
-            await actNull.Should().ThrowAsync<Exception>();
-            await actEmpty.Should().ThrowAsync<Exception>();
-        }
-
-        [Fact]
-        public async Task CreateItem_FailWhenPriceIsNegative()
+        [Theory]
+        [InlineData(0, true)]
+        [InlineData(-1, false)]
+        public async Task CreateItem_PriceBoundary(int price, bool shouldSucceed)
         {
             await using var db = TestDataBase.CreateTestDbContext();
             var handler = CreateHandler(db);
@@ -98,9 +100,64 @@ namespace GameTools.Test.DataBase.ItemTest
             var rarity = TestDataBase.SeedRarity(db);
 
             // 음수 가격 -> 검증 실패.
-            var cmd = new CreateItemCommand(new ItemCreateDto("Item1", -1, rarity.Id, null!));
+            var cmd = new CreateItemCommand(new ItemCreateDto("Item1", price, rarity.Id, null!));
             var act = async () => await handler.Handle(cmd, CancellationToken.None);
 
+            if (shouldSucceed) await act.Should().NotThrowAsync();
+            else await act.Should().ThrowAsync<Exception>();
+        }
+
+        [Fact]
+        public async Task CreateItem_NameMaxLengthBoundary()
+        {
+            await using var db = TestDataBase.CreateTestDbContext();
+            var handler = CreateHandler(db);
+            var rarity = TestDataBase.SeedRarity(db);
+
+            var max = ItemRules.NameMax;
+            var ok = new string('A', max);
+            var tooLong = new string('A', max + 1);
+
+            // OK
+            var okDto = new ItemCreateDto(ok, 10, rarity.Id, null);
+            var okRes = await handler.Handle(new CreateItemCommand(okDto), default);
+            okRes.Name.Length.Should().Be(max);
+
+            // Fail
+            var badDto = new ItemCreateDto(tooLong, 10, rarity.Id, null);
+            var act = async () => await handler.Handle(new CreateItemCommand(badDto), default);
+            await act.Should().ThrowAsync<Exception>();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("   ")]
+        [InlineData(" \t \r\n ")]
+        public async Task CreateItem_FailWhenNameNullOrWhitespace(string? name)
+        {
+            await using var db = TestDataBase.CreateTestDbContext();
+            var handler = CreateHandler(db);
+            var rarity = TestDataBase.SeedRarity(db);
+
+            var act = async () => await handler.Handle(new CreateItemCommand(new ItemCreateDto(name, 1, rarity.Id)), default);
+            await act.Should().ThrowAsync<Exception>();
+        }
+
+        [Fact]
+        public async Task CreateItem_DescriptionMaxLengthBoundary()
+        {
+            await using var db = TestDataBase.CreateTestDbContext();
+            var handler = CreateHandler(db);
+            var rarity = TestDataBase.SeedRarity(db);
+
+            var max = ItemRules.DescriptionMax;
+            var ok = new string('D', max);
+            var tooLong = new string('D', max + 1);
+
+            await handler.Handle(new CreateItemCommand(new ItemCreateDto("Item1", 1, rarity.Id, ok)), default);
+
+            var act = async () => await handler.Handle(
+                new CreateItemCommand(new ItemCreateDto("DescTooLong", 1, rarity.Id, tooLong)), default);
             await act.Should().ThrowAsync<Exception>();
         }
 

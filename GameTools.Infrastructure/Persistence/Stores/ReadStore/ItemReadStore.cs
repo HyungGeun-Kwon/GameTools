@@ -40,7 +40,8 @@ namespace GameTools.Infrastructure.Persistence.Stores.ReadStore
 
             var total = await query.CountAsync(ct);
             var items = await query
-                .Skip((page - 1) * size).Take(size)
+                .Skip((page - 1) * size)
+                .Take(size)
                 .Select(i => new ItemDto(i.Id, i.Name, i.Price, i.Description, i.RarityId, i.Rarity.Grade, i.Rarity.ColorCode, Convert.ToBase64String(i.RowVersion)))
                 .ToListAsync(ct);
 

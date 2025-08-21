@@ -2,6 +2,7 @@
 using GameTools.Application.Features.Items.Commands.CreateItem;
 using GameTools.Application.Features.Items.Commands.UpdateItem;
 using GameTools.Application.Features.Items.Dtos;
+using GameTools.Domain.Auditing;
 using GameTools.Domain.Entities;
 using GameTools.Infrastructure.Persistence;
 using GameTools.Infrastructure.Persistence.Stores.WriteStore;
@@ -18,14 +19,28 @@ namespace GameTools.Test.DataBase.ItemTest
         public async Task UpdateItem_SuccessInMemory()
         {
             await using var db = TestDataBase.CreateTestDbContext();
-            await UpdateItemSuccess(db);
+            var createdItem = await CreateItem(db);
+            await UpdateItemSuccess(db, createdItem);
         }
 
         [Fact]
         public async Task UpdateItem_SuccessSqlServer()
         {
             await using var serverDb = await SqlServerTestDb.CreateAsync();
-            await UpdateItemSuccess(serverDb.Db);
+            var db = serverDb.Db;
+            var createdItem = await CreateItem(db);
+            await UpdateItemSuccess(db, createdItem);
+
+            List<ItemAudit> itemaudits = await db.Set<ItemAudit>().Select(ia => ia).ToListAsync();
+
+            itemaudits.Count.Should().Be(2);
+            ItemAudit? updateAudit = itemaudits.Find(ia => ia.Action == AuditAction.Update);
+            updateAudit.Should().NotBeNull();
+            updateAudit.AuditId.Should().BeGreaterThan(0);
+            updateAudit.ItemId.Should().Be(createdItem.Id);
+            updateAudit.BeforeJson.Should().NotBeNullOrEmpty();
+            updateAudit.AfterJson.Should().NotBeNullOrEmpty();
+            updateAudit.ChangedBy.Should().Be(new TestCurrentUser().UserIdOrName);
         }
 
         [Fact]
@@ -66,10 +81,8 @@ namespace GameTools.Test.DataBase.ItemTest
             await act.Should().ThrowAsync<Exception>();
         }
 
-        private static async Task UpdateItemSuccess(AppDbContext db)
+        private static async Task UpdateItemSuccess(AppDbContext db, ItemDto createdItem)
         {
-            var createdItem = await CreateItem(db);
-
             var handler = UpdateItemHandler(db);
             var updatedItem = await handler.Handle(
                 new UpdateItemCommand(new ItemUpdateDto(
@@ -79,7 +92,6 @@ namespace GameTools.Test.DataBase.ItemTest
                     createdItem.Description,
                     createdItem.RarityId,
                     createdItem.RowVersionBase64)), CancellationToken.None);
-
 
             // 반환 DTO 기본값 검증
             updatedItem.Should().NotBeNull();
