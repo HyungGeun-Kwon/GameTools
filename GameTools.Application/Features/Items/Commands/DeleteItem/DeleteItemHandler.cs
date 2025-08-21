@@ -9,10 +9,13 @@ namespace GameTools.Application.Features.Items.Commands.DeleteItem
     {
         public async Task Handle(DeleteItemCommand request, CancellationToken ct)
         {
-            var item = await itemWriteStore.GetByIdAsync(request.Id, ct)
+            var item = await itemWriteStore.GetByIdAsync(request.ItemDeleteDto.Id, ct)
                        ?? throw new InvalidOperationException("Item not found.");
 
+            itemWriteStore.SetOriginalRowVersion(item, request.ItemDeleteDto.RowVersionBase64);
+
             itemWriteStore.Remove(item);
+
             await uow.SaveChangesAsync(ct);
         }
     }

@@ -13,6 +13,7 @@ namespace GameTools.Application.Features.Items.Commands.UpdateItem
             RuleFor(x => x.ItemUpdateDto.Price).GreaterThanOrEqualTo(ItemRules.PriceMin);
             RuleFor(x => x.ItemUpdateDto.Description).MaximumLength(ItemRules.DescriptionMax);
             RuleFor(x => x.ItemUpdateDto.RarityId).GreaterThan((byte)0);
+            RuleFor(x => x.ItemUpdateDto.RowVersionBase64).NotEmpty();
         }
     }
 }

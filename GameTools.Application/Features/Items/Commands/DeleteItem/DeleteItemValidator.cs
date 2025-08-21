@@ -6,7 +6,9 @@ namespace GameTools.Application.Features.Items.Commands.DeleteItem
     {
         public DeleteItemValidator()
         {
-            RuleFor(x => x.Id).GreaterThan(0);
+            RuleFor(x => x.ItemDeleteDto).NotNull();
+            RuleFor(x => x.ItemDeleteDto.RowVersionBase64).NotEmpty();
+            RuleFor(x => x.ItemDeleteDto.Id).GreaterThan(0);
         }
     }
 }
