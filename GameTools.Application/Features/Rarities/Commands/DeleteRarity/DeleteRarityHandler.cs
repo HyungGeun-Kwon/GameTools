@@ -1,6 +1,5 @@
 ﻿using GameTools.Application.Abstractions.Stores.WriteStore;
 using GameTools.Application.Abstractions.Works;
-using GameTools.Domain.Entities;
 using MediatR;
 
 namespace GameTools.Application.Features.Rarities.Commands.DeleteRarity
