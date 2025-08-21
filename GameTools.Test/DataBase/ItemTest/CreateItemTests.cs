@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Test.DataBase.ItemTest
 {
-    // TODO : Audit값 추가되는지 확인해줘야함
     public class CreateItemTests
     {
         [Fact]

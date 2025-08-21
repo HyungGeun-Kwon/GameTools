@@ -83,9 +83,9 @@ namespace GameTools.Test.DataBase.ItemTest
             await new UnitOfWork(db1, currentUser).SaveChangesAsync();
 
             // db2: 예전 RowVersion으로 삭제 시도
-            var staleDelete = new DeleteItemCommand(new ItemDeleteDto(created.Id, created.RowVersionBase64));
+            var deleteCommand = new DeleteItemCommand(new ItemDeleteDto(created.Id, created.RowVersionBase64));
             var deleter = DeleteHandler(db2);
-            var act = async () => await deleter.Handle(staleDelete, CancellationToken.None);
+            var act = async () => await deleter.Handle(deleteCommand, CancellationToken.None);
 
             await act.Should().ThrowAsync<Exception>();
         }
@@ -112,7 +112,7 @@ namespace GameTools.Test.DataBase.ItemTest
         {
             var rarity = TestDataBase.SeedRarity(db);
             var create = new CreateItemCommand(new ItemCreateDto("ToDelete", 10, rarity.Id, "temp"));
-            return await CreateItemTests.CreateHandler(db).Handle(create, default);
+            return await CreateItemTests.CreateHandler(db).Handle(create, CancellationToken.None);
         }
     }
 }
