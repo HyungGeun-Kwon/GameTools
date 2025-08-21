@@ -84,7 +84,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var r1 = serverDb.SeedRarity("Common", "#ABABAB");
             var r2 = serverDb.SeedRarity("Rare", "#CDCDCD");
 
-            CreateItemsForPageTest(db, r1, r2);
+            await CreateItemsForPageTest(db, r1, r2);
 
             var filter = new ItemFilter("Item", r1.Id);
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(2, 5), filter));
@@ -93,10 +93,15 @@ namespace GameTools.Test.DataBase.ItemTest
             var pageResult = await handler.Handle(itemPageQuery, default);
 
             // r1의 Item* 12개만 카운트
-            pageResult.TotalCount.Should().Be(12); 
+            pageResult.TotalCount.Should().Be(12);
             pageResult.PageNumber.Should().Be(2);
             pageResult.PageSize.Should().Be(5);
+            pageResult.TotalPages.Should().Be(3);
+            pageResult.HasPrevious.Should().BeTrue();
+            pageResult.HasNext.Should().BeTrue();
             pageResult.Items.Should().HaveCount(5);
+            pageResult.Items.Select(i => i.Id).Should().BeInDescendingOrder();
+            pageResult.Items.All(i => i.RarityId == r1.Id && i.Name.Contains("Item")).Should().BeTrue();
         }
 
         [Fact]
@@ -108,7 +113,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var r1 = serverDb.SeedRarity("Common", "#ABABAB");
             var r2 = serverDb.SeedRarity("Rare", "#CDCDCD");
 
-            CreateItemsForPageTest(db, r1, r2);
+            await CreateItemsForPageTest(db, r1, r2);
 
             var filter = new ItemFilter("Item", null);
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(2, 5), filter));
@@ -116,11 +121,16 @@ namespace GameTools.Test.DataBase.ItemTest
             var handler = new GetItemsPageHandler(new ItemReadStore(db));
             var pageResult = await handler.Handle(itemPageQuery, default);
 
-            // Item* 15개 카운트
+            // Item* 15개(r1:12 + r2:3) 카운트
             pageResult.TotalCount.Should().Be(15);
             pageResult.PageNumber.Should().Be(2);
             pageResult.PageSize.Should().Be(5);
-            pageResult.Items.Count.Should().Be(5);
+            pageResult.TotalPages.Should().Be(3);
+            pageResult.HasPrevious.Should().BeTrue();
+            pageResult.HasNext.Should().BeTrue();
+            pageResult.Items.Should().HaveCount(5);
+            pageResult.Items.Select(i => i.Id).Should().BeInDescendingOrder();
+            pageResult.Items.All(i => i.Name.Contains("Item")).Should().BeTrue();
         }
         [Fact]
         public async Task GetItemsPage_UseRarityFilter()
@@ -131,7 +141,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var r1 = serverDb.SeedRarity("Common", "#ABABAB");
             var r2 = serverDb.SeedRarity("Rare", "#CDCDCD");
 
-            CreateItemsForPageTest(db, r1, r2);
+            await CreateItemsForPageTest(db, r1, r2);
 
             var filter = new ItemFilter(null, r2.Id);
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(1, 2), filter));
@@ -140,10 +150,15 @@ namespace GameTools.Test.DataBase.ItemTest
             var pageResult = await handler.Handle(itemPageQuery, default);
 
             // r2 사용하는 5개 카운트
-            pageResult.TotalCount.Should().Be(5);
+            pageResult.TotalCount.Should().Be(5); // r2의 전체 5개
             pageResult.PageNumber.Should().Be(1);
             pageResult.PageSize.Should().Be(2);
-            pageResult.Items.Count.Should().Be(2);
+            pageResult.TotalPages.Should().Be(3);
+            pageResult.HasPrevious.Should().BeFalse();
+            pageResult.HasNext.Should().BeTrue();
+            pageResult.Items.Should().HaveCount(2);
+            pageResult.Items.Select(i => i.Id).Should().BeInDescendingOrder();
+            pageResult.Items.All(i => i.RarityId == r2.Id).Should().BeTrue();
         }
         [Fact]
         public async Task GetItemsPage_NoFilter()
@@ -154,7 +169,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var r1 = serverDb.SeedRarity("Common", "#ABABAB");
             var r2 = serverDb.SeedRarity("Rare", "#CDCDCD");
 
-            CreateItemsForPageTest(db, r1, r2);
+            await CreateItemsForPageTest(db, r1, r2);
 
             var filter = new ItemFilter(null, null);
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(2, 5), filter));
@@ -163,13 +178,17 @@ namespace GameTools.Test.DataBase.ItemTest
             var pageResult = await handler.Handle(itemPageQuery, default);
 
             // 전부 다 Count
-            pageResult.TotalCount.Should().Be(17);
+            pageResult.TotalCount.Should().Be(17); // 전체
             pageResult.PageNumber.Should().Be(2);
             pageResult.PageSize.Should().Be(5);
-            pageResult.Items.Count.Should().Be(5);
+            pageResult.TotalPages.Should().Be(4);
+            pageResult.HasPrevious.Should().BeTrue();
+            pageResult.HasNext.Should().BeTrue();
+            pageResult.Items.Should().HaveCount(5);
+            pageResult.Items.Select(i => i.Id).Should().BeInDescendingOrder();
         }
 
-        private async static void CreateItemsForPageTest(AppDbContext db, Rarity r1, Rarity r2)
+        private async static Task CreateItemsForPageTest(AppDbContext db, Rarity r1, Rarity r2)
         {
             // r1: Item01..Item12 (12개), r2: ItemA,B,C(3개) + Other1,2(2개)
             for (int i = 1; i <= 12; i++)
