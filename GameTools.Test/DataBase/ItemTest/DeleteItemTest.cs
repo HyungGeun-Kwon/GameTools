@@ -21,7 +21,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var created = await CreateItem(db);
 
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteItemCommand(new ItemDeleteDto(created.Id, created.RowVersionBase64)), default);
+            await handler.Handle(new DeleteItemCommand(new ItemDeleteDto(created.Id, created.RowVersionBase64)), CancellationToken.None);
 
             (await db.Set<Item>().AnyAsync(i => i.Id == created.Id)).Should().BeFalse();
         }
@@ -34,7 +34,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var created = await CreateItem(db);
 
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteItemCommand(new ItemDeleteDto(created.Id, created.RowVersionBase64)), default);
+            await handler.Handle(new DeleteItemCommand(new ItemDeleteDto(created.Id, created.RowVersionBase64)), CancellationToken.None);
 
             (await db.Set<Item>().AnyAsync(i => i.Id == created.Id)).Should().BeFalse();
         }

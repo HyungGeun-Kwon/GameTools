@@ -30,7 +30,13 @@ namespace GameTools.Infrastructure.Persistence.Tvp
             dt.Columns.Add("RowVersionOriginal", typeof(byte[]));
 
             foreach (var r in itemUpdateDtos)
-                dt.Rows.Add(r.Id, r.Name, r.Price, r.Description ?? (object)DBNull.Value, r.RarityId);
+                dt.Rows.Add(
+                    r.Id, 
+                    r.Name, 
+                    r.Price, 
+                    r.Description ?? (object)DBNull.Value, 
+                    r.RarityId,
+                    Convert.FromBase64String(r.RowVersionBase64));
 
             return dt;
         }

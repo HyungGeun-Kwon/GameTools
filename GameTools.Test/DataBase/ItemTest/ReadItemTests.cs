@@ -24,7 +24,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var created = await CreateItem(db, "One", 10, rarity.Id, "d");
 
             var handler = new GetItemByIdHandler(new ItemReadStore(db));
-            var dto = await handler.Handle(new GetItemByIdQuery(created.Id), default);
+            var dto = await handler.Handle(new GetItemByIdQuery(created.Id), CancellationToken.None);
 
             dto.Should().NotBeNull();
             dto!.Id.Should().Be(created.Id);
@@ -43,7 +43,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var db = serverDb.Db;
 
             var handler = new GetItemByIdHandler(new ItemReadStore(db));
-            var dto = await handler.Handle(new GetItemByIdQuery(999999), default);
+            var dto = await handler.Handle(new GetItemByIdQuery(999999), CancellationToken.None);
 
             dto.Should().BeNull();
         }
@@ -65,7 +65,7 @@ namespace GameTools.Test.DataBase.ItemTest
             await CreateItem(db, "RareItem1", 40, rb.Id);
 
             var handler = new GetItemByRarityIdHandler(new ItemReadStore(db));
-            var list = await handler.Handle(new GetItemByRarityIdQuery(ra.Id), default);
+            var list = await handler.Handle(new GetItemByRarityIdQuery(ra.Id), CancellationToken.None);
 
             list.Count.Should().Be(3);
             list.All(x => x.RarityId == ra.Id).Should().BeTrue();
@@ -90,7 +90,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(2, 5), filter));
 
             var handler = new GetItemsPageHandler(new ItemReadStore(db));
-            var pageResult = await handler.Handle(itemPageQuery, default);
+            var pageResult = await handler.Handle(itemPageQuery, CancellationToken.None);
 
             // r1의 Item* 12개만 카운트
             pageResult.TotalCount.Should().Be(12);
@@ -119,7 +119,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(2, 5), filter));
 
             var handler = new GetItemsPageHandler(new ItemReadStore(db));
-            var pageResult = await handler.Handle(itemPageQuery, default);
+            var pageResult = await handler.Handle(itemPageQuery, CancellationToken.None);
 
             // Item* 15개(r1:12 + r2:3) 카운트
             pageResult.TotalCount.Should().Be(15);
@@ -147,7 +147,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(1, 2), filter));
 
             var handler = new GetItemsPageHandler(new ItemReadStore(db));
-            var pageResult = await handler.Handle(itemPageQuery, default);
+            var pageResult = await handler.Handle(itemPageQuery, CancellationToken.None);
 
             // r2 사용하는 5개 카운트
             pageResult.TotalCount.Should().Be(5); // r2의 전체 5개
@@ -175,7 +175,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var itemPageQuery = new GetItemsPageQuery(new GetItemsPageQueryParams(new Pagination(2, 5), filter));
 
             var handler = new GetItemsPageHandler(new ItemReadStore(db));
-            var pageResult = await handler.Handle(itemPageQuery, default);
+            var pageResult = await handler.Handle(itemPageQuery, CancellationToken.None);
 
             // 전부 다 Count
             pageResult.TotalCount.Should().Be(17); // 전체
@@ -204,7 +204,7 @@ namespace GameTools.Test.DataBase.ItemTest
         private static async Task<ItemDto> CreateItem(AppDbContext db, string name, int price, byte rarityId, string? desc = null)
         {
             var handler = CreateItemTests.CreateHandler(db);
-            return await handler.Handle(new CreateItemCommand(new ItemCreateDto(name, price, rarityId, desc)), default);
+            return await handler.Handle(new CreateItemCommand(new ItemCreateDto(name, price, rarityId, desc)), CancellationToken.None);
         }
     }
 }

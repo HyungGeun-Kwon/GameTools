@@ -18,7 +18,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var r = serverDb.SeedRarity("Common", "#000000");
 
             var handler = new GetRarityByIdHandler(new RarityReadStore(db));
-            var dto = await handler.Handle(new GetRarityByIdQuery(r.Id), default);
+            var dto = await handler.Handle(new GetRarityByIdQuery(r.Id), CancellationToken.None);
 
             dto.Should().NotBeNull();
             dto!.Id.Should().Be(r.Id);
@@ -35,7 +35,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var db = serverDb.Db;
 
             var handler = new GetRarityByIdHandler(new RarityReadStore(db));
-            var dto = await handler.Handle(new GetRarityByIdQuery(200), default);
+            var dto = await handler.Handle(new GetRarityByIdQuery(200), CancellationToken.None);
 
             dto.Should().BeNull();
         }
@@ -53,7 +53,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var r3 = serverDb.SeedRarity("Epic", "#222222");
 
             var handler = new GetRaritiesHandler(new RarityReadStore(db));
-            var list = await handler.Handle(new GetRaritiesQuery(), default);
+            var list = await handler.Handle(new GetRaritiesQuery(), CancellationToken.None);
 
             list.Should().NotBeNull();
             list.Count.Should().BeGreaterThanOrEqualTo(3);
@@ -71,7 +71,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var db = serverDb.Db;
 
             var handler = new GetRaritiesHandler(new RarityReadStore(db));
-            var list = await handler.Handle(new GetRaritiesQuery(), default);
+            var list = await handler.Handle(new GetRaritiesQuery(), CancellationToken.None);
 
             list.Should().NotBeNull();
             list.Should().BeEmpty();

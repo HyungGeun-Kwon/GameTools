@@ -23,7 +23,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var handler = UpdateHandler(db);
             var updated = await handler.Handle(
                 new UpdateRarityCommand(new RarityUpdateDto(
-                    created.Id, "Common_Fix", "#111111", created.RowVersionBase64)), default);
+                    created.Id, "Common_Fix", "#111111", created.RowVersionBase64)), CancellationToken.None);
 
             updated.Should().NotBeNull();
             updated.Grade.Should().Be("Common_Fix");
@@ -43,7 +43,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var handler = UpdateHandler(db);
             var updated = await handler.Handle(
                 new UpdateRarityCommand(new RarityUpdateDto(
-                    created.Id, "Common_Fix", "#111111", created.RowVersionBase64)), default);
+                    created.Id, "Common_Fix", "#111111", created.RowVersionBase64)), CancellationToken.None);
 
             updated.Grade.Should().Be("Common_Fix");
             updated.ColorCode.Should().Be("#111111");
@@ -64,7 +64,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var handler = UpdateHandler(db);
             var updated = await handler.Handle(
                 new UpdateRarityCommand(new RarityUpdateDto(
-                    created.Id, "Common_Fix", "#111111", created.RowVersionBase64)), default);
+                    created.Id, "Common_Fix", "#111111", created.RowVersionBase64)), CancellationToken.None);
 
             updated.Id.Should().Be(created.Id);
 
@@ -91,7 +91,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var handler = UpdateHandler(db);
             var act = async () => await handler.Handle(
                 new UpdateRarityCommand(new RarityUpdateDto(
-                    rarity2.Id, "Grade_A", rarity2.ColorCode, rarity2.RowVersionBase64)), default);
+                    rarity2.Id, "Grade_A", rarity2.ColorCode, rarity2.RowVersionBase64)), CancellationToken.None);
 
             await act.Should().ThrowAsync<Exception>();
         }
@@ -108,7 +108,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var handler = UpdateHandler(db);
             var act = async () => await handler.Handle(
                 new UpdateRarityCommand(new RarityUpdateDto(
-                    rarity2.Id, rarity2.Grade, "#111111", rarity2.RowVersionBase64)), default);
+                    rarity2.Id, rarity2.Grade, "#111111", rarity2.RowVersionBase64)), CancellationToken.None);
 
             await act.Should().ThrowAsync<Exception>();
         }
@@ -156,7 +156,7 @@ namespace GameTools.Test.DataBase.RarityTest
             var handler = UpdateHandler(db);
             var updated = await handler.Handle(
                 new UpdateRarityCommand(new RarityUpdateDto(
-                    created.Id, created.Grade, created.ColorCode, created.RowVersionBase64)), default);
+                    created.Id, created.Grade, created.ColorCode, created.RowVersionBase64)), CancellationToken.None);
 
             // 변경사항이 없다면 RowVersion은 동일해야 함
             updated.RowVersionBase64.Should().Be(created.RowVersionBase64);
@@ -177,7 +177,7 @@ namespace GameTools.Test.DataBase.RarityTest
 
             var act = async () => await handler.Handle(
                 new UpdateRarityCommand(new RarityUpdateDto(
-                    250, "None", "#000000", Convert.ToBase64String(new byte[] { 1, 2, 3, 4 }))), default);
+                    250, "None", "#000000", Convert.ToBase64String(new byte[] { 1, 2, 3, 4 }))), CancellationToken.None);
 
             await act.Should().ThrowAsync<Exception>();
         }
@@ -185,7 +185,7 @@ namespace GameTools.Test.DataBase.RarityTest
         private static async Task<RarityDto> CreateRarity(AppDbContext db, string grade, string color)
         {
             var handler = new CreateRarityHandler(new RarityWriteStore(db), new UnitOfWork(db, new TestCurrentUser()));
-            return await handler.Handle(new CreateRarityCommand(new RarityCreateDto(grade, color)), default);
+            return await handler.Handle(new CreateRarityCommand(new RarityCreateDto(grade, color)), CancellationToken.None);
         }
 
         private static UpdateRarityHandler UpdateHandler(AppDbContext db)

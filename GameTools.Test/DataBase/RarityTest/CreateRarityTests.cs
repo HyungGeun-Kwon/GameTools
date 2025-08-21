@@ -162,9 +162,9 @@ namespace GameTools.Test.DataBase.RarityTest
             var db = serverDb.Db;
             var handler = CreateHandler(db);
 
-            await handler.Handle(new CreateRarityCommand(new RarityCreateDto("Common", "#000000")), default);
+            await handler.Handle(new CreateRarityCommand(new RarityCreateDto("Common", "#000000")), CancellationToken.None);
 
-            var act = async () => await handler.Handle(new CreateRarityCommand(new RarityCreateDto("Rare", "#000000")), default);
+            var act = async () => await handler.Handle(new CreateRarityCommand(new RarityCreateDto("Rare", "#000000")), CancellationToken.None);
             await act.Should().ThrowAsync<Exception>(); // 유니크 인덱스(ColorCode)
         }
 

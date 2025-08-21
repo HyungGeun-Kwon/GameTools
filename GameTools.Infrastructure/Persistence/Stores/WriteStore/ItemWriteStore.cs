@@ -108,7 +108,7 @@ namespace GameTools.Infrastructure.Persistence.Stores.WriteStore
                     var id = reader.GetInt32(0);
                     var isNull = await reader.IsDBNullAsync(1, ct);
                     var newRv = isNull ? null : (byte[])reader.GetValue(1);
-                    var statusCode = (UpdateStatusCode)reader.GetByte(2);
+                    var statusCode = (UpdateStatusCode)reader.GetInt32(2);
 
                     result.Add((id, newRv, statusCode));
                 }

@@ -148,7 +148,7 @@ namespace GameTools.Test.DataBase.RarityTest
         {
             var handler = CreateItemTests.CreateHandler(db);
             var dto = new ItemCreateDto("RefItem", 100, rarityId, "ref");
-            return await handler.Handle(new CreateItemCommand(dto), default);
+            return await handler.Handle(new CreateItemCommand(dto), CancellationToken.None);
         }
     }
 }
