@@ -16,7 +16,7 @@ namespace GameTools.Test.DataBase.ItemTest
     public class CreateItemTests
     {
         [Fact]
-        public async Task CreateItemSuccessInMemory()
+        public async Task CreateItem_SuccessInMemory()
         {
             await using var db = TestDataBase.CreateTestDbContext();
 
@@ -28,7 +28,7 @@ namespace GameTools.Test.DataBase.ItemTest
         }
 
         [Fact]
-        public async Task CreateItemSuccessSqlServer()
+        public async Task CreateItem_SuccessSqlServer()
         {
             await using var serverDb = await SqlServerTestDb.CreateAsync();
 
@@ -37,7 +37,20 @@ namespace GameTools.Test.DataBase.ItemTest
 
             var itemCreateDto = new ItemCreateDto("ItemSql", 456, rarity.Id, "SqlServer");
 
-            var utcNow = DateTime.UtcNow;
+            var _ = await CreateItem(db, itemCreateDto, rarity);
+        }
+
+        [Fact]
+        public async Task CreateItem_SuccessCreateAuditItem()
+        {
+            await using var serverDb = await SqlServerTestDb.CreateAsync();
+
+            var db = serverDb.Db;
+            var rarity = serverDb.SeedRarity();
+
+            var itemCreateDto = new ItemCreateDto("item1", 456, rarity.Id, "Firsts");
+
+            var utcBeforeCreate = DateTime.UtcNow;
             ItemDto itemDto = await CreateItem(db, itemCreateDto, rarity);
 
             var itemaudits = await db.Set<ItemAudit>().Select(ia => ia).ToListAsync();
@@ -49,26 +62,7 @@ namespace GameTools.Test.DataBase.ItemTest
             itemaudits[0].BeforeJson.Should().BeNullOrEmpty();
             itemaudits[0].AfterJson.Should().NotBeNullOrEmpty();
             itemaudits[0].ChangedBy.Should().Be(new TestCurrentUser().UserIdOrName);
-            itemaudits[0].ChangedAtUtc.Should().BeOnOrAfter(utcNow);
-        }
-
-        private async Task<ItemDto> CreateItem(AppDbContext db, ItemCreateDto itemCreateDto, Rarity rarity)
-        {
-            var handler = CreateHandler(db);
-
-            var cmd = new CreateItemCommand(itemCreateDto);
-
-            var result = await handler.Handle(cmd, CancellationToken.None);
-
-            // 반환 DTO 기본값 검증
-            result.Id.Should().BeGreaterThan(0);
-            result.Name.Should().Be(itemCreateDto.Name);
-            result.RowVersionBase64.Should().NotBeNullOrEmpty();
-
-            // 실제 저장된 엔티티 검증
-            await AssertDtoMatchesEntityAsync(db, result, rarity);
-
-            return result;
+            itemaudits[0].ChangedAtUtc.Should().BeOnOrAfter(utcBeforeCreate);
         }
 
         [Fact]
@@ -120,12 +114,12 @@ namespace GameTools.Test.DataBase.ItemTest
 
             // OK
             var okDto = new ItemCreateDto(ok, 10, rarity.Id, null);
-            var okRes = await handler.Handle(new CreateItemCommand(okDto), default);
+            var okRes = await handler.Handle(new CreateItemCommand(okDto), CancellationToken.None);
             okRes.Name.Length.Should().Be(max);
 
             // Fail
             var badDto = new ItemCreateDto(tooLong, 10, rarity.Id, null);
-            var act = async () => await handler.Handle(new CreateItemCommand(badDto), default);
+            var act = async () => await handler.Handle(new CreateItemCommand(badDto), CancellationToken.None);
             await act.Should().ThrowAsync<Exception>();
         }
 
@@ -139,7 +133,7 @@ namespace GameTools.Test.DataBase.ItemTest
             var handler = CreateHandler(db);
             var rarity = TestDataBase.SeedRarity(db);
 
-            var act = async () => await handler.Handle(new CreateItemCommand(new ItemCreateDto(name, 1, rarity.Id)), default);
+            var act = async () => await handler.Handle(new CreateItemCommand(new ItemCreateDto(name, 1, rarity.Id)), CancellationToken.None);
             await act.Should().ThrowAsync<Exception>();
         }
 
@@ -154,10 +148,10 @@ namespace GameTools.Test.DataBase.ItemTest
             var ok = new string('D', max);
             var tooLong = new string('D', max + 1);
 
-            await handler.Handle(new CreateItemCommand(new ItemCreateDto("Item1", 1, rarity.Id, ok)), default);
+            await handler.Handle(new CreateItemCommand(new ItemCreateDto("Item1", 1, rarity.Id, ok)), CancellationToken.None);
 
             var act = async () => await handler.Handle(
-                new CreateItemCommand(new ItemCreateDto("DescTooLong", 1, rarity.Id, tooLong)), default);
+                new CreateItemCommand(new ItemCreateDto("DescTooLong", 1, rarity.Id, tooLong)), CancellationToken.None);
             await act.Should().ThrowAsync<Exception>();
         }
 
@@ -170,7 +164,7 @@ namespace GameTools.Test.DataBase.ItemTest
             // 존재하지 않는 RarityId로 생성 -> 검증 실패.
             var act = async () => await handler.Handle(
                 new CreateItemCommand(new ItemCreateDto("Item1", 500, 250, null)),
-                default
+                CancellationToken.None
             );
 
             await act.Should().ThrowAsync<Exception>();
@@ -220,6 +214,26 @@ namespace GameTools.Test.DataBase.ItemTest
         // 저장된 엔티티 로드 헬퍼
         internal static async Task<Item> GetSavedAsync(AppDbContext db, int id)
             => await db.Set<Item>().AsNoTracking().SingleAsync(i => i.Id == id);
+
+        // Item 생성 헬퍼
+        private async Task<ItemDto> CreateItem(AppDbContext db, ItemCreateDto itemCreateDto, Rarity rarity)
+        {
+            var handler = CreateHandler(db);
+
+            var cmd = new CreateItemCommand(itemCreateDto);
+
+            var result = await handler.Handle(cmd, CancellationToken.None);
+
+            // 반환 DTO 기본값 검증
+            result.Id.Should().BeGreaterThan(0);
+            result.Name.Should().Be(itemCreateDto.Name);
+            result.RowVersionBase64.Should().NotBeNullOrEmpty();
+
+            // 실제 저장된 엔티티 검증
+            await AssertDtoMatchesEntityAsync(db, result, rarity);
+
+            return result;
+        }
 
         // DTO / 저장 엔티티 일치 검증 헬퍼
         private static async Task AssertDtoMatchesEntityAsync(AppDbContext db, ItemDto dto, Rarity rarity)

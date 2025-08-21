@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Test.DataBase.ItemTest
 {
-    // TODO : Audit값 추가되는지 확인해줘야함
     public class UpdateItemTests
     {
         [Fact]
@@ -30,6 +29,17 @@ namespace GameTools.Test.DataBase.ItemTest
             var db = serverDb.Db;
             var createdItem = await CreateItem(db);
             await UpdateItemSuccess(db, createdItem);
+        }
+
+        [Fact]
+        public async Task UpdateItem_SuccessCreateAuditItem()
+        {
+            await using var serverDb = await SqlServerTestDb.CreateAsync();
+            var db = serverDb.Db;
+            var createdItem = await CreateItem(db);
+            
+            var utcBeforeUpdate = DateTime.UtcNow;
+            await UpdateItemSuccess(db, createdItem);
 
             List<ItemAudit> itemaudits = await db.Set<ItemAudit>().Select(ia => ia).ToListAsync();
 
@@ -41,6 +51,59 @@ namespace GameTools.Test.DataBase.ItemTest
             updateAudit.BeforeJson.Should().NotBeNullOrEmpty();
             updateAudit.AfterJson.Should().NotBeNullOrEmpty();
             updateAudit.ChangedBy.Should().Be(new TestCurrentUser().UserIdOrName);
+            updateAudit.ChangedAtUtc.Should().BeOnOrAfter(utcBeforeUpdate);
+        }
+
+        [Fact]
+        public async Task UpdateItem_FailsWhenRenamingToSameName()
+        {
+            await using var serverDb = await SqlServerTestDb.CreateAsync();
+            var db = serverDb.Db;
+            var rarity = serverDb.SeedRarity();
+
+            var handler = CreateItemTests.CreateHandler(db);
+            var item1 = await handler.Handle(new CreateItemCommand(new ItemCreateDto("Item1", 1, rarity.Id)), CancellationToken.None);
+            var item2 = await handler.Handle(new CreateItemCommand(new ItemCreateDto("Item2", 1, rarity.Id)), CancellationToken.None);
+
+            var updater = UpdateItemHandler(db);
+            var act = async () => await updater.Handle(new UpdateItemCommand(
+                new ItemUpdateDto(item2.Id, "Item1", item2.Price, item2.Description, item2.RarityId, item2.RowVersionBase64)), CancellationToken.None);
+
+            await act.Should().ThrowAsync<Exception>();
+        }
+
+        [Fact]
+        public async Task UpdateItem_SuccessWhenRarityChange()
+        {
+            await using var serverDb = await SqlServerTestDb.CreateAsync();
+            var db = serverDb.Db;
+
+            var r1 = serverDb.SeedRarity(grade: "COMMON", "#AAAAAA");
+            var r2 = serverDb.SeedRarity(grade: "RARE", "#BBBBBB");
+
+            var created = await CreateItem(db, r1);
+
+            var updater = UpdateItemHandler(db);
+            var updated = await updater.Handle(new UpdateItemCommand(new ItemUpdateDto(
+                created.Id, created.Name, created.Price, created.Description, r2.Id, created.RowVersionBase64)), CancellationToken.None);
+
+            updated.RarityId.Should().Be(r2.Id);
+            var saved = await CreateItemTests.GetSavedAsync(db, updated.Id);
+            saved.RarityId.Should().Be(r2.Id);
+        }
+
+        [Fact]
+        public async Task UpdateItem_FailsWhenRarityNotFound()
+        {
+            await using var db = TestDataBase.CreateTestDbContext();
+            var created = await CreateItem(db);
+
+            var updater = UpdateItemHandler(db);
+            // 존재하지 않는 Rarity로 업데이트 시도
+            var act = async () => await updater.Handle(new UpdateItemCommand(new ItemUpdateDto(
+                created.Id, created.Name, created.Price, created.Description, 250, created.RowVersionBase64)), CancellationToken.None);
+
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
@@ -81,6 +144,26 @@ namespace GameTools.Test.DataBase.ItemTest
             await act.Should().ThrowAsync<Exception>();
         }
 
+        [Fact]
+        public async Task UpdateItem_NoUpdateRowVersionAndAuditWhenSameItemUpdated()
+        {
+            await using var serverDb = await SqlServerTestDb.CreateAsync();
+            var db = serverDb.Db;
+
+            var created = await CreateItem(db);
+
+            var updater = UpdateItemHandler(db);
+            var updated = await updater.Handle(new UpdateItemCommand(new ItemUpdateDto(
+                created.Id, created.Name, created.Price, created.Description, created.RarityId, created.RowVersionBase64)), CancellationToken.None);
+
+            // 변경사항이 없다면 RowVersion은 변경되지 않아야 함
+            updated.RowVersionBase64.Should().Be(created.RowVersionBase64);
+
+            // 변경사항이 없다면 Audit도 생성되지 않아야 함
+            var audits = await db.Set<ItemAudit>().Where(a => a.ItemId == created.Id && a.Action == AuditAction.Update).ToListAsync();
+            audits.Should().BeEmpty();
+        }
+
         private static async Task UpdateItemSuccess(AppDbContext db, ItemDto createdItem)
         {
             var handler = UpdateItemHandler(db);
@@ -103,11 +186,11 @@ namespace GameTools.Test.DataBase.ItemTest
             await AssertDtoMatchesEntityAsync(db, updatedItem);
         }
 
-        private static async Task<ItemDto> CreateItem(AppDbContext db)
+        private static async Task<ItemDto> CreateItem(AppDbContext db, Rarity? rarity = null)
         {
             var currentUser = new TestCurrentUser();
             var handler = CreateItemTests.CreateHandler(db);
-            Rarity rarity = TestDataBase.SeedRarity(db);
+            rarity = rarity is null ? TestDataBase.SeedRarity(db) : rarity;
             var cmd = new CreateItemCommand(new ItemCreateDto("Item1", 100, rarity.Id, "First Item"));
             return await handler.Handle(cmd, CancellationToken.None);
         }
