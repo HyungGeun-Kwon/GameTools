@@ -1,6 +1,5 @@
 ﻿using System.Net.Mime;
 using GameTools.Server.Api.Mapper;
-using GameTools.Server.Application.Common.Paging;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
 using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
 using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
@@ -19,6 +18,7 @@ using GameTools.Contracts.Items.InsertItemsTvp;
 using GameTools.Contracts.Items.UpdateItem;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using GameTools.Contracts.Common;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -36,7 +36,7 @@ namespace GameTools.Server.Api.Controllers
             [FromRoute] int id, CancellationToken ct = default)
         {
             ItemReadModel? read = await mediator.Send(new GetItemByIdQuery(id), ct);
-            return read is null ? NotFound() : Ok(read);
+            return read is null ? NotFound() : Ok(read.ToResponse());
         }
 
         // Page기반 조회
@@ -55,7 +55,7 @@ namespace GameTools.Server.Api.Controllers
         public async Task<ActionResult<ItemsByRarityResponse>> GetByRarity(
             [FromRoute] byte rarityId, CancellationToken ct = default)
         {
-            IReadOnlyList<ItemReadModel> reads = await mediator.Send(new GetItemsByRarityIdQuery(rarityId), ct);
+            var reads = await mediator.Send(new GetItemsByRarityIdQuery(rarityId), ct);
             var response = reads.ToResponse();
             return Ok(response);
         }
@@ -66,7 +66,7 @@ namespace GameTools.Server.Api.Controllers
             [FromBody] CreateItemRequest request, CancellationToken ct)
         {
             var read = await mediator.Send(new CreateItemCommand(request.ToPayload()), ct);
-            return Ok(read);
+            return Ok(read.ToResponse());
         }
 
         // 삭제
@@ -86,7 +86,7 @@ namespace GameTools.Server.Api.Controllers
             CancellationToken ct)
         {
             var read = await mediator.Send(new UpdateItemCommand(request.ToPayload()), ct);
-            return read is null ? NotFound() : Ok(read);
+            return read is null ? NotFound() : Ok(read.ToResponse());
         }
 
         // 벌크 삽입 (클래스 단위 Body)
@@ -94,9 +94,8 @@ namespace GameTools.Server.Api.Controllers
         public async Task<ActionResult<BulkInsertItemsResponse>> BulkInsert(
             [FromBody] BulkInsertItemsRequest req, CancellationToken ct)
         {
-            var results = await mediator.Send(new InsertItemsTvpCommand(req.ToRows()), ct);
-            var resp = results.ToResponse();
-            return Ok(resp);
+            var reads = await mediator.Send(new InsertItemsTvpCommand(req.ToRows()), ct);
+            return Ok(reads.ToResponse());
         }
 
         // 벌크 업데이트 (클래스 단위 Body)
@@ -104,9 +103,8 @@ namespace GameTools.Server.Api.Controllers
         public async Task<ActionResult<BulkUpdateItemsResponse>> BulkUpdate(
             [FromBody] BulkUpdateItemsRequest req, CancellationToken ct)
         {
-            var results = await mediator.Send(new UpdateItemsTvpCommand(req.ToRows()), ct);
-            var resp = results.ToResponse();
-            return Ok(resp);
+            var reads = await mediator.Send(new UpdateItemsTvpCommand(req.ToRows()), ct);
+            return Ok(reads.ToResponse());
         }
     }
 }

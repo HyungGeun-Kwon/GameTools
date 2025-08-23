@@ -1,4 +1,4 @@
-﻿namespace GameTools.Contracts.Items.Common
+﻿namespace GameTools.Contracts.Common
 {
     public sealed record PagedResponse<T>(
         IReadOnlyList<T> Items,

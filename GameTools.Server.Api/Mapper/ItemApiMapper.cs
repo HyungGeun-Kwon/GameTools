@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using GameTools.Server.Application.Common.Paging;
+﻿using GameTools.Server.Application.Common.Paging;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
 using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
 using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
@@ -15,6 +14,8 @@ using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
 using GameTools.Contracts.Items.InsertItemsTvp;
 using GameTools.Contracts.Items.UpdateItem;
+using GameTools.Server.Api.Extensions;
+using GameTools.Contracts.Common;
 
 namespace GameTools.Server.Api.Mapper
 {
@@ -77,12 +78,5 @@ namespace GameTools.Server.Api.Mapper
                     r.RarityId, r.RarityGrade, r.RarityColorCode, 
                     r.RowVersion.ToBase64RowVersion()
                 )).ToList());
-
-        internal static byte[] FromBase64RowVersion(this string base64)
-            => Convert.FromBase64String(base64);
-
-        internal static string ToBase64RowVersion(this byte[] rowVersion)
-            => Convert.ToBase64String(rowVersion);
-
     }
 }

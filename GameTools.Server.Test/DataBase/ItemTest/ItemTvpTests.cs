@@ -10,7 +10,6 @@ using GameTools.Server.Infrastructure.Persistence.Works;
 using GameTools.Server.Test.Utils;
 using Microsoft.EntityFrameworkCore;
 using GameTools.Server.Domain.Common.Rules;
-using GameTools.Server.Application.Features.Items.Commands.UpdateItem;
 
 namespace GameTools.Server.Test.DataBase.ItemTest
 {
