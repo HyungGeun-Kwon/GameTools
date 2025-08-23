@@ -28,6 +28,14 @@ namespace GameTools.Domain.Entities
             SetDescription(description);
         }
 
+        public Item(string name, int price, byte rarityId, string? description = null)
+        {
+            SetName(name);
+            SetPrice(price);
+            RarityId = rarityId;
+            SetDescription(description);
+        }
+
         public void SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be null or empty.", nameof(name));
