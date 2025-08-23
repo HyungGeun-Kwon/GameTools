@@ -1,0 +1,3 @@
+@host = http://localhost:5008
+@json = application/json
+

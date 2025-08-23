@@ -1,0 +1,112 @@
+﻿using System.Net.Mime;
+using GameTools.Server.Api.Mapper;
+using GameTools.Server.Application.Common.Paging;
+using GameTools.Server.Application.Features.Items.Commands.CreateItem;
+using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
+using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
+using GameTools.Server.Application.Features.Items.Commands.UpdateItem;
+using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
+using GameTools.Server.Application.Features.Items.Models;
+using GameTools.Server.Application.Features.Items.Queries.GetItemById;
+using GameTools.Server.Application.Features.Items.Queries.GetItemPage;
+using GameTools.Contracts.Items.BulkUpdateItems;
+using GameTools.Contracts.Items.Common;
+using GameTools.Contracts.Items.CreateItem;
+using GameTools.Contracts.Items.DeleteItem;
+using GameTools.Contracts.Items.GetItemPage;
+using GameTools.Contracts.Items.GetItemsByRarity;
+using GameTools.Contracts.Items.InsertItemsTvp;
+using GameTools.Contracts.Items.UpdateItem;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace GameTools.Server.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Tags("Items")]
+    public sealed class ItemsController(IMediator mediator) : ControllerBase
+    {
+        // ID기반 조회
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ItemResponse>> Get(
+            [FromRoute] int id, CancellationToken ct = default)
+        {
+            ItemReadModel? read = await mediator.Send(new GetItemByIdQuery(id), ct);
+            return read is null ? NotFound() : Ok(read);
+        }
+
+        // Page기반 조회
+        [HttpGet]
+        public async Task<ActionResult<PagedResponse<ItemResponse>>> GetPage(
+            [FromQuery] ItemsPageRequest request, CancellationToken ct)
+        {
+            var criteria = request.ToCriteria();
+            var query = new GetItemsPageQuery(criteria);
+            var page = await mediator.Send(query, ct);
+            return Ok(page);
+        }
+
+        // Rarity기반 조회
+        [HttpGet("by-rarity/{rarityId:byte}")]
+        public async Task<ActionResult<ItemsByRarityResponse>> GetByRarity(
+            [FromRoute] byte rarityId, CancellationToken ct = default)
+        {
+            IReadOnlyList<ItemReadModel> reads = await mediator.Send(new GetItemsByRarityIdQuery(rarityId), ct);
+            var response = reads.ToResponse();
+            return Ok(response);
+        }
+
+        // 생성
+        [HttpPost]
+        public async Task<ActionResult<ItemResponse>> Create(
+            [FromBody] CreateItemRequest request, CancellationToken ct)
+        {
+            var read = await mediator.Send(new CreateItemCommand(request.ToPayload()), ct);
+            return Ok(read);
+        }
+
+        // 삭제
+        [HttpDelete]
+        [Consumes(MediaTypeNames.Application.Json)]
+        public async Task<IActionResult> Delete(
+            [FromBody] DeleteItemRequest request, CancellationToken ct)
+        {
+            await mediator.Send(new DeleteItemCommand(request.ToPayload()), ct);
+            return NoContent();
+        }
+
+        // 업데이트
+        [HttpPut]
+        public async Task<ActionResult<ItemResponse>> Update(
+            [FromBody] UpdateItemRequest request,
+            CancellationToken ct)
+        {
+            var read = await mediator.Send(new UpdateItemCommand(request.ToPayload()), ct);
+            return read is null ? NotFound() : Ok(read);
+        }
+
+        // 벌크 삽입 (클래스 단위 Body)
+        [HttpPost("bulk-insert")]
+        public async Task<ActionResult<BulkInsertItemsResponse>> BulkInsert(
+            [FromBody] BulkInsertItemsRequest req, CancellationToken ct)
+        {
+            var results = await mediator.Send(new InsertItemsTvpCommand(req.ToRows()), ct);
+            var resp = results.ToResponse();
+            return Ok(resp);
+        }
+
+        // 벌크 업데이트 (클래스 단위 Body)
+        [HttpPut("bulk-update")]
+        public async Task<ActionResult<BulkUpdateItemsResponse>> BulkUpdate(
+            [FromBody] BulkUpdateItemsRequest req, CancellationToken ct)
+        {
+            var results = await mediator.Send(new UpdateItemsTvpCommand(req.ToRows()), ct);
+            var resp = results.ToResponse();
+            return Ok(resp);
+        }
+    }
+}
