@@ -11,7 +11,7 @@ namespace GameTools.Client.Application.UseCases.GetItemsPage
 {
     public sealed class GetItemsPageUseCase(IItemsGateway gateway)
     {
-        public Task<PagedResult<Item>> Handle(GetItemsPageInput input, CancellationToken ct)
+        public Task<PagedOutput<Item>> Handle(GetItemsPageInput input, CancellationToken ct)
             => gateway.GetPageAsync(input, ct);
     }
 }

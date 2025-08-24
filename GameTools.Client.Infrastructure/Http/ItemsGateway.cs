@@ -1,12 +1,14 @@
 ﻿using System.Net.Http.Json;
 using GameTools.Client.Application.Common.Paging;
 using GameTools.Client.Application.Ports;
+using GameTools.Client.Application.UseCases.BulkInsertItems;
 using GameTools.Client.Application.UseCases.CreateItem;
 using GameTools.Client.Application.UseCases.DeleteItem;
 using GameTools.Client.Application.UseCases.GetItemsPage;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Infrastructure.Mapper;
 using GameTools.Contracts.Common;
+using GameTools.Contracts.Items.BulkInsertItems;
 using GameTools.Contracts.Items.Common;
 using GameTools.Contracts.Items.CreateItem;
 using GameTools.Contracts.Items.DeleteItem;
@@ -36,7 +38,7 @@ namespace GameTools.Client.Infrastructure.Http
             return resp.ToDomain();
         }
 
-        public async Task<PagedResult<Item>> GetPageAsync(GetItemsPageInput input, CancellationToken ct)
+        public async Task<PagedOutput<Item>> GetPageAsync(GetItemsPageInput input, CancellationToken ct)
         {
             ItemsPageRequest req = input.ToContract();
             using var res = await http.PostAsJsonAsync("/api/items/page-search", req, ct);
@@ -81,6 +83,18 @@ namespace GameTools.Client.Infrastructure.Http
             };
             using var res = await http.SendAsync(req, ct);
             res.EnsureSuccessStatusCode();
+        }
+
+        public async Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput input, CancellationToken ct)
+        {
+            BulkInsertItemsRequest req = input.ToContract();
+            using var res = await http.PostAsJsonAsync("/api/items/bulk-insert", req, ct);
+            res.EnsureSuccessStatusCode();
+
+            var body = await res.Content.ReadFromJsonAsync<BulkInsertItemsResponse>(cancellationToken: ct)
+                ?? throw new InvalidOperationException("Empty response");
+
+            return body.ToDomain();
         }
     }
 }

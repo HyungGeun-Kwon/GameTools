@@ -12,10 +12,10 @@ using GameTools.Contracts.Items.CreateItem;
 using GameTools.Contracts.Items.DeleteItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
-using GameTools.Contracts.Items.InsertItemsTvp;
 using GameTools.Contracts.Items.UpdateItem;
 using GameTools.Server.Api.Extensions;
 using GameTools.Contracts.Common;
+using GameTools.Contracts.Items.BulkInsertItems;
 
 namespace GameTools.Server.Api.Mapper
 {

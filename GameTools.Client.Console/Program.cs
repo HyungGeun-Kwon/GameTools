@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using GameTools.Client.Application.Common.Paging;
 using GameTools.Client.Application.Ports;
+using GameTools.Client.Application.UseCases.BulkInsertItems;
 using GameTools.Client.Application.UseCases.CreateItem;
 using GameTools.Client.Application.UseCases.DeleteItem;
 using GameTools.Client.Application.UseCases.GetByRarity;
@@ -22,6 +23,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<CreateItemUseCase>();
         services.AddTransient<DeleteItemUseCase>();
         services.AddTransient<UpdateItemUseCase>();
+        services.AddTransient<BulkInsertItemsUseCase>();
     }).Build();
 
 
@@ -33,6 +35,7 @@ var getItemsPage = scope.ServiceProvider.GetRequiredService<GetItemsPageUseCase>
 var createItem = scope.ServiceProvider.GetRequiredService<CreateItemUseCase>();
 var deleteItem = scope.ServiceProvider.GetRequiredService<DeleteItemUseCase>();
 var updateItem = scope.ServiceProvider.GetRequiredService<UpdateItemUseCase>();
+var bulkInsertItem = scope.ServiceProvider.GetRequiredService<BulkInsertItemsUseCase>();
 
 try
 {
@@ -63,7 +66,23 @@ try
     await deleteItem.Handle(new DeleteItemInput(updatedItem.Id, updatedItem.RowVersionBase64), CancellationToken.None);
 
     // Bulk Insert
+    BulkInsertItemsOutput bulkInsertOutput = await bulkInsertItem.Handle(
+        new BulkInsertItemsInput([
+            new BulkInsertItemInputRow($"Bulk1_{Stopwatch.GetTimestamp()}", 1000, 1, null),
+            new BulkInsertItemInputRow($"Bulk2_{Stopwatch.GetTimestamp()}", 1000, 1, null),
+            new BulkInsertItemInputRow($"Bulk3_{Stopwatch.GetTimestamp()}", 1000, 1, null),
+            new BulkInsertItemInputRow($"Bulk4_{Stopwatch.GetTimestamp()}", 1000, 1, null),
+        ]), CancellationToken.None);
 
+    // Get Bulk Names
+    PagedOutput<Item> pagedOutput = await getItemsPage.Handle(new GetItemsPageInput(new Pagination(1, 100), new ItemSearchFilter("Bulk", null)), CancellationToken.None);
+
+    // TODO : bulk update 예정
+
+    foreach (var item in pagedOutput.Items)
+    {
+        await deleteItem.Handle(new DeleteItemInput(item.Id, item.RowVersionBase64), CancellationToken.None);
+    }
 }
 catch (HttpRequestException ex)
 {

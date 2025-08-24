@@ -14,11 +14,11 @@ using GameTools.Contracts.Items.CreateItem;
 using GameTools.Contracts.Items.DeleteItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
-using GameTools.Contracts.Items.InsertItemsTvp;
 using GameTools.Contracts.Items.UpdateItem;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using GameTools.Contracts.Common;
+using GameTools.Contracts.Items.BulkInsertItems;
 
 namespace GameTools.Server.Api.Controllers
 {
@@ -41,7 +41,7 @@ namespace GameTools.Server.Api.Controllers
         [HttpPost("page-search")]
         [Consumes(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<PagedResponse<ItemResponse>>> GetPage(
-            [FromQuery] ItemsPageRequest request, CancellationToken ct)
+            [FromBody] ItemsPageRequest request, CancellationToken ct)
         {
             var criteria = request.ToCriteria();
             var query = new GetItemsPageQuery(criteria);
