@@ -14,6 +14,8 @@ namespace GameTools.Server.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+            modelBuilder.Entity<Item>().HasOne(i => i.Rarity).WithMany(r => r.Items).HasForeignKey(i => i.RarityId).IsRequired();
         }
     }
 }

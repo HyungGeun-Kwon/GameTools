@@ -20,8 +20,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using GameTools.Contracts.Common;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace GameTools.Server.Api.Controllers
 {
     [ApiController]
@@ -40,22 +38,23 @@ namespace GameTools.Server.Api.Controllers
         }
 
         // Page기반 조회
-        [HttpGet]
+        [HttpPost("page-search")]
+        [Consumes(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<PagedResponse<ItemResponse>>> GetPage(
             [FromQuery] ItemsPageRequest request, CancellationToken ct)
         {
             var criteria = request.ToCriteria();
             var query = new GetItemsPageQuery(criteria);
             var page = await mediator.Send(query, ct);
-            return Ok(page);
+            return Ok(page.ToResponse());
         }
 
         // Rarity기반 조회
-        [HttpGet("by-rarity/{rarityId:byte}")]
+        [HttpGet("by-rarity/{rarityId:int:range(0,255)}")]
         public async Task<ActionResult<ItemsByRarityResponse>> GetByRarity(
-            [FromRoute] byte rarityId, CancellationToken ct = default)
+            [FromRoute] int rarityId, CancellationToken ct = default)
         {
-            var reads = await mediator.Send(new GetItemsByRarityIdQuery(rarityId), ct);
+            var reads = await mediator.Send(new GetItemsByRarityIdQuery((byte)rarityId), ct);
             var response = reads.ToResponse();
             return Ok(response);
         }

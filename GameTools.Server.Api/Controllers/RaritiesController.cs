@@ -23,11 +23,11 @@ namespace GameTools.Server.Api.Controllers
     public sealed class RaritiesController(IMediator mediator) : ControllerBase
     {
         // ID기반 조회
-        [HttpGet("{id:byte}")]
+        [HttpGet("{id:int:range(0,255)}")]
         public async Task<ActionResult<RarityResponse>> Get(
-            [FromRoute] byte id, CancellationToken ct = default)
+            [FromRoute] int id, CancellationToken ct = default)
         {
-            var read = await mediator.Send(new GetRarityByIdQuery(id), ct);
+            var read = await mediator.Send(new GetRarityByIdQuery((byte)id), ct);
             return read is null ? NotFound() : Ok(read.ToResponse());
         }
 

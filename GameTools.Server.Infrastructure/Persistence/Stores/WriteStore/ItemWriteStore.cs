@@ -14,8 +14,9 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
     public sealed class ItemWriteStore(AppDbContext db, ICurrentUser currentUser) : IItemWriteStore
     {
         public async Task<Item?> GetByIdAsync(int id, CancellationToken ct)
-            => await db.Items.FindAsync([id], ct);
-
+            => await db.Items
+                .Include(i => i.Rarity)
+                .SingleOrDefaultAsync(i => i.Id == id, ct);
         public async Task AddAsync(Item entity, CancellationToken ct)
             => await db.Items.AddAsync(entity, ct);
 
