@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Rarities\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\GameTools.Contracts\GameTools.Contracts.csproj" />
     <ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
   </ItemGroup>

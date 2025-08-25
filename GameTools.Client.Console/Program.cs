@@ -7,6 +7,11 @@ using GameTools.Client.Application.UseCases.Items.GetItemById;
 using GameTools.Client.Application.UseCases.Items.GetItemsByRarity;
 using GameTools.Client.Application.UseCases.Items.GetItemsPage;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
+using GameTools.Client.Application.UseCases.Rarities.CreateRarity;
+using GameTools.Client.Application.UseCases.Rarities.DeleteRarity;
+using GameTools.Client.Application.UseCases.Rarities.GetAllRarities;
+using GameTools.Client.Application.UseCases.Rarities.GetRarityById;
+using GameTools.Client.Application.UseCases.Rarities.UpdateRarity;
 using GameTools.Client.Console;
 using GameTools.Client.Infrastructure.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +22,7 @@ var host = Host.CreateDefaultBuilder(args)
     {
         var baseUrl = "http://localhost:5008";
         services.AddHttpClient<IItemsGateway, ItemsGateway>(c => c.BaseAddress = new Uri(baseUrl));
+        services.AddHttpClient<IRarityGateway, RarityGateway>(c => c.BaseAddress = new Uri(baseUrl));
         services.AddTransient<GetItemByIdUseCase>();
         services.AddTransient<GetItemByRarityUseCase>();
         services.AddTransient<GetItemsPageUseCase>();
@@ -26,7 +32,12 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<BulkInsertItemsUseCase>();
         services.AddTransient<BulkUpdateItemsUseCase>();
         services.AddTransient<ItemTest>();
-        
+
+        services.AddTransient<GetRarityByIdUseCase>();
+        services.AddTransient<GetAllRaritiesUseCase>();
+        services.AddTransient<CreateRarityUseCase>();
+        services.AddTransient<UpdateRarityUseCase>();
+        services.AddTransient<DeleteRarityUseCase>();
         services.AddTransient<RarityTest>();
     }).Build();
 
@@ -38,7 +49,7 @@ var rarityTest = scope.ServiceProvider.GetRequiredService<RarityTest>();
 try
 {
     //await itemTest.Run();
-    //await rarityTest.Run();
+    await rarityTest.Run();
 }
 catch (HttpRequestException ex)
 {
