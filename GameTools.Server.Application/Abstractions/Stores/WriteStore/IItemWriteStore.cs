@@ -10,7 +10,7 @@ namespace GameTools.Server.Application.Abstractions.Stores.WriteStore
             IEnumerable<InsertItemRow> rows, CancellationToken ct);
 
         // StatusCode: 0=Updated, 1=NotFound, 2=Concurrency
-        Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, UpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
+        Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, BulkUpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
             IEnumerable<UpdateItemRow> rows, CancellationToken ct);
 
         void SetOriginalRowVersion(Item entity, byte[] rowVersion);

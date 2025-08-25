@@ -2,6 +2,7 @@
 using System.Data.Common;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.Users;
+using GameTools.Server.Application.Common.Results;
 using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
 using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
 using GameTools.Server.Domain.Entities;
@@ -73,7 +74,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
             }
         }
 
-        public async Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, UpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
+        public async Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, BulkUpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
             IEnumerable<UpdateItemRow> rows, CancellationToken ct)
         {
             var table = TvpTableFactory.CreateItemUpdateDataTable(rows);
@@ -102,14 +103,14 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
                 };
                 cmd.Parameters.Add(p);
 
-                var result = new List<(int, byte[]?, UpdateStatusCode)>();
+                var result = new List<(int, byte[]?, BulkUpdateStatusCode)>();
                 await using var reader = await cmd.ExecuteReaderAsync(ct);
                 while (await reader.ReadAsync(ct))
                 {
                     var id = reader.GetInt32(0);
                     var isNull = await reader.IsDBNullAsync(1, ct);
                     var newRv = isNull ? null : (byte[])reader.GetValue(1);
-                    var statusCode = (UpdateStatusCode)reader.GetInt32(2);
+                    var statusCode = (BulkUpdateStatusCode)reader.GetInt32(2);
 
                     result.Add((id, newRv, statusCode));
                 }

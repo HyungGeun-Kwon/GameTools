@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using GameTools.Server.Application.Common.Results;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
 using GameTools.Server.Application.Features.Items.Commands.UpdateItem;
 using GameTools.Server.Application.Features.Items.Models;
@@ -87,8 +88,10 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             var updated = await updater.Handle(new UpdateItemCommand(new UpdateItemPayload(
                 created.Id, created.Name, created.Price, created.Description, r2.Id, created.RowVersion)), CancellationToken.None);
 
-            updated.RarityId.Should().Be(r2.Id);
-            var saved = await CreateItemTests.GetSavedAsync(db, updated.Id);
+            updated.ItemReadModel.Should().NotBeNull();
+
+            updated.ItemReadModel.RarityId.Should().Be(r2.Id);
+            var saved = await CreateItemTests.GetSavedAsync(db, updated.ItemReadModel.Id);
             saved.RarityId.Should().Be(r2.Id);
         }
 
@@ -157,8 +160,9 @@ namespace GameTools.Server.Test.DataBase.ItemTest
                 created.Id, created.Name, created.Price, created.Description, created.RarityId, created.RowVersion)), CancellationToken.None);
 
             // 변경사항이 없다면 RowVersion은 변경되지 않아야 함
-            updated.RowVersion.Should().Equal(created.RowVersion);
-
+            updated.WriteStatusCode.Should().Be(WriteStatusCode.Success);
+            updated.ItemReadModel.Should().NotBeNull();
+            updated.ItemReadModel.RowVersion.Should().Equal(created.RowVersion);
             // 변경사항이 없다면 Audit도 생성되지 않아야 함
             var audits = await db.Set<ItemAudit>().Where(a => a.ItemId == created.Id && a.Action == AuditAction.Update).ToListAsync();
             audits.Should().BeEmpty();
@@ -178,17 +182,17 @@ namespace GameTools.Server.Test.DataBase.ItemTest
 
             // 반환 DTO 기본값 검증
             updatedItem.Should().NotBeNull();
-            updatedItem.Price.Should().Be(createdItem.Price + 100);
+            updatedItem.ItemReadModel.Should().NotBeNull();
+            updatedItem.ItemReadModel.Price.Should().Be(createdItem.Price + 100);
 
             // RowVersion변경 확인
-            updatedItem.RowVersion.Should().NotBeEquivalentTo(createdItem.RowVersion);
+            updatedItem.ItemReadModel.RowVersion.Should().NotBeEquivalentTo(createdItem.RowVersion);
 
-            await AssertDtoMatchesEntityAsync(db, updatedItem);
+            await AssertDtoMatchesEntityAsync(db, updatedItem.ItemReadModel);
         }
 
         private static async Task<ItemReadModel> CreateItem(AppDbContext db, Rarity? rarity = null)
         {
-            var currentUser = new TestCurrentUser();
             var handler = CreateItemTests.CreateHandler(db);
             rarity = rarity is null ? TestDataBase.SeedRarity(db) : rarity;
             var cmd = new CreateItemCommand(new CreateItemPayload("Item1", 100, rarity.Id, "First Item"));

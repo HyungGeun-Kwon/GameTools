@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using GameTools.Server.Application.Common.Results;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
 using GameTools.Server.Application.Features.Items.Models;
 using GameTools.Server.Application.Features.Rarities.Commands.CreateRarity;
@@ -24,7 +25,8 @@ namespace GameTools.Server.Test.DataBase.RarityTest
             var created = await CreateRarity(db, "Common", "#000000");
 
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            var statusCode = await handler.Handle(new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.Success);
 
             // 삭제되었기 때문에 없어야함
             (await db.Set<Rarity>().AnyAsync(r => r.Id == created.Id)).Should().BeFalse();
@@ -38,7 +40,8 @@ namespace GameTools.Server.Test.DataBase.RarityTest
             var created = await CreateRarity(db, "Common", "#000000");
 
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            var statusCode = await handler.Handle(new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.Success);
 
             // 삭제되었기 때문에 없어야함
             (await db.Set<Item>().AnyAsync(i => i.Id == created.Id)).Should().BeFalse();
@@ -54,7 +57,8 @@ namespace GameTools.Server.Test.DataBase.RarityTest
             var utcBeforeDelete = DateTime.UtcNow;
 
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            var statusCode = await handler.Handle(new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.Success);
 
             // 감사: Insert + Delete = 2건
             var audits = await db.Set<RarityAudit>().Where(a => a.RarityId == created.Id).OrderBy(a => a.AuditId).ToListAsync();
@@ -85,11 +89,11 @@ namespace GameTools.Server.Test.DataBase.RarityTest
                 
 
             // db2: 예전 RowVersion으로 삭제 시도.
-            var deleteCommand = new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion));
-            var deleter = DeleteHandler(db2);
-            var act = async () => await deleter.Handle(deleteCommand, CancellationToken.None);
 
-            await act.Should().ThrowAsync<Exception>();
+            var deleter = DeleteHandler(db2);
+            var deleteCommand = new DeleteRarityCommand(new DeleteRarityPayload(created.Id, created.RowVersion));
+            var statusCode = await deleter.Handle(deleteCommand, CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.VersionMismatch);
         }
 
         [Fact]
@@ -99,9 +103,8 @@ namespace GameTools.Server.Test.DataBase.RarityTest
 
             var deleteCommand = new DeleteRarityCommand(new DeleteRarityPayload(200, [1, 2, 3, 4]));
             var deleter = DeleteHandler(db);
-            var act = async () => await deleter.Handle(deleteCommand, CancellationToken.None);
-
-            await act.Should().ThrowAsync<Exception>();
+            var statusCode = await deleter.Handle(deleteCommand, CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.NotFound);
         }
 
         [Fact]

@@ -1,17 +1,20 @@
 ﻿using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.Works;
+using GameTools.Server.Application.Common.Results;
 using GameTools.Server.Application.Features.Rarities.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity
 {
     public sealed class UpdateRarityHandler(IRarityWriteStore rarityWriteStore, IUnitOfWork uow)
-        : IRequestHandler<UpdateRarityCommand, RarityReadModel>
+        : IRequestHandler<UpdateRarityCommand, UpdateRarityResult>
     {
-        public async Task<RarityReadModel> Handle(UpdateRarityCommand request, CancellationToken ct)
+        public async Task<UpdateRarityResult> Handle(UpdateRarityCommand request, CancellationToken ct)
         {
-            var rarity = await rarityWriteStore.GetByIdAsync(request.Payload.Id, ct)
-                         ?? throw new InvalidOperationException("Rarity not found.");
+            var rarity = await rarityWriteStore.GetByIdAsync(request.Payload.Id, ct);
+            if (rarity == null)
+                return new UpdateRarityResult(WriteStatusCode.NotFound, null);
 
             // 감시하고있는  버전 업데이트
             rarityWriteStore.SetOriginalRowVersion(rarity, request.Payload.RowVersion);
@@ -19,9 +22,19 @@ namespace GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity
             rarity.SetGrade(request.Payload.Grade);
             rarity.SetColorCode(request.NormalizedColorCode);
 
-            await uow.SaveChangesAsync(ct);
+            try
+            {
+                await uow.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                var exists = await rarityWriteStore.GetByIdAsync(request.Payload.Id, ct);
+                return exists == null ? new(WriteStatusCode.NotFound, null) : new(WriteStatusCode.VersionMismatch, null);
+            }
 
-            return new RarityReadModel(rarity.Id, rarity.Grade, rarity.ColorCode, rarity.RowVersion);
+            return new UpdateRarityResult(
+                WriteStatusCode.Success, 
+                new RarityReadModel(rarity.Id, rarity.Grade, rarity.ColorCode, rarity.RowVersion));
         }
     }
 }

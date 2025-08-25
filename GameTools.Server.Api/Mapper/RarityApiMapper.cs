@@ -1,6 +1,5 @@
 ﻿using GameTools.Contracts.Rarities.Common;
 using GameTools.Contracts.Rarities.CreateRarity;
-using GameTools.Contracts.Rarities.DeleteRarity;
 using GameTools.Contracts.Rarities.GetAllRarities;
 using GameTools.Contracts.Rarities.UpdateRarity;
 using GameTools.Server.Api.Extensions;
@@ -24,8 +23,5 @@ namespace GameTools.Server.Api.Mapper
 
         public static UpdateRarityPayload ToPayload(this UpdateRarityRequest req)
             => new(req.Id, req.Grade, req.ColorCode, Convert.FromBase64String(req.RowVersionBase64));
-
-        public static DeleteRarityPayload ToPayload(this DeleteRarityRequest req)
-            => new(req.Id, Convert.FromBase64String(req.RowVersionBase64));
     }
 }

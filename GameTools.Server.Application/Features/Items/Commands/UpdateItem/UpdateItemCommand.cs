@@ -1,7 +1,6 @@
-﻿using GameTools.Server.Application.Features.Items.Models;
-using MediatR;
+﻿using MediatR;
 
 namespace GameTools.Server.Application.Features.Items.Commands.UpdateItem
 {
-    public sealed record UpdateItemCommand(UpdateItemPayload Payload) : IRequest<ItemReadModel>;
+    public sealed record UpdateItemCommand(UpdateItemPayload Payload) : IRequest<UpdateItemResult>;
 }

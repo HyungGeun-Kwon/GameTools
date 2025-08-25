@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using GameTools.Server.Application.Common.Results;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
 using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
 using GameTools.Server.Application.Features.Items.Models;
@@ -21,7 +22,8 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             var created = await CreateItem(db);
 
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteItemCommand(new DeleteItemPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            var statusCode = await handler.Handle(new DeleteItemCommand(new DeleteItemPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.Success);
 
             (await db.Set<Item>().AnyAsync(i => i.Id == created.Id)).Should().BeFalse();
         }
@@ -34,7 +36,8 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             var created = await CreateItem(db);
 
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteItemCommand(new DeleteItemPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            var statusCode = await handler.Handle(new DeleteItemCommand(new DeleteItemPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.Success);
 
             (await db.Set<Item>().AnyAsync(i => i.Id == created.Id)).Should().BeFalse();
         }
@@ -48,7 +51,8 @@ namespace GameTools.Server.Test.DataBase.ItemTest
 
             var utcBeforeDelete = DateTime.UtcNow;
             var handler = DeleteHandler(db);
-            await handler.Handle(new DeleteItemCommand(new DeleteItemPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            var statusCode = await handler.Handle(new DeleteItemCommand(new DeleteItemPayload(created.Id, created.RowVersion)), CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.Success);
 
             (await db.Set<Item>().AnyAsync(i => i.Id == created.Id)).Should().BeFalse();
 
@@ -85,9 +89,8 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             // db2: 예전 RowVersion으로 삭제 시도
             var deleteCommand = new DeleteItemCommand(new DeleteItemPayload(created.Id, created.RowVersion));
             var deleter = DeleteHandler(db2);
-            var act = async () => await deleter.Handle(deleteCommand, CancellationToken.None);
-
-            await act.Should().ThrowAsync<Exception>();
+            var statusCode = await deleter.Handle(deleteCommand, CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.VersionMismatch);
         }
 
         [Fact]
@@ -96,10 +99,8 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             await using var db = TestDataBase.CreateTestDbContext();
 
             var handler = DeleteHandler(db);
-            var act = async () => await handler.Handle(
-                new DeleteItemCommand(new DeleteItemPayload(999, [1, 2, 3, 4])), CancellationToken.None);
-
-            await act.Should().ThrowAsync<Exception>();
+            var statusCode = await handler.Handle(new DeleteItemCommand(new DeleteItemPayload(999, [1, 2, 3, 4])), CancellationToken.None);
+            statusCode.Should().Be(WriteStatusCode.NotFound);
         }
 
         private static DeleteItemHandler DeleteHandler(AppDbContext db)

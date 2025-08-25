@@ -8,7 +8,7 @@ namespace GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp
     {
         public async Task<IReadOnlyList<UpdateItemResultRow>> Handle(UpdateItemsTvpCommand request, CancellationToken ct)
         {
-            IReadOnlyList<(int Id, byte[]? NewRowVersion, UpdateStatusCode StatusCode)> results = await writeStore.UpdateManyTvpAsync(request.Rows, ct);
+            IReadOnlyList<(int Id, byte[]? NewRowVersion, BulkUpdateStatusCode StatusCode)> results = await writeStore.UpdateManyTvpAsync(request.Rows, ct);
 
             return results
                 .Select(r => new UpdateItemResultRow(

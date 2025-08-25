@@ -168,13 +168,13 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             var resNF = results.Single(r => r.Id == notFoundId);
             var resB = results.Single(r => r.Id == b.Id);
 
-            resA.StatusCode.Should().Be(UpdateStatusCode.Updated);
+            resA.StatusCode.Should().Be(BulkUpdateStatusCode.Updated);
             resA.NewRowVersion.Should().NotBeNullOrEmpty().And.NotEqual(a.RowVersion);
 
-            resNF.StatusCode.Should().Be(UpdateStatusCode.NotFound);
+            resNF.StatusCode.Should().Be(BulkUpdateStatusCode.NotFound);
             resNF.NewRowVersion.Should().BeNull();
 
-            resB.StatusCode.Should().Be(UpdateStatusCode.Concurrency);
+            resB.StatusCode.Should().Be(BulkUpdateStatusCode.Concurrency);
             resB.NewRowVersion.Should().BeNull();
 
             // 실제 DB 반영 확인

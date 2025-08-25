@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using GameTools.Server.Application.Common.Results;
 using GameTools.Server.Application.Features.Rarities.Commands.CreateRarity;
 using GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity;
 using GameTools.Server.Application.Features.Rarities.Models;
@@ -25,12 +26,13 @@ namespace GameTools.Server.Test.DataBase.RarityTest
                 new UpdateRarityCommand(new UpdateRarityPayload(
                     created.Id, "Common_Fix", "#111111", created.RowVersion)), CancellationToken.None);
 
-            updated.Should().NotBeNull();
-            updated.Grade.Should().Be("Common_Fix");
-            updated.ColorCode.Should().Be("#111111");
-            updated.RowVersion.Should().NotEqual(created.RowVersion);
+            updated.WriteStatusCode.Should().Be(WriteStatusCode.Success);
+            updated.RarityReadModel.Should().NotBeNull();
+            updated.RarityReadModel.Grade.Should().Be("Common_Fix");
+            updated.RarityReadModel.ColorCode.Should().Be("#111111");
+            updated.RarityReadModel.RowVersion.Should().NotEqual(created.RowVersion);
 
-            await AssertDtoMatchesEntityAsync(db, updated);
+            await AssertDtoMatchesEntityAsync(db, updated.RarityReadModel);
         }
 
         [Fact]
@@ -45,11 +47,13 @@ namespace GameTools.Server.Test.DataBase.RarityTest
                 new UpdateRarityCommand(new UpdateRarityPayload(
                     created.Id, "Common_Fix", "#111111", created.RowVersion)), CancellationToken.None);
 
-            updated.Grade.Should().Be("Common_Fix");
-            updated.ColorCode.Should().Be("#111111");
-            updated.RowVersion.Should().NotEqual(created.RowVersion);
+            updated.WriteStatusCode.Should().Be(WriteStatusCode.Success);
+            updated.RarityReadModel.Should().NotBeNull();
+            updated.RarityReadModel.Grade.Should().Be("Common_Fix");
+            updated.RarityReadModel.ColorCode.Should().Be("#111111");
+            updated.RarityReadModel.RowVersion.Should().NotEqual(created.RowVersion);
 
-            await AssertDtoMatchesEntityAsync(db, updated);
+            await AssertDtoMatchesEntityAsync(db, updated.RarityReadModel);
         }
 
         [Fact]
@@ -66,7 +70,9 @@ namespace GameTools.Server.Test.DataBase.RarityTest
                 new UpdateRarityCommand(new UpdateRarityPayload(
                     created.Id, "Common_Fix", "#111111", created.RowVersion)), CancellationToken.None);
 
-            updated.Id.Should().Be(created.Id);
+            updated.WriteStatusCode.Should().Be(WriteStatusCode.Success);
+            updated.RarityReadModel.Should().NotBeNull();
+            updated.RarityReadModel.Id.Should().Be(created.Id);
 
             var audits = await db.Set<RarityAudit>().Select(r => r).ToListAsync();
             audits.Count.Should().Be(2);
@@ -158,8 +164,10 @@ namespace GameTools.Server.Test.DataBase.RarityTest
                 new UpdateRarityCommand(new UpdateRarityPayload(
                     created.Id, created.Grade, created.ColorCode, created.RowVersion)), CancellationToken.None);
 
+            updated.WriteStatusCode.Should().Be(WriteStatusCode.Success);
+            updated.RarityReadModel.Should().NotBeNull();
             // 변경사항이 없다면 RowVersion은 동일해야 함
-            updated.RowVersion.Should().Equal(created.RowVersion);
+            updated.RarityReadModel.RowVersion.Should().Equal(created.RowVersion);
 
             // 변경사항이 없다면 Audit(Update)도 없어야 함
             var audits = await db.Set<RarityAudit>()
@@ -175,11 +183,11 @@ namespace GameTools.Server.Test.DataBase.RarityTest
             await using var db = TestDataBase.CreateTestDbContext();
             var handler = UpdateHandler(db);
 
-            var act = async () => await handler.Handle(
+            var result = await handler.Handle(
                 new UpdateRarityCommand(new UpdateRarityPayload(
                     250, "None", "#000000", [1, 2, 3, 4])), CancellationToken.None);
-
-            await act.Should().ThrowAsync<Exception>();
+            result.WriteStatusCode.Should().Be(WriteStatusCode.NotFound);
+            result.RarityReadModel.Should().BeNull();
         }
 
         private static async Task<RarityReadModel> CreateRarity(AppDbContext db, string grade, string color)

@@ -11,8 +11,6 @@ namespace GameTools.Server.Domain.Entities
         public string Grade { get; private set; } = default!;
         public string ColorCode { get; private set; } = default!;
 
-        public static int GradeMaxLength => 32;
-
         public IReadOnlyCollection<Item> Items => _items.AsReadOnly();
 
         [Timestamp]

@@ -1,17 +1,21 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using GameTools.Client.Application.Common.Paging;
 using GameTools.Client.Application.Ports;
-using GameTools.Client.Application.UseCases.BulkInsertItems;
-using GameTools.Client.Application.UseCases.CreateItem;
-using GameTools.Client.Application.UseCases.DeleteItem;
-using GameTools.Client.Application.UseCases.GetItemsPage;
+using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
+using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
+using GameTools.Client.Application.UseCases.Items.CreateItem;
+using GameTools.Client.Application.UseCases.Items.DeleteItem;
+using GameTools.Client.Application.UseCases.Items.GetItemsPage;
+using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Infrastructure.Mapper;
 using GameTools.Contracts.Common;
 using GameTools.Contracts.Items.BulkInsertItems;
+using GameTools.Contracts.Items.BulkUpdateItems;
 using GameTools.Contracts.Items.Common;
 using GameTools.Contracts.Items.CreateItem;
-using GameTools.Contracts.Items.DeleteItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
 using GameTools.Contracts.Items.UpdateItem;
@@ -23,7 +27,7 @@ namespace GameTools.Client.Infrastructure.Http
         public async Task<Item?> GetByIdAsync(int id, CancellationToken ct)
         {
             var res = await http.GetAsync($"/api/items/{id}", ct);
-            if (res.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
+            if (res.StatusCode == HttpStatusCode.NotFound) return null;
 
             res.EnsureSuccessStatusCode();
             ItemResponse? body = await res.Content.ReadFromJsonAsync<ItemResponse>(cancellationToken: ct);
@@ -52,7 +56,7 @@ namespace GameTools.Client.Infrastructure.Http
 
         public async Task<Item> CreateAsync(CreateItemInput input, CancellationToken ct)
         {
-            var req = new CreateItemRequest(input.Name, input.Price, input.RarityId, input.Description);
+            CreateItemRequest req = input.ToContract();
             using var res = await http.PostAsJsonAsync("/api/items", req, ct);
             res.EnsureSuccessStatusCode();
 
@@ -64,7 +68,7 @@ namespace GameTools.Client.Infrastructure.Http
 
         public async Task<Item> UpdateAsync(UpdateItemInput input, CancellationToken ct)
         {
-            var req = new UpdateItemRequest(input.Id, input.Name, input.Price, input.Description, input.RarityId, input.RowVersionBase64);
+            UpdateItemRequest req = input.ToContract();
             using var res = await http.PutAsJsonAsync("/api/items", req, ct);
             res.EnsureSuccessStatusCode();
 
@@ -76,12 +80,12 @@ namespace GameTools.Client.Infrastructure.Http
 
         public async Task DeleteAsync(DeleteItemInput input, CancellationToken ct)
         {
-            var reqBody = new DeleteItemRequest(input.Id, input.RowVersionBase64);
-            using var req = new HttpRequestMessage(HttpMethod.Delete, "/api/items")
-            {
-                Content = JsonContent.Create(reqBody)
-            };
+            using var req = new HttpRequestMessage(HttpMethod.Delete, $"/api/items/{input.Id}");
+
+            req.Headers.IfMatch.Add(new EntityTagHeaderValue($"\"{input.RowVersionBase64}\""));
+
             using var res = await http.SendAsync(req, ct);
+
             res.EnsureSuccessStatusCode();
         }
 
@@ -92,6 +96,18 @@ namespace GameTools.Client.Infrastructure.Http
             res.EnsureSuccessStatusCode();
 
             var body = await res.Content.ReadFromJsonAsync<BulkInsertItemsResponse>(cancellationToken: ct)
+                ?? throw new InvalidOperationException("Empty response");
+
+            return body.ToDomain();
+        }
+
+        public async Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput input, CancellationToken ct)
+        {
+            BulkUpdateItemsRequest req = input.ToContract();
+            using var res = await http.PutAsJsonAsync("/api/items/bulk-update", req, ct);
+            res.EnsureSuccessStatusCode();
+
+            var body = await res.Content.ReadFromJsonAsync<BulkUpdateItemsResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
             return body.ToDomain();

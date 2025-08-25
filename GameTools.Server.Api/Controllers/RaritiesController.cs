@@ -1,10 +1,10 @@
 ﻿using System.Net.Mime;
 using GameTools.Contracts.Rarities.Common;
 using GameTools.Contracts.Rarities.CreateRarity;
-using GameTools.Contracts.Rarities.DeleteRarity;
 using GameTools.Contracts.Rarities.GetAllRarities;
 using GameTools.Contracts.Rarities.UpdateRarity;
 using GameTools.Server.Api.Mapper;
+using GameTools.Server.Application.Common.Results;
 using GameTools.Server.Application.Features.Rarities.Commands.CreateRarity;
 using GameTools.Server.Application.Features.Rarities.Commands.DeleteRarity;
 using GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity;
@@ -48,13 +48,29 @@ namespace GameTools.Server.Api.Controllers
             return Ok(read.ToResponse());
         }
 
-        [HttpDelete]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpDelete("{id:int:range(0,255)}")]
         public async Task<IActionResult> Delete(
-            [FromBody] DeleteRarityRequest request, CancellationToken ct)
+            [FromRoute] int id, CancellationToken ct)
         {
-            await mediator.Send(new DeleteRarityCommand(request.ToPayload()), ct);
-            return NoContent();
+            if (!Request.Headers.TryGetValue("If-Match", out var ifMatch) || string.IsNullOrWhiteSpace(ifMatch))
+                return Problem(statusCode: StatusCodes.Status428PreconditionRequired, title: "If-Match header required");
+
+            var etag = ifMatch.ToString().Trim('"');
+            byte[] rowVersion;
+            try { rowVersion = Convert.FromBase64String(etag); }
+            catch { return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid ETag"); }
+
+            var payload = new DeleteRarityPayload((byte)id, rowVersion);
+
+            WriteStatusCode statusCode = await mediator.Send(new DeleteRarityCommand(payload), ct);
+
+            return statusCode switch
+            {
+                WriteStatusCode.Success => NoContent(),
+                WriteStatusCode.NotFound => NotFound(),
+                WriteStatusCode.VersionMismatch => StatusCode(StatusCodes.Status412PreconditionFailed),
+                _ => Problem(statusCode: StatusCodes.Status500InternalServerError)
+            };
         }
 
         [HttpPut]
@@ -62,7 +78,16 @@ namespace GameTools.Server.Api.Controllers
             [FromBody] UpdateRarityRequest request, CancellationToken ct)
         {
             var read = await mediator.Send(new UpdateRarityCommand(request.ToPayload()), ct);
-            return read is null ? NotFound() : Ok(read.ToResponse());
+
+
+            if (read.WriteStatusCode == WriteStatusCode.NotFound)
+                return NotFound();
+            else if (read.WriteStatusCode == WriteStatusCode.VersionMismatch)
+                return StatusCode(StatusCodes.Status412PreconditionFailed);
+            else if (read.WriteStatusCode == WriteStatusCode.Success && read.RarityReadModel is not null)
+                return Ok(read.RarityReadModel.ToResponse());
+
+            return Problem(statusCode: StatusCodes.Status500InternalServerError);
         }
     }
 }

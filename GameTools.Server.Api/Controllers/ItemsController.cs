@@ -11,7 +11,6 @@ using GameTools.Server.Application.Features.Items.Queries.GetItemPage;
 using GameTools.Contracts.Items.BulkUpdateItems;
 using GameTools.Contracts.Items.Common;
 using GameTools.Contracts.Items.CreateItem;
-using GameTools.Contracts.Items.DeleteItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
 using GameTools.Contracts.Items.UpdateItem;
@@ -19,6 +18,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using GameTools.Contracts.Common;
 using GameTools.Contracts.Items.BulkInsertItems;
+using GameTools.Server.Application.Common.Results;
 
 namespace GameTools.Server.Api.Controllers
 {
@@ -69,13 +69,28 @@ namespace GameTools.Server.Api.Controllers
         }
 
         // 삭제
-        [HttpDelete]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(
-            [FromBody] DeleteItemRequest request, CancellationToken ct)
+            [FromRoute] int id, CancellationToken ct)
         {
-            await mediator.Send(new DeleteItemCommand(request.ToPayload()), ct);
-            return NoContent();
+            if (!Request.Headers.TryGetValue("If-Match", out var ifMatch) || string.IsNullOrWhiteSpace(ifMatch))
+                return Problem(statusCode: StatusCodes.Status428PreconditionRequired, title: "If-Match header required");
+
+            var etag = ifMatch.ToString().Trim('"');
+            byte[] rowVersion;
+            try { rowVersion = Convert.FromBase64String(etag); }
+            catch { return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid ETag"); }
+
+            var payload = new DeleteItemPayload(id, rowVersion);
+            WriteStatusCode statusCode = await mediator.Send(new DeleteItemCommand(payload), ct);
+
+            return statusCode switch
+            {
+                WriteStatusCode.Success => NoContent(),
+                WriteStatusCode.NotFound => NotFound(),
+                WriteStatusCode.VersionMismatch => StatusCode(StatusCodes.Status412PreconditionFailed),
+                _ => Problem(statusCode: StatusCodes.Status500InternalServerError)
+            };
         }
 
         // 업데이트
@@ -85,7 +100,15 @@ namespace GameTools.Server.Api.Controllers
             CancellationToken ct)
         {
             var read = await mediator.Send(new UpdateItemCommand(request.ToPayload()), ct);
-            return read is null ? NotFound() : Ok(read.ToResponse());
+
+            if (read.WriteStatusCode == WriteStatusCode.NotFound)
+                return NotFound();
+            else if (read.WriteStatusCode == WriteStatusCode.VersionMismatch)
+                return StatusCode(StatusCodes.Status412PreconditionFailed);
+            else if (read.WriteStatusCode == WriteStatusCode.Success && read.ItemReadModel is not null)
+                return Ok(read.ItemReadModel.ToResponse());
+
+            return Problem(statusCode: StatusCodes.Status500InternalServerError);
         }
 
         // 벌크 삽입 (클래스 단위 Body)

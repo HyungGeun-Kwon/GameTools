@@ -9,7 +9,6 @@ using GameTools.Server.Application.Features.Items.Queries.GetItemPage;
 using GameTools.Contracts.Items.BulkUpdateItems;
 using GameTools.Contracts.Items.Common;
 using GameTools.Contracts.Items.CreateItem;
-using GameTools.Contracts.Items.DeleteItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
 using GameTools.Contracts.Items.UpdateItem;
@@ -50,9 +49,6 @@ namespace GameTools.Server.Api.Mapper
                 req.Id, req.Name, req.Price, req.Description, 
                 req.RarityId, req.RowVersionBase64.FromBase64RowVersion()
             );
-
-        internal static DeleteItemPayload ToPayload(this DeleteItemRequest req)
-            => new(req.Id, req.RowVersionBase64.FromBase64RowVersion());
 
         internal static IReadOnlyList<InsertItemRow> ToRows(this BulkInsertItemsRequest req)
             => req.BulkInsertItems.Select(
