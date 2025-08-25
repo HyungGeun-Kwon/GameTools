@@ -1,5 +1,4 @@
-﻿using GameTools.Server.Application.Features.Rarities.Models;
-using MediatR;
+﻿using MediatR;
 
 namespace GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity
 {

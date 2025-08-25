@@ -1,6 +1,5 @@
 ﻿using GameTools.Server.Application.Common.Paging;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
-using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
 using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
 using GameTools.Server.Application.Features.Items.Commands.UpdateItem;
 using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
