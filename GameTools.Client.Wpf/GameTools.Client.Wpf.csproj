@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="DotNetHelper.MsDiKit" Version="1.2.0-gba07c83c96" />
   </ItemGroup>
 
   <ItemGroup>
