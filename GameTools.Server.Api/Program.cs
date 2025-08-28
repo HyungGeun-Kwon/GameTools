@@ -1,4 +1,4 @@
-using GameTools.Server.Api;
+using GameTools.Server.Api.Middlewares;
 using GameTools.Server.Application.Abstractions.Users;
 using GameTools.Server.Application.Extensions;
 using GameTools.Server.Infrastructure.Extensions;
@@ -15,7 +15,8 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUser, ApiUser>();
+builder.Services.AddScoped<ApiCurrentUser>();
+builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<ApiCurrentUser>());
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -47,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
+
+app.UseMiddleware<CurrentUserMiddleware>();
 
 app.MapControllers();
 

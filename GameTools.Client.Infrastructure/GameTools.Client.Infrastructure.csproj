@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GameTools.Client.Application\GameTools.Client.Application.csproj" />
     <ProjectReference Include="..\GameTools.Client.Domain\GameTools.Client.Domain.csproj" />
     <ProjectReference Include="..\GameTools.Contracts\GameTools.Contracts.csproj" />
