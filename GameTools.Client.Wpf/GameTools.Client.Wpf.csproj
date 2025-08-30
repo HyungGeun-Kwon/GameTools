@@ -11,12 +11,13 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="DotNetHelper.MsDiKit" Version="1.2.0-gba07c83c96" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameTools.Server.Application\GameTools.Server.Application.csproj" />
-    <ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
-    <ProjectReference Include="..\GameTools.Server.Infrastructure\GameTools.Server.Infrastructure.csproj" />
+    <ProjectReference Include="..\GameTools.Client.Application\GameTools.Client.Application.csproj" />
+    <ProjectReference Include="..\GameTools.Client.Domain\GameTools.Client.Domain.csproj" />
+    <ProjectReference Include="..\GameTools.Client.Infrastructure\GameTools.Client.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

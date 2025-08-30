@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 
-namespace GameTools.Client.Wpf
+namespace GameTools.Client.Wpf.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// MainWindow.xaml에 대한 상호 작용 논리
     /// </summary>
     public partial class MainWindow : Window
     {
