@@ -62,7 +62,7 @@ namespace GameTools.Client.Infrastructure.Http
 
             var body = await res.Content.ReadFromJsonAsync<ItemResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
-
+            
             return body.ToDomain();
         }
 

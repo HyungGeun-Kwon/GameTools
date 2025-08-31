@@ -1,19 +1,27 @@
-﻿using System.Windows;
+﻿using System.Net.Http;
+using System.Security.Authentication;
+using System.Text.Json;
+using System.Windows;
 using System.Windows.Threading;
 using DotNetHelper.MsDiKit.Extensions;
 using GameTools.Client.Application.Extensions;
 using GameTools.Client.Infrastructure.Extensions;
 using GameTools.Client.Wpf.Common.Names;
+using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels;
 using GameTools.Client.Wpf.ViewModels.Items;
 using GameTools.Client.Wpf.ViewModels.Navigations;
 using GameTools.Client.Wpf.ViewModels.Rarities;
+using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
 using GameTools.Client.Wpf.Views;
 using GameTools.Client.Wpf.Views.Items;
 using GameTools.Client.Wpf.Views.Navigations;
 using GameTools.Client.Wpf.Views.Rarities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace GameTools.Client.Wpf
 {
@@ -25,13 +33,17 @@ namespace GameTools.Client.Wpf
         private IHost _host = null!;
         public App()
         {
-            // UI 스레드 예외
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.Async(a => a.File(
+                    path: "logs/log-.log", // logs/log-YYYY-MM-DD.log
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 365
+                )).CreateLogger();
+
             DispatcherUnhandledException += App_DispatcherUnhandledException;
-
-            // 백그라운드/스레드 예외
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-            // 관찰되지 않은 Task 예외
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
         }
         protected override void OnStartup(StartupEventArgs e)
@@ -39,15 +51,25 @@ namespace GameTools.Client.Wpf
             base.OnStartup(e);
 
             _host = Host.CreateDefaultBuilder(e.Args)
-                .ConfigureServices(services =>
+                .UseSerilog()
+                .ConfigureLogging(logging =>
                 {
-                    var baseUri = "http://localhost:5008";
+                    logging.ClearProviders();
+                    logging.AddDebug();
+                    logging.AddConsole();
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    var baseUri = context.Configuration.GetValue<string>("Api:BaseUri")
+                        ?? throw new InvalidOperationException("Config 'Api:BaseUri' is missing.");
 
                     services.AddClientApplication();
                     services.AddClientInfrastructure(baseUri);
 
                     services.AddDialogService();
                     services.AddRegionService(() => _host.Services);
+
+                    services.AddSingleton<ISearchState<RarityEditModel>, SearchState<RarityEditModel>>();
 
                     services.AddSingleton<MainViewModel>();
 
@@ -62,52 +84,114 @@ namespace GameTools.Client.Wpf
                     services.AddRegionView<RarityResultView, RarityResultViewModel>(RegionViewNames.Rarity_ResultView);
                 }).Build();
 
+            _host.StartAsync().GetAwaiter().GetResult();
+
             var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
             var mainWindow = new MainWindow() { DataContext = mainViewModel };
-
             MainWindow = mainWindow;
             MainWindow.Show();
+
+            Log.Information("Application started");
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            if (_host is not null) await _host.StopAsync();
-            _host?.Dispose();
-            base.OnExit(e);
+
+            try
+            {
+                if (_host is not null) await _host.StopAsync();
+                _host?.Dispose();
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+                base.OnExit(e);
+            }
         }
 
         private void App_DispatcherUnhandledException(object? sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show(
-                "Unhandled UI Exception\n\n" + e.Exception,
-                "Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+            if (IsCancellation(e.Exception))
+            {
+                e.Handled = true; return;
+            }
 
-            try { Shutdown(-1); } catch { }
+            if (IsNormalError(e.Exception))
+            {
+                e.Handled = true;
+                Log.Error(e.Exception, "UI thread exception");
+                MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            Log.Fatal(e.Exception, "UI thread unhandled exception");
         }
 
         private void CurrentDomain_UnhandledException(object? sender, UnhandledExceptionEventArgs e)
         {
-            var msg = e.ExceptionObject?.ToString() ?? "(no details)";
-            MessageBox.Show(
-                "Unhandled Non-UI Exception\n\n" + msg,
-                "Fatal Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+            var ex = e.ExceptionObject as Exception;
+            var terminating = e.IsTerminating;
 
-            try { Shutdown(-1); } catch { }
+            var title = e.IsTerminating ? "Fatal Error" : "Unhandled Error";
+            
+            Log.Fatal(ex, $"Unhandled exception. IsTerminating={terminating}");
+
+            try
+            {
+                var msg = $"Unhandled Exception (IsTerminating={terminating})\n\n{ex}";
+                if (Current?.Dispatcher is Dispatcher d)
+                {
+                    d.BeginInvoke(() =>
+                        MessageBox.Show(msg, terminating ? "Fatal Error" : "Unhandled Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error));
+                }
+                else
+                {
+                    MessageBox.Show(msg, terminating ? "Fatal Error" : "Unhandled Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch { }
+
+            try { Log.CloseAndFlush(); } catch { }
+            if (!e.IsTerminating) try { Shutdown(-1); } catch { }
         }
 
         private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
         {
-            MessageBox.Show(
-                "Unobserved Task Exception\n\n" + e.Exception,
-                "Task Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+            var agg = e.Exception.Flatten();
+
+            if (agg.InnerExceptions.All(IsCancellation))
+            {
+                e.SetObserved();
+                return;
+            }
+
+            Log.Error(agg, "Unobserved task exception");
+
+            Dispatcher.BeginInvoke(() =>
+                MessageBox.Show("An error occurred while running a background task.\n\nPlease check the log for more details.",
+                    "Task Error", MessageBoxButton.OK, MessageBoxImage.Error));
 
             e.SetObserved();
+        }
+
+        private static bool IsCancellation(Exception? ex)
+        {
+            if (ex is null) return false;
+            if (ex is OperationCanceledException || ex is TaskCanceledException) return true;
+            if (ex is AggregateException ae) return ae.Flatten().InnerExceptions.All(IsCancellation);
+            return ex.InnerException is not null && IsCancellation(ex.InnerException);
+        }
+
+        private static bool IsNormalError(Exception? ex)
+        {
+            return ex is HttpRequestException
+                || ex is InvalidOperationException
+                || ex is TaskCanceledException
+                || ex is JsonException
+                || ex is AuthenticationException
+                || ex is ArgumentNullException;
         }
     }
 }

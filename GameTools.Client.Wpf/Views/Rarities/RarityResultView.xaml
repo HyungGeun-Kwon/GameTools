@@ -4,9 +4,98 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Rarities"
+             xmlns:localConverter="clr-namespace:GameTools.Client.Wpf.Common.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <localConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- HasErrors == true 이면 행 배경을 연한 빨강으로 -->
+        <Style x:Key="ErrorRowStyle" TargetType="DataGridRow">
+            <Setter Property="ToolTip"
+                    Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
+            <Style.Triggers>
+                <!-- ViewModel/Model에 HasErrors(bool)가 있다고 가정 -->
+                <DataTrigger Binding="{Binding HasErrors}" Value="True">
+                    <Setter Property="Background" Value="#FFFFE5E5"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ColorCode 셀 배경을 색상으로 칠하고 싶다면 사용 (선택) -->
+        <Style x:Key="ColorCellStyle" TargetType="DataGridCell">
+            <Setter Property="Background" Value="{Binding ColorCode}"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
-        <Label Content="Rarity Result"/>
+        <DataGrid ItemsSource="{Binding State.Results}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False"
+                  RowStyle="{StaticResource ErrorRowStyle}">
+            <DataGrid.Columns>
+
+                <!-- 1) Id (읽기전용) -->
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Id}"
+                                    IsReadOnly="True"
+                                    Width="80"/>
+
+                <!-- 2) Grade (편집가능) -->
+                <DataGridTextColumn Header="Grade"
+                                    Binding="{Binding Grade, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
+                                    Width="120"/>
+
+                <!-- 3) ColorCode (편집가능 + 스와치 표시) -->
+                <DataGridTemplateColumn Header="ColorCode" Width="200">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- 색상 스와치 -->
+                                <Border Width="18" Height="18" CornerRadius="3"
+                                        BorderBrush="#33000000" BorderThickness="1"
+                                        Background="{Binding ColorCode}"/>
+                                <!-- 코드 텍스트 (읽기/쓰기) -->
+                                <TextBlock Text="{Binding ColorCode}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="18" Height="18" CornerRadius="3"
+                                        BorderBrush="#33000000" BorderThickness="1"
+                                        Background="{Binding ColorCode}"/>
+                                <TextBox Text="{Binding ColorCode, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
+                                         MinWidth="120"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- 4) RowVersion (읽기전용) -->
+                <DataGridTextColumn Header="RowVersion"
+                                    Binding="{Binding RowVersionBase64}"
+                                    IsReadOnly="True"
+                                    Width="*"/>
+
+                <!-- 5) IsDirty (아이콘으로만 표시, 편집 불가) -->
+                <DataGridTemplateColumn Header=" " Width="40" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <!-- 더티면 ● 보이기 -->
+                            <TextBlock Text="●" FontSize="14"
+                                       Foreground="#FFCC8800"
+                                       HorizontalAlignment="Center"
+                                       Visibility="{Binding IsDirty, Converter={StaticResource BoolToVisibilityConverter}}"
+                                       ToolTip="Unsaved changes"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>
