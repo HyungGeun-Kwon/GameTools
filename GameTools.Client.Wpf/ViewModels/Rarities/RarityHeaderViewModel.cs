@@ -18,9 +18,9 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         : ObservableObject, IRegionViewModel
     {
         [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
-        public async Task RaritySearch(CancellationToken token)
+        public async Task RaritySearch(CancellationToken ct)
         {
-            var result = await getAllRaritiesUseCase.Handle(token);
+            var result = await getAllRaritiesUseCase.Handle(ct);
             raritySearchState.ReplaceResults(result.ToEditModels());
         }
 
