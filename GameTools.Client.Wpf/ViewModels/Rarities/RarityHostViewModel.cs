@@ -9,7 +9,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
     {
         public void OnRegionActivated(Parameters? _)
         {
-            regionService.SetView(RegionNames.Rarity_SearchRegion, RegionViewNames.Rarity_SearchView);
+            regionService.SetView(RegionNames.Rarity_SearchRegion, RegionViewNames.Rarity_HeaderView);
             regionService.SetView(RegionNames.Rarity_ResultRegion, RegionViewNames.Rarity_ResultView);
         }
 

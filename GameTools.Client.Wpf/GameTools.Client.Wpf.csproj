@@ -10,8 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="DotNetHelper.Logger" Version="1.0.3-g3c7f236d4b" />
-    <PackageReference Include="DotNetHelper.MsDiKit" Version="1.2.0-gba07c83c96" />
+    <PackageReference Include="DotNetHelper.MsDiKit" Version="1.4.0-ga8c7cbce11" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.1-dev-02307" />

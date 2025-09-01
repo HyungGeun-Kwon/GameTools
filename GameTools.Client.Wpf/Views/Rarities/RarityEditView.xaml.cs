@@ -3,11 +3,11 @@
 namespace GameTools.Client.Wpf.Views.Rarities
 {
     /// <summary>
-    /// RaritySearchView.xaml에 대한 상호 작용 논리
+    /// RarityEditView.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class RaritySearchView : UserControl
+    public partial class RarityEditView : UserControl
     {
-        public RaritySearchView()
+        public RarityEditView()
         {
             InitializeComponent();
         }

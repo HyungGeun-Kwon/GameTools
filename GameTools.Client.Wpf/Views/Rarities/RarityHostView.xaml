@@ -14,6 +14,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Rarity_SearchRegion}"/>
-        <ContentControl Grid.Row="1" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Rarity_ResultRegion}"/>
+        <ContentControl Grid.Row="2" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Rarity_ResultRegion}"/>
     </Grid>
 </UserControl>

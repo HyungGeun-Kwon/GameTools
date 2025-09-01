@@ -5,9 +5,9 @@ namespace GameTools.Client.Wpf.Views.Items
     /// <summary>
     /// ItemSearchView.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class ItemSearchView : UserControl
+    public partial class ItemHeaderView : UserControl
     {
-        public ItemSearchView()
+        public ItemHeaderView()
         {
             InitializeComponent();
         }

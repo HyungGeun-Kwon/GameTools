@@ -10,7 +10,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
 
         public void OnRegionActivated(Parameters? _)
         {
-            regionService.SetView(RegionNames.Item_SearchRegion, RegionViewNames.Item_SearchView);
+            regionService.SetView(RegionNames.Item_SearchRegion, RegionViewNames.Item_HeaderView);
             regionService.SetView(RegionNames.Item_ResultRegion, RegionViewNames.Item_ResultView);
         }
         public void OnRegionDeactivated() { }

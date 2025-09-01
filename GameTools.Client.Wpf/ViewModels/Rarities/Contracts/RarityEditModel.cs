@@ -6,6 +6,10 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
 {
     public partial class RarityEditModel : ObservableValidator, IEditableObject
     {
+        private sealed record Snapshot(string Grade, string ColorCode);
+
+        private Snapshot? _isDirtyBaseline;
+
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required, MinLength(1)]
@@ -34,8 +38,8 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
         {
             Grade = string.Empty;
             ColorCode = "#A0A0A0";
-            IsDirty = true;
             ValidateAllProperties();
+            IsDirty = true;
         }
 
         /// <summary>
@@ -49,6 +53,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
             RowVersionBase64 = rowVersion;
 
             ValidateAllProperties();
+            ResetIsDirtyBaseline();
             IsDirty = false;
         }
 
@@ -59,7 +64,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
             {
                 Grade = normalized; return;
             }
-            IsDirty = true;
+            SetIsDirty();
         }
         partial void OnColorCodeChanged(string? oldValue, string newValue)
         {
@@ -68,35 +73,34 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
             {
                 ColorCode = normalized; return;
             }
-            IsDirty = true;
+            SetIsDirty();
         }
 
 
-        private Snapshot? _backup;
-        private sealed record Snapshot(string Grade, string ColorCode);
+        private Snapshot? _editBackup;
 
         public void BeginEdit()
         {
-            _backup ??= new Snapshot(Grade, ColorCode);
+            _editBackup ??= new Snapshot(Grade, ColorCode);
         }
 
         public void CancelEdit()
         {
-            if (_backup is null) return;
+            if (_editBackup is null) return;
 
             // 복원
-            Grade = _backup.Grade;
-            ColorCode = _backup.ColorCode;
+            Grade = _editBackup.Grade;
+            ColorCode = _editBackup.ColorCode;
 
-            _backup = null;
+            _editBackup = null;
 
             // 재검증
             ValidateAllProperties();
 
-            IsDirty = false;
+            SetIsDirty();
         }
 
-        public void EndEdit() => _backup = null;
+        public void EndEdit() => _editBackup = null;
 
         /// <summary>
         /// 수정 완료 시 반드시 호출
@@ -104,6 +108,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
         public void FinishEdit(string newRowVersion)
         {
             RowVersionBase64 = newRowVersion;
+            ResetIsDirtyBaseline();
             IsDirty = false;
         }
 
@@ -114,12 +119,25 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
         {
             Id = newId;
             RowVersionBase64 = newRowVersion;
+            ResetIsDirtyBaseline();
             IsDirty = false;
         }
 
         /// <summary>
         /// 저장 성공 후 Dirty 초기화
         /// </summary>
-        public void AcceptChanges() => IsDirty = false;
+        public void AcceptChanges()
+        {
+            ResetIsDirtyBaseline();
+            IsDirty = false;
+        }
+
+        private void SetIsDirty()
+            => IsDirty = _isDirtyBaseline is null
+                || !string.Equals(Grade, _isDirtyBaseline.Grade)
+                || !string.Equals(ColorCode, _isDirtyBaseline.ColorCode);
+
+        private void ResetIsDirtyBaseline()
+            => _isDirtyBaseline = new Snapshot(Grade, ColorCode);
     }
 }

@@ -8,8 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <localConverter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-
+        <localConverter:IsDirtyToBrushConverter x:Key="IsDirtyToBrushConverter"/>
         <!-- HasErrors == true 이면 행 배경을 연한 빨강으로 -->
         <Style x:Key="ErrorRowStyle" TargetType="DataGridRow">
             <Setter Property="ToolTip"
@@ -37,27 +36,25 @@
                   RowStyle="{StaticResource ErrorRowStyle}">
             <DataGrid.Columns>
 
-                <!-- 1) Id (읽기전용) -->
+                <!-- Id -->
                 <DataGridTextColumn Header="ID"
                                     Binding="{Binding Id}"
                                     IsReadOnly="True"
                                     Width="80"/>
 
-                <!-- 2) Grade (편집가능) -->
+                <!-- Grade -->
                 <DataGridTextColumn Header="Grade"
                                     Binding="{Binding Grade, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
                                     Width="120"/>
 
-                <!-- 3) ColorCode (편집가능 + 스와치 표시) -->
+                <!-- ColorCode -->
                 <DataGridTemplateColumn Header="ColorCode" Width="200">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <!-- 색상 스와치 -->
                                 <Border Width="18" Height="18" CornerRadius="3"
                                         BorderBrush="#33000000" BorderThickness="1"
                                         Background="{Binding ColorCode}"/>
-                                <!-- 코드 텍스트 (읽기/쓰기) -->
                                 <TextBlock Text="{Binding ColorCode}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </DataTemplate>
@@ -75,22 +72,33 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- 4) RowVersion (읽기전용) -->
+                <!-- RowVersion -->
                 <DataGridTextColumn Header="RowVersion"
                                     Binding="{Binding RowVersionBase64}"
                                     IsReadOnly="True"
                                     Width="*"/>
 
-                <!-- 5) IsDirty (아이콘으로만 표시, 편집 불가) -->
+                <!-- IsDirty -->
                 <DataGridTemplateColumn Header=" " Width="40" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <!-- 더티면 ● 보이기 -->
+                            <!-- 더티면 주황, 최신이면 초록색 -->
                             <TextBlock Text="●" FontSize="14"
-                                       Foreground="#FFCC8800"
-                                       HorizontalAlignment="Center"
-                                       Visibility="{Binding IsDirty, Converter={StaticResource BoolToVisibilityConverter}}"
-                                       ToolTip="Unsaved changes"/>
+                                       Foreground="{Binding IsDirty, Converter={StaticResource IsDirtyToBrushConverter}}"
+                                       HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <!-- 기본(최신/초록) -->
+                                        <Setter Property="ToolTip" Value="All changes saved"/>
+                                        <!-- 더티(주황) -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                                                <Setter Property="ToolTip" Value="Unsaved changes"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
