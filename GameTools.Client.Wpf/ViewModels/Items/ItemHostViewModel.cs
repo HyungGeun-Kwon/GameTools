@@ -7,7 +7,6 @@ namespace GameTools.Client.Wpf.ViewModels.Items
 {
     public sealed partial class ItemHostViewModel(IRegionService regionService) : ObservableObject, IRegionViewModel
     {
-
         public void OnRegionActivated(Parameters? _)
         {
             regionService.SetView(RegionNames.Item_SearchRegion, RegionViewNames.Item_HeaderView);

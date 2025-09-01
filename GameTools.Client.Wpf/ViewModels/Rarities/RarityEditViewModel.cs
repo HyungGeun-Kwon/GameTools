@@ -20,7 +20,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         [RelayCommand(
             IncludeCancelCommand = true,
             AllowConcurrentExecutions = false)]
-        public async Task SaveRarity(CancellationToken ct)
+        private async Task SaveRarityAsync(CancellationToken ct)
         {
             if (RarityEditModel.HasErrors)
             {
@@ -42,7 +42,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         }
 
         [RelayCommand]
-        public void CancelRarityEdit()
+        private void CancelRarityEdit()
         {
             if (SaveRarityCommand.IsRunning) { SaveRarityCancelCommand.Execute(null); }
             RequestClose?.Invoke(new DialogResult(ButtonResult.Cancel));

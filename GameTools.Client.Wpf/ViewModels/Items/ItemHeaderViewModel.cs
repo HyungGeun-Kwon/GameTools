@@ -4,7 +4,8 @@ using DotNetHelper.MsDiKit.RegionServices;
 
 namespace GameTools.Client.Wpf.ViewModels.Items
 {
-    public sealed partial class ItemHeaderViewModel : ObservableObject, IRegionViewModel
+    public sealed partial class ItemHeaderViewModel
+        : ObservableObject, IRegionViewModel
     {
         public void OnRegionActivated(Parameters? _)
         {

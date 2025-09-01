@@ -18,14 +18,14 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         : ObservableObject, IRegionViewModel
     {
         [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
-        public async Task RaritySearch(CancellationToken ct)
+        private async Task RaritySearchAsync(CancellationToken ct)
         {
             var result = await getAllRaritiesUseCase.Handle(ct);
             raritySearchState.ReplaceResults(result.ToEditModels());
         }
 
         [RelayCommand]
-        public void AddRarity()
+        private void AddRarity()
         {
             dialogService.ShowDialog(DialogViewNames.Rarity_EditDialog, null, RarityEditDialogClosed);
         }

@@ -8,7 +8,7 @@ namespace GameTools.Client.Wpf.ViewModels
     public partial class MainViewModel(IRegionService regionService) : ObservableObject
     {
         [RelayCommand]
-        public void Loaded()
+        private void Loaded()
         {
             regionService.SetView(RegionNames.Main_LeftNavigationRegion, RegionViewNames.Main_EntityNavigationView);
         }
