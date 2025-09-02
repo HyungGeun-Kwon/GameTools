@@ -5,7 +5,8 @@
         public const string Main_LeftNavigationRegion = "Shell.LeftNavigationRegion";
         public const string Main_MainContentRegion = "Shell.MainContentRegion";
         
-        public const string Item_SearchRegion = "Items.FilterRegion";
+        public const string Item_HeaderRegion = "Items.HeaderRegion";
+        public const string Item_SearchRegion = "Items.SearchRegion";
         public const string Item_ResultRegion = "Items.ResultRegion";
      
         public const string Rarity_SearchRegion = "Rarity.SearchRegion";

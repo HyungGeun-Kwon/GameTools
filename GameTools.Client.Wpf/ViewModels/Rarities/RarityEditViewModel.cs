@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.DialogServices;
 using GameTools.Client.Application.UseCases.Rarities.CreateRarity;
-using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
+using GameTools.Client.Wpf.Models.Rarities;
 using GameTools.Client.Wpf.ViewModels.Rarities.Mappers;
 using Serilog;
 
@@ -13,7 +13,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
     public partial class RarityEditViewModel(CreateRarityUseCase createRarityUseCase) : ObservableObject, IDialogViewModel
     {
         [ObservableProperty]
-        private RarityEditModel _rarityEditModel = new();
+        private RarityCreateModel _rarityCreateModel = new();
 
         public event Action<IDialogResult>? RequestClose;
 
@@ -22,7 +22,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
             AllowConcurrentExecutions = false)]
         private async Task SaveRarityAsync(CancellationToken ct)
         {
-            if (RarityEditModel.HasErrors)
+            if (RarityCreateModel.HasErrors)
             {
                 MessageBox.Show("Please check the input values.", "Warning");
                 return;
@@ -30,7 +30,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
 
             try
             {
-                await createRarityUseCase.Handle(RarityEditModel.ToCreateRarityInput(), ct);
+                await createRarityUseCase.Handle(RarityCreateModel.ToCreateRarityInput(), ct);
                 RequestClose?.Invoke(new DialogResult(ButtonResult.OK));
             }
             catch (OperationCanceledException) { }

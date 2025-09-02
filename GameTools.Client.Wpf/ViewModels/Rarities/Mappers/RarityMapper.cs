@@ -2,6 +2,7 @@
 using GameTools.Client.Application.UseCases.Rarities.DeleteRarity;
 using GameTools.Client.Application.UseCases.Rarities.UpdateRarity;
 using GameTools.Client.Domain.Rarities;
+using GameTools.Client.Wpf.Models.Rarities;
 using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
 
 namespace GameTools.Client.Wpf.ViewModels.Rarities.Mappers
@@ -11,14 +12,8 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Mappers
         public static RarityEditModel ToEditModel(this Rarity rarity)
             => new(rarity.Id, rarity.Grade, rarity.ColorCode, rarity.RowVersionBase64);
 
-        public static CreateRarityInput ToCreateRarityInput(this RarityEditModel rarityEditModel)
-        {
-            if (rarityEditModel.Id is not null || rarityEditModel.RowVersionBase64 is not null)
-            {
-                throw new InvalidOperationException("CreateRarityInput requires Id or RowVersionBase64 to be null.");
-            }
-            return new(rarityEditModel.Grade, rarityEditModel.ColorCode);
-        }
+        public static CreateRarityInput ToCreateRarityInput(this RarityCreateModel rarityEditModel)
+            => new(rarityEditModel.Grade, rarityEditModel.ColorCode);
 
         public static DeleteRarityInput ToDeleteRarityInput(this RarityEditModel rarityEditModel)
         {

@@ -1,26 +1,15 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
+using GameTools.Client.Wpf.Models.Rarities;
 
 namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
 {
-    public partial class RarityEditModel : ObservableValidator, IEditableObject
+    public sealed partial class RarityEditModel : RarityBaseModel, IEditableObject
     {
         private sealed record Snapshot(string Grade, string ColorCode);
 
         private Snapshot? _isDirtyBaseline;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [Required, MinLength(1)]
-        [MaxLength(32)]
-        private string _grade;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [Required]
-        [RegularExpression("^#[0-9A-F]{6}$", ErrorMessage = "Color must be '#RRGGBB' (uppercase).")]
-        private string _colorCode;
+        private Snapshot? _editBackup;
 
         [ObservableProperty]
         private bool _isDirty;
@@ -31,20 +20,6 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
         private byte? _id;
         public byte? Id { get => _id; private set => SetProperty(ref _id, value); }
 
-        /// <summary>
-        /// 신규 추가를 위한 생성자
-        /// </summary>
-        public RarityEditModel()
-        {
-            Grade = string.Empty;
-            ColorCode = "#A0A0A0";
-            ValidateAllProperties();
-            IsDirty = true;
-        }
-
-        /// <summary>
-        /// 기존 데이터를 위한 생성자
-        /// </summary>
         public RarityEditModel(byte id, string grade, string colorCode, string rowVersion)
         {
             Id = id;
@@ -56,28 +31,6 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
             ResetIsDirtyBaseline();
             IsDirty = false;
         }
-
-        partial void OnGradeChanged(string? oldValue, string newValue)
-        {
-            var normalized = newValue?.Trim() ?? string.Empty;
-            if (normalized != newValue)
-            {
-                Grade = normalized; return;
-            }
-            SetIsDirty();
-        }
-        partial void OnColorCodeChanged(string? oldValue, string newValue)
-        {
-            var normalized = newValue?.Trim().ToUpperInvariant() ?? string.Empty;
-            if (normalized != newValue)
-            {
-                ColorCode = normalized; return;
-            }
-            SetIsDirty();
-        }
-
-
-        private Snapshot? _editBackup;
 
         public void BeginEdit()
         {
@@ -102,22 +55,27 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
 
         public void EndEdit() => _editBackup = null;
 
+        public void RevertToSaved()
+        {
+            if (_isDirtyBaseline is null) return;
+
+            // 현재 편집 중이면 세션 취소
+            _editBackup = null;
+
+            // 마지막 저장 스냅샷으로 복원
+            Grade = _isDirtyBaseline.Grade;
+            ColorCode = _isDirtyBaseline.ColorCode;
+
+            // 재검증 + Dirty 재계산
+            ValidateAllProperties();
+            SetIsDirty();
+        }
+
         /// <summary>
         /// 수정 완료 시 반드시 호출
         /// </summary>
         public void FinishEdit(string newRowVersion)
         {
-            RowVersionBase64 = newRowVersion;
-            ResetIsDirtyBaseline();
-            IsDirty = false;
-        }
-
-        /// <summary>
-        /// 생성 완료 시 반드시 호출
-        /// </summary>
-        public void FinishCreate(byte newId, string newRowVersion)
-        {
-            Id = newId;
             RowVersionBase64 = newRowVersion;
             ResetIsDirtyBaseline();
             IsDirty = false;
@@ -130,6 +88,12 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
         {
             ResetIsDirtyBaseline();
             IsDirty = false;
+        }
+
+        protected override void AfterNormalizedChange(string propertyName, object? oldValue, object? newValue)
+        {
+            base.AfterNormalizedChange(propertyName, oldValue, newValue);
+            SetIsDirty();
         }
 
         private void SetIsDirty()

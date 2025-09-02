@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace GameTools.Client.Wpf.Common.State
 {
-    public sealed partial class SearchState<T> : ObservableObject, ISearchState<T>
+    public partial class SearchState<T> : ObservableObject, ISearchState<T>
     {
         private readonly ObservableCollection<T> _inner = [];
         public ReadOnlyObservableCollection<T> Results { get; }

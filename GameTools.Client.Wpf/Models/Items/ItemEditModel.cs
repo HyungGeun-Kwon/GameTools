@@ -1,35 +1,14 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
+using GameTools.Client.Wpf.Models.Items;
 
 namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
 {
-    public partial class ItemEditModel : ObservableValidator, IEditableObject
+    public sealed partial class ItemEditModel : ItemBaseModel, IEditableObject
     {
         private sealed record Snapshot(string Name, int Price, string? Description, byte RarityId);
 
         private Snapshot? _isDirtyBaseline;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [Required, MinLength(1)]
-        [MaxLength(100)]
-        private string _name = string.Empty;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [Range(0, int.MaxValue)]
-        private int _price;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [StringLength(500)]
-        private string? _description;
-
-        [ObservableProperty]
-        [NotifyDataErrorInfo]
-        [Range(1, byte.MaxValue, ErrorMessage = "Select a rarity.")]
-        private byte _rarityId;
 
         [ObservableProperty]
         private bool _isDirty;
@@ -48,10 +27,10 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
             Name = string.Empty;
             Price = 0;
             Description = null;
-            RarityId = 0; // 미선택 → 검증에서 실패 상태
+            RarityId = 0;
 
             ValidateAllProperties();
-            IsDirty = true; // 신규는 기본적으로 변경됨 상태
+            IsDirty = true;
         }
 
 
@@ -77,30 +56,6 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
             ResetIsDirtyBaseline();
             IsDirty = false;
         }
-
-        partial void OnNameChanged(string? oldValue, string newValue)
-        {
-            var normalized = (newValue ?? string.Empty).Trim();
-            if (!ReferenceEquals(newValue, normalized) && newValue != normalized)
-            {
-                Name = normalized; return;
-            }
-            SetIsDirty();
-        }
-
-        partial void OnPriceChanged(int oldValue, int newValue) => SetIsDirty();
-
-        partial void OnDescriptionChanged(string? oldValue, string? newValue)
-        {
-            var normalized = string.IsNullOrWhiteSpace(newValue) ? null : newValue!.Trim();
-            if (!Equals(newValue, normalized))
-            {
-                Description = normalized; return;
-            }
-            SetIsDirty();
-        }
-
-        partial void OnRarityIdChanged(byte oldValue, byte newValue) => SetIsDirty();
 
         private Snapshot? _editBackup;
 
@@ -128,6 +83,24 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
         }
 
         public void EndEdit() => _editBackup = null;
+
+        public void RevertToSaved()
+        {
+            if (_isDirtyBaseline is null) return;
+
+            // 현재 편집 중이면 세션 취소
+            _editBackup = null;
+
+            // 마지막 저장 스냅샷으로 복원
+            Name = _isDirtyBaseline.Name;
+            Price = _isDirtyBaseline.Price;
+            Description = _isDirtyBaseline.Description;
+            RarityId = _isDirtyBaseline.RarityId;
+
+            // 재검증 + Dirty 재계산
+            ValidateAllProperties();
+            SetIsDirty();
+        }
 
         /// <summary>
         /// 수정 완료 시 반드시 호출
@@ -157,6 +130,12 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
         {
             ResetIsDirtyBaseline();
             IsDirty = false;
+        }
+
+        protected override void AfterNormalizedChange(string propertyName, object? oldValue, object? newValue)
+        {
+            base.AfterNormalizedChange(propertyName, oldValue, newValue);
+            SetIsDirty();
         }
 
         private void SetIsDirty()

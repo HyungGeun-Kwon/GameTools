@@ -70,6 +70,7 @@ namespace GameTools.Client.Wpf
                     services.AddRegionService(() => _host.Services);
 
                     services.AddSingleton<ISearchState<RarityEditModel>, SearchState<RarityEditModel>>();
+                    services.AddSingleton<IItemPageSearchState, ItemPageSearchState>();
 
                     services.AddSingleton<MainViewModel>();
 
@@ -77,6 +78,7 @@ namespace GameTools.Client.Wpf
 
                     services.AddRegionView<ItemHostView, ItemHostViewModel>(RegionViewNames.Item_HostView);
                     services.AddRegionView<ItemHeaderView, ItemHeaderViewModel>(RegionViewNames.Item_HeaderView);
+                    services.AddRegionView<ItemSearchView, ItemSearchViewModel>(RegionViewNames.Item_SearchView);
                     services.AddRegionView<ItemResultView, ItemResultViewModel>(RegionViewNames.Item_ResultView);
 
                     services.AddRegionView<RarityHostView, RarityHostViewModel>(RegionViewNames.Rarity_HostView);

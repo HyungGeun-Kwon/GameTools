@@ -8,53 +8,45 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <localConverter:IsDirtyToBrushConverter x:Key="IsDirtyToBrushConverter"/>
-        <!-- HasErrors == true 이면 행 배경을 연한 빨강으로 -->
-        <Style x:Key="ErrorRowStyle" TargetType="DataGridRow">
-            <Setter Property="ToolTip"
-                    Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
-            <Style.Triggers>
-                <!-- ViewModel/Model에 HasErrors(bool)가 있다고 가정 -->
-                <DataTrigger Binding="{Binding HasErrors}" Value="True">
-                    <Setter Property="Background" Value="#FFFFE5E5"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- ColorCode 셀 배경을 색상으로 칠하고 싶다면 사용 (선택) -->
-        <Style x:Key="ColorCellStyle" TargetType="DataGridCell">
-            <Setter Property="Background" Value="{Binding ColorCode}"/>
-        </Style>
+        <ResourceDictionary>
+            <localConverter:IsDirtyToBrushConverter x:Key="IsDirtyToBrushConverter"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/GameTools.Client.Wpf;component/Resources/DataGridStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
-        <DataGrid ItemsSource="{Binding State.Results}"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  IsReadOnly="False"
-                  RowStyle="{StaticResource ErrorRowStyle}">
+        <DataGrid 
+            ItemsSource="{Binding State.Results}"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            IsReadOnly="False"
+            RowStyle="{StaticResource ErrorRowStyle}">
             <DataGrid.Columns>
 
                 <!-- Id -->
-                <DataGridTextColumn Header="ID"
-                                    Binding="{Binding Id}"
-                                    IsReadOnly="True"
-                                    Width="80"/>
+                <DataGridTextColumn 
+                    Header="ID"
+                    Binding="{Binding Id}"
+                    IsReadOnly="True"
+                    Width="80"/>
 
                 <!-- Grade -->
-                <DataGridTextColumn Header="Grade"
-                                    Binding="{Binding Grade, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
-                                    Width="120"/>
+                <DataGridTextColumn 
+                    Header="Grade"
+                    Binding="{Binding Grade, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
+                    Width="120"/>
 
                 <!-- ColorCode -->
                 <DataGridTemplateColumn Header="ColorCode" Width="200">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Border Width="18" Height="18" CornerRadius="3"
-                                        BorderBrush="#33000000" BorderThickness="1"
-                                        Background="{Binding ColorCode}"/>
+                                <Border 
+                                    Width="18" Height="18" CornerRadius="3"
+                                    BorderBrush="#33000000" BorderThickness="1" Background="{Binding ColorCode}"/>
                                 <TextBlock Text="{Binding ColorCode}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </DataTemplate>
@@ -62,30 +54,33 @@
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Border Width="18" Height="18" CornerRadius="3"
-                                        BorderBrush="#33000000" BorderThickness="1"
-                                        Background="{Binding ColorCode}"/>
-                                <TextBox Text="{Binding ColorCode, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
-                                         MinWidth="120"/>
+                                <Border 
+                                    Width="18" Height="18" CornerRadius="3"
+                                    BorderBrush="#33000000" BorderThickness="1" Background="{Binding ColorCode}"/>
+                                <TextBox 
+                                    Text="{Binding ColorCode, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
+                                    MinWidth="120"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
                 <!-- RowVersion -->
-                <DataGridTextColumn Header="RowVersion"
-                                    Binding="{Binding RowVersionBase64}"
-                                    IsReadOnly="True"
-                                    Width="*"/>
+                <DataGridTextColumn 
+                    Header="RowVersion"
+                    Binding="{Binding RowVersionBase64}"
+                    IsReadOnly="True"
+                    Width="*"/>
 
                 <!-- IsDirty -->
                 <DataGridTemplateColumn Header=" " Width="40" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <!-- 더티면 주황, 최신이면 초록색 -->
-                            <TextBlock Text="●" FontSize="14"
-                                       Foreground="{Binding IsDirty, Converter={StaticResource IsDirtyToBrushConverter}}"
-                                       HorizontalAlignment="Center">
+                            <TextBlock 
+                                Text="●" FontSize="14"
+                                Foreground="{Binding IsDirty, Converter={StaticResource IsDirtyToBrushConverter}}"
+                                HorizontalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <!-- 기본(최신/초록) -->
@@ -104,14 +99,14 @@
                 </DataGridTemplateColumn>
 
                 <!-- Actions -->
-                <DataGridTemplateColumn Width="150" IsReadOnly="True">
+                <DataGridTemplateColumn Width="180" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <!-- Update -->
                                 <Button 
                                     Content="Update"
-                                    Command="{Binding DataContext.UpdateRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Command="{Binding DataContext.UpdateRarityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}">
                                     <Button.Style>
                                         <Style TargetType="Button">
@@ -130,11 +125,30 @@
                                     </Button.Style>
                                 </Button>
 
+                                <!-- Revert (마지막 저장본으로 되돌리기) -->
+                                <Button 
+                                    Margin="10 0 0 0"
+                                    Content="Revert"
+                                    Command="{Binding DataContext.RevertRarityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <!-- 더티일 때만 활성화 -->
+                                                <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
                                 <!-- Delete -->
                                 <Button 
-                                    Margin="20 0 0 0"
+                                    Margin="10 0 0 0"
                                     Content="Delete"
-                                    Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Command="{Binding DataContext.DeleteRarityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}"/>
                             </StackPanel>
                         </DataTemplate>

@@ -16,13 +16,13 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         ISearchState<RarityEditModel> raritySearchState,
         GetAllRaritiesUseCase getAllRaritiesUseCase,
         UpdateRarityUseCase updateRarityUseCase,
-        DeleteRarityUseCase deleteRarityuseCase
+        DeleteRarityUseCase deleteRarityUseCase
         ) : ObservableObject, IRegionViewModel
     {
         public ISearchState<RarityEditModel> State => raritySearchState;
 
         [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
-        private async Task UpdateRowAsync(RarityEditModel? model, CancellationToken ct)
+        private async Task UpdateRarityAsync(RarityEditModel? model, CancellationToken ct)
         {
             if (model is null) return;
             if (model.HasErrors) return;
@@ -33,7 +33,6 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
             {
                 var newModel = await updateRarityUseCase.Handle(model.ToUpdateRarityInput(), ct);
 
-                model.AcceptChanges();
                 model.FinishEdit(newModel.RowVersionBase64);
             }
             finally
@@ -43,7 +42,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         }
 
         [RelayCommand(AllowConcurrentExecutions = false, IncludeCancelCommand = true)]
-        private async Task DeleteRowAsync(RarityEditModel? model, CancellationToken ct)
+        private async Task DeleteRarityAsync(RarityEditModel? model, CancellationToken ct)
         {
             if (model is null) return;
 
@@ -53,7 +52,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
             State.IsBusy = true;
             try
             {
-                await deleteRarityuseCase.Handle(model.ToDeleteRarityInput(), ct);
+                await deleteRarityUseCase.Handle(model.ToDeleteRarityInput(), ct);
 
                 var result = await getAllRaritiesUseCase.Handle(ct);
                 raritySearchState.ReplaceResults(result.ToEditModels());
@@ -62,6 +61,13 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
             {
                 State.IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        private void RevertRarity(RarityEditModel? model)
+        {
+            if (model is null) return;
+            model.RevertToSaved();
         }
 
         public void OnRegionActivated(Parameters? _) { }

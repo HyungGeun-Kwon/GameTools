@@ -6,6 +6,7 @@
 
         public const string Item_HostView = "Item.HostView";
         public const string Item_HeaderView = "Item.HeaderView";
+        public const string Item_SearchView = "Item.SearchView";
         public const string Item_ResultView = "Item.ResultView";
 
         public const string Rarity_HostView = "Rarity.HostView";
