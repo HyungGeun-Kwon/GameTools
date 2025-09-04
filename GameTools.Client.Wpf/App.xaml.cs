@@ -82,11 +82,12 @@ namespace GameTools.Client.Wpf
                     services.AddRegionView<ItemHeaderView, ItemHeaderViewModel>(RegionViewNames.Item_HeaderView);
                     services.AddRegionView<ItemSearchView, ItemSearchViewModel>(RegionViewNames.Item_SearchView);
                     services.AddRegionView<ItemResultView, ItemResultViewModel>(RegionViewNames.Item_ResultView);
+                    services.AddDialogView<ItemCreateView, ItemCreateViewModel>(DialogViewNames.Item_EditDialog);
 
                     services.AddRegionView<RarityHostView, RarityHostViewModel>(RegionViewNames.Rarity_HostView);
                     services.AddRegionView<RarityHeaderView, RarityHeaderViewModel>(RegionViewNames.Rarity_HeaderView);
                     services.AddRegionView<RarityResultView, RarityResultViewModel>(RegionViewNames.Rarity_ResultView);
-                    services.AddDialogView<RarityEditView, RarityEditViewModel>(DialogViewNames.Rarity_EditDialog);
+                    services.AddDialogView<RarityCreateView, RarityCreateViewModel>(DialogViewNames.Rarity_EditDialog);
 
                 }).Build();
 

@@ -7,6 +7,7 @@ using GameTools.Client.Application.UseCases.Items.GetItemsPage;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Wpf.Common.State;
+using GameTools.Client.Wpf.Models.Items;
 using GameTools.Client.Wpf.ViewModels.Items.Contracts;
 
 namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
@@ -18,6 +19,9 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
 
         public static IEnumerable<ItemEditModel> ToEditModels(this IEnumerable<Item>? items)
             => (items ?? []).Select(i => i.ToEditModel());
+
+        public static CreateItemInput ToCreateItemInput(this ItemCreateModel itemEditModel)
+            => new(itemEditModel.Name, itemEditModel.Price, itemEditModel.RarityId, itemEditModel.Description);
 
         public static PagedOutput<ItemEditModel> ToPagedItemEditModel(this PagedOutput<Item> pagedOutput)
             => new(pagedOutput.Items.ToEditModels().ToList(), pagedOutput.TotalCount, pagedOutput.PageNumber, pagedOutput.PageSize);

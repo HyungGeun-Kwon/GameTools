@@ -10,16 +10,14 @@ using Serilog;
 
 namespace GameTools.Client.Wpf.ViewModels.Rarities
 {
-    public partial class RarityEditViewModel(CreateRarityUseCase createRarityUseCase) : ObservableObject, IDialogViewModel
+    public partial class RarityCreateViewModel(CreateRarityUseCase createRarityUseCase) : ObservableObject, IDialogViewModel
     {
         [ObservableProperty]
         private RarityCreateModel _rarityCreateModel = new();
 
         public event Action<IDialogResult>? RequestClose;
 
-        [RelayCommand(
-            IncludeCancelCommand = true,
-            AllowConcurrentExecutions = false)]
+        [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
         private async Task SaveRarityAsync(CancellationToken ct)
         {
             if (RarityCreateModel.HasErrors)
@@ -42,7 +40,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         }
 
         [RelayCommand]
-        private void CancelRarityEdit()
+        private void CancelRarityCreate()
         {
             if (SaveRarityCommand.IsRunning) { SaveRarityCancelCommand.Execute(null); }
             RequestClose?.Invoke(new DialogResult(ButtonResult.Cancel));

@@ -29,9 +29,6 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         [ObservableProperty]
         private RarityLookupViewModel _rarityLookup = rarityLookupViewModel;
 
-        public ObservableCollection<RarityOptionModel> RarityOptions { get; } = [];
-
-
         [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
         private async Task GetItemsAsync(CancellationToken ct)
         {
