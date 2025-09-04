@@ -13,7 +13,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_HeaderRegion}"/>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_HeaderRegion}"/>
+        </ScrollViewer>
         <ContentControl Grid.Row="1" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_ResultRegion}"/>
     </Grid>
 </UserControl>

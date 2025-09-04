@@ -72,6 +72,8 @@ namespace GameTools.Client.Wpf
                     services.AddSingleton<ISearchState<RarityEditModel>, SearchState<RarityEditModel>>();
                     services.AddSingleton<IItemPageSearchState, ItemPageSearchState>();
 
+                    services.AddTransient<RarityLookupViewModel>();
+
                     services.AddSingleton<MainViewModel>();
 
                     services.AddRegionView<EntityNavigationView, EntityNavigationViewModel>(RegionViewNames.Main_EntityNavigationView);

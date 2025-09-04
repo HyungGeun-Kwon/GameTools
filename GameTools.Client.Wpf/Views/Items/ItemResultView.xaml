@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Items"
              xmlns:localConverter="clr-namespace:GameTools.Client.Wpf.Common.Converters"
+             xmlns:userControl="clr-namespace:GameTools.Client.Wpf.Views.Shared"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -47,9 +48,18 @@
                     Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
 
                 <!-- Rarity -->
-                <DataGridTextColumn 
-                    Header="Rarity"
-                    Binding="{Binding RarityId, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
+                <DataGridTemplateColumn Header="Rarity">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <userControl:RarityFilterControl
+                                VerticalAlignment="Center"
+                                RarityLookup="{Binding DataContext.RarityLookup, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                SelectedRaityId="{Binding RarityId, UpdateSourceTrigger=LostFocus}"
+                                ShowErrorMessage="True"
+                                ShowRetryIfError="True"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
                 <!-- RowVersion -->
                 <DataGridTextColumn 

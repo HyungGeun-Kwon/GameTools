@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.RegionServices;
@@ -6,13 +7,15 @@ using GameTools.Client.Application.Common.Paging;
 using GameTools.Client.Application.UseCases.Items.GetItemsPage;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Wpf.Common.State;
+using GameTools.Client.Wpf.Models.Lookups;
 using GameTools.Client.Wpf.ViewModels.Items.Mappers;
 
 namespace GameTools.Client.Wpf.ViewModels.Items
 {
     public partial class ItemSearchViewModel(
         IItemPageSearchState itemPageSearchState,
-        GetItemsPageUseCase getItemsPageUseCase
+        GetItemsPageUseCase getItemsPageUseCase,
+        RarityLookupViewModel rarityLookupViewModel
         ) : ObservableObject, IRegionViewModel
     {
         [ObservableProperty]
@@ -23,6 +26,10 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         private string? _nameFilter;
         [ObservableProperty]
         private byte? _rarityIdFilter;
+        [ObservableProperty]
+        private RarityLookupViewModel _rarityLookup = rarityLookupViewModel;
+
+        public ObservableCollection<RarityOptionModel> RarityOptions { get; } = [];
 
 
         [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
@@ -41,7 +48,9 @@ namespace GameTools.Client.Wpf.ViewModels.Items
             return new(pagination, itemFilter);
         }
 
-        public void OnRegionActivated(Parameters? parameters) { }
+        public async void OnRegionActivated(Parameters? parameters)
+            => await RarityLookup.LoadCommand.ExecuteAsync(null);
+
         public void OnRegionDeactivated() { }
     }
 }

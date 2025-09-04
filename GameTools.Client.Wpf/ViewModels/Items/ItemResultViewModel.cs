@@ -16,9 +16,13 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         IItemPageSearchState itemPagedSearchState,
         GetItemsPageUseCase getItemsPageUseCase,
         UpdateItemUseCase updateItemUseCase,
-        DeleteItemUseCase deleteItemUseCase
+        DeleteItemUseCase deleteItemUseCase,
+        RarityLookupViewModel rarityLookupViewModel
         ) : ObservableObject, IRegionViewModel
     {
+        [ObservableProperty]
+        private RarityLookupViewModel _rarityLookup = rarityLookupViewModel;
+
         public IItemPageSearchState PageState => itemPagedSearchState;
 
         [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
@@ -70,7 +74,8 @@ namespace GameTools.Client.Wpf.ViewModels.Items
             model.RevertToSaved();
         }
 
-        public void OnRegionActivated(Parameters? _) { }
+        public async void OnRegionActivated(Parameters? _)
+            => await RarityLookup.LoadCommand.ExecuteAsync(null);
 
         public void OnRegionDeactivated() { }
     }
