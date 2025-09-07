@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Items"
-             xmlns:userControl="clr-namespace:GameTools.Client.Wpf.Views.Shared"
-             mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="800">
+             xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemSearchViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
     <StackPanel Orientation="Horizontal">
         <Label VerticalContentAlignment="Center" Content="Page number : "/>
         <TextBox Text="{Binding SearchPageNumber}" Width="50" VerticalAlignment="Center"/>
@@ -23,7 +24,7 @@
             FontSize="15" 
             VerticalAlignment="Center"
             Command="{Binding RarityLookup.LoadCommand}"/>
-        <userControl:RarityFilterControl 
+        <controls:RarityFilterControl 
             VerticalAlignment="Center"
             RarityLookup="{Binding RarityLookup}" 
             SelectedRaityId="{Binding RarityIdFilter, UpdateSourceTrigger=PropertyChanged}"
@@ -31,6 +32,5 @@
             ShowRetryIfError="False"
             UseAllOptions="True"/>
         <Button Margin="20 10 0 10" Width="100" Content="Search" Command="{Binding GetItemsCommand}"/>
-        <Button Margin="20 10 0 10" Width="100" Content="Cancel" Command="{Binding GetItemsCancelCommand}"/>
     </StackPanel>
 </UserControl>

@@ -14,11 +14,11 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
         [ObservableProperty]
         private bool _isDirty;
 
-        private string? _rowVersion;
-        public string? RowVersionBase64 { get => _rowVersion; private set => SetProperty(ref _rowVersion, value); }
+        [ObservableProperty]
+        public partial string? RowVersionBase64 { get; private set; }
 
-        private byte? _id;
-        public byte? Id { get => _id; private set => SetProperty(ref _id, value); }
+        [ObservableProperty]
+        public partial byte? Id { get; private set; }
 
         public RarityEditModel(byte id, string grade, string colorCode, string rowVersion)
         {

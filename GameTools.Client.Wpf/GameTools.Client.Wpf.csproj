@@ -28,4 +28,7 @@
   	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   	</None>
   </ItemGroup>
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
 </Project>

@@ -11,6 +11,7 @@ namespace GameTools.Client.Wpf.ViewModels
         private void Loaded()
         {
             regionService.SetView(RegionNames.Main_LeftNavigationRegion, RegionViewNames.Main_EntityNavigationView);
+
         }
     }
 }

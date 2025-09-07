@@ -8,6 +8,12 @@ namespace GameTools.Client.Wpf.Common.State
         int TotalPageNumber { get; }
         int PageSize { get; }
         int TotalCount { get; }
+
+        int StartIndex { get; }
+        int EndIndex { get; }
+        bool HasPreview { get; }
+        bool HasNext { get; }
+
         void ReplacePageResults(PagedOutput<T> page);
     }
 }

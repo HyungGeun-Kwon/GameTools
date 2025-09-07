@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using DotNetHelper.MsDiKit.Extensions;
 using GameTools.Client.Application.Extensions;
 using GameTools.Client.Infrastructure.Extensions;
+using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels;
@@ -71,6 +72,8 @@ namespace GameTools.Client.Wpf
 
                     services.AddSingleton<ISearchState<RarityEditModel>, SearchState<RarityEditModel>>();
                     services.AddSingleton<IItemPageSearchState, ItemPageSearchState>();
+                    services.AddSingleton<IItemsQueryCoordinator, ItemsQueryCoordinator>();
+                    services.AddSingleton<IItemsCommandCoordinator, ItemsCommandCoordinator>();
 
                     services.AddTransient<RarityLookupViewModel>();
 
@@ -82,6 +85,7 @@ namespace GameTools.Client.Wpf
                     services.AddRegionView<ItemHeaderView, ItemHeaderViewModel>(RegionViewNames.Item_HeaderView);
                     services.AddRegionView<ItemSearchView, ItemSearchViewModel>(RegionViewNames.Item_SearchView);
                     services.AddRegionView<ItemResultView, ItemResultViewModel>(RegionViewNames.Item_ResultView);
+                    services.AddRegionView<ItemPagingView, ItemPagingViewModel>(RegionViewNames.Item_PagingView);
                     services.AddDialogView<ItemCreateView, ItemCreateViewModel>(DialogViewNames.Item_EditDialog);
 
                     services.AddRegionView<RarityHostView, RarityHostViewModel>(RegionViewNames.Rarity_HostView);

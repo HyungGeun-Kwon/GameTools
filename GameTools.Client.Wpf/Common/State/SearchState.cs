@@ -7,10 +7,8 @@ namespace GameTools.Client.Wpf.Common.State
     {
         private readonly ObservableCollection<T> _inner = [];
         public ReadOnlyObservableCollection<T> Results { get; }
+        public BusyState BusyState { get; } = new();
         public SearchState() => Results = new(_inner);
-
-        [ObservableProperty]
-        private bool _isBusy;
 
         [ObservableProperty]
         private Exception? _error;

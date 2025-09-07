@@ -13,11 +13,11 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
         [ObservableProperty]
         private bool _isDirty;
 
-        private string? _rowVersion;
-        public string? RowVersionBase64 { get => _rowVersion; private set => SetProperty(ref _rowVersion, value); }
+        [ObservableProperty]
+        public partial string? RowVersionBase64 { get; private set; }
 
-        private int? _id;
-        public int? Id { get => _id; private set => SetProperty(ref _id, value); }
+        [ObservableProperty]
+        public partial int? Id { get; private set; }
 
         /// <summary>
         /// 신규 추가를 위한 생성자

@@ -5,6 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Rarities"
              xmlns:localConverter="clr-namespace:GameTools.Client.Wpf.Common.Converters"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Rarities"
+             xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
+             d:DataContext="{d:DesignInstance Type=viewModels:RarityResultViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -156,5 +159,10 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <controls:BusyOverlay
+            IsActive="{Binding State.IsBusy}"
+            ShowCancel="True"
+            IsHitTestVisible="True"/>
+
     </Grid>
 </UserControl>

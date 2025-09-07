@@ -1,20 +1,13 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.RegionServices;
-using GameTools.Client.Application.Common.Paging;
-using GameTools.Client.Application.UseCases.Items.GetItemsPage;
-using GameTools.Client.Domain.Items;
-using GameTools.Client.Wpf.Common.State;
-using GameTools.Client.Wpf.Models.Lookups;
-using GameTools.Client.Wpf.ViewModels.Items.Mappers;
+using GameTools.Client.Wpf.Common.Coordinators.Items;
 
 namespace GameTools.Client.Wpf.ViewModels.Items
 {
     public partial class ItemSearchViewModel(
-        IItemPageSearchState itemPageSearchState,
-        GetItemsPageUseCase getItemsPageUseCase,
+        IItemsQueryCoordinator itemsQueryCoordinator,
         RarityLookupViewModel rarityLookupViewModel
         ) : ObservableObject, IRegionViewModel
     {
@@ -26,24 +19,12 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         private string? _nameFilter;
         [ObservableProperty]
         private byte? _rarityIdFilter;
-        [ObservableProperty]
-        private RarityLookupViewModel _rarityLookup = rarityLookupViewModel;
 
-        [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
-        private async Task GetItemsAsync(CancellationToken ct)
-        {
-            PagedOutput<Item> itemPageOutput = await getItemsPageUseCase.Handle(GetItemsPageInput(), ct);
-            
-            itemPageSearchState.ReplacePageResults(itemPageOutput.ToPagedItemEditModel());
-            itemPageSearchState.ReplaceFilter(NameFilter, RarityIdFilter);
-        }
+        public RarityLookupViewModel RarityLookup => rarityLookupViewModel;
 
-        private GetItemsPageInput GetItemsPageInput()
-        {
-            var pagination = new Pagination(SearchPageNumber, SearchPageSize);
-            var itemFilter = new ItemSearchFilter(NameFilter, RarityIdFilter);
-            return new(pagination, itemFilter);
-        }
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private Task GetItemsAsync()
+            => itemsQueryCoordinator.SearchWithFilterAsync(SearchPageNumber, SearchPageSize, NameFilter, RarityIdFilter);
 
         public async void OnRegionActivated(Parameters? parameters)
             => await RarityLookup.LoadCommand.ExecuteAsync(null);

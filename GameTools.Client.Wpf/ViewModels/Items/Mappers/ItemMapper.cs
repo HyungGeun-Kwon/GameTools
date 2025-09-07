@@ -33,6 +33,13 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
                 new(itemPageSearchState.NameFilter, itemPageSearchState.RarityIdFilter)
             );
 
+        public static GetItemsPageInput GetItemPageInputFromNewPage(this IItemPageSearchState itemPageSearchState, int page)
+            => new
+            (
+                new(page, itemPageSearchState.PageSize),
+                new(itemPageSearchState.NameFilter, itemPageSearchState.RarityIdFilter)
+            );
+
         public static CreateItemInput ToCreateItemInput(this ItemEditModel itemEditModel)
         {
             if (itemEditModel.Id is not null || itemEditModel.RowVersionBase64 is not null)
@@ -52,7 +59,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
             {
                 throw new ArgumentNullException(nameof(itemEditModel), "DeleteItemInput requires a valid RowVersionBase64.");
             }
-            return new((byte)itemEditModel.Id, itemEditModel.RowVersionBase64);
+            return new((int)itemEditModel.Id, itemEditModel.RowVersionBase64);
         }
 
         public static UpdateItemInput ToUpdateItemInput(this ItemEditModel itemEditModel)

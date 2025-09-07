@@ -3,24 +3,20 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.DialogServices;
-using GameTools.Client.Application.UseCases.Items.CreateItem;
+using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Models.Items;
 using Serilog;
-using GameTools.Client.Wpf.ViewModels.Items.Mappers;
-
 
 namespace GameTools.Client.Wpf.ViewModels.Items
 {
     public partial class ItemCreateViewModel(
-        CreateItemUseCase createItemUseCase,
+        IItemsCommandCoordinator itemsCommandCoordinator,
         RarityLookupViewModel rarityLookupViewModel
         ) : ObservableObject, IDialogViewModel
     {
-        [ObservableProperty]
-        private RarityLookupViewModel _rarityLookup = rarityLookupViewModel;
+        public RarityLookupViewModel RarityLookup => rarityLookupViewModel;
 
-        [ObservableProperty]
-        private ItemCreateModel _itemCreateModel = new();
+        public ItemCreateModel ItemCreateModel { get; } = new();
 
         public event Action<IDialogResult>? RequestClose;
 
@@ -35,7 +31,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
 
             try
             {
-                await createItemUseCase.Handle(ItemCreateModel.ToCreateItemInput(), ct);
+                await itemsCommandCoordinator.CreateAsync(ItemCreateModel, true, ct);
                 RequestClose?.Invoke(new DialogResult(ButtonResult.OK));
             }
             catch (OperationCanceledException) { }

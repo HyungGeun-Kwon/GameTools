@@ -3,26 +3,19 @@ using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.DialogServices;
 using DotNetHelper.MsDiKit.RegionServices;
-using GameTools.Client.Application.UseCases.Rarities.GetAllRarities;
+using GameTools.Client.Wpf.Common.Coordinators.Rarities;
 using GameTools.Client.Wpf.Common.Names;
-using GameTools.Client.Wpf.Common.State;
-using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
-using GameTools.Client.Wpf.ViewModels.Rarities.Mappers;
 
 namespace GameTools.Client.Wpf.ViewModels.Rarities
 {
     public sealed partial class RarityHeaderViewModel(
         IDialogService dialogService,
-        ISearchState<RarityEditModel> raritySearchState,
-        GetAllRaritiesUseCase getAllRaritiesUseCase)
-        : ObservableObject, IRegionViewModel
+        IRaritiesQueryCoordinator raritiesQueryCoordinator
+        ) : ObservableObject, IRegionViewModel
     {
-        [RelayCommand(IncludeCancelCommand = true, AllowConcurrentExecutions = false)]
-        private async Task RaritySearchAsync(CancellationToken ct)
-        {
-            var result = await getAllRaritiesUseCase.Handle(ct);
-            raritySearchState.ReplaceResults(result.ToEditModels());
-        }
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private Task RaritySearchAsync()
+            => raritiesQueryCoordinator.SearchAllAsync();
 
         [RelayCommand]
         private void AddRarity()
@@ -34,14 +27,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
         {
             if (result?.ButtonResult != ButtonResult.OK) return;
 
-            try
-            {
-                if (RaritySearchCommand.IsRunning)
-                    RaritySearchCancelCommand.Execute(null);
-
-                await RaritySearchCommand.ExecuteAsync(null); // 추가했다면 업데이트
-            }
-            catch (OperationCanceledException) { }
+            await raritiesQueryCoordinator.SearchAllAsync();
         }
 
         public void OnRegionActivated(Parameters? _) { }

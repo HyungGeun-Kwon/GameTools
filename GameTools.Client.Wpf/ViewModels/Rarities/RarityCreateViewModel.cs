@@ -3,17 +3,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.DialogServices;
-using GameTools.Client.Application.UseCases.Rarities.CreateRarity;
+using GameTools.Client.Wpf.Common.Coordinators.Rarities;
 using GameTools.Client.Wpf.Models.Rarities;
-using GameTools.Client.Wpf.ViewModels.Rarities.Mappers;
 using Serilog;
 
 namespace GameTools.Client.Wpf.ViewModels.Rarities
 {
-    public partial class RarityCreateViewModel(CreateRarityUseCase createRarityUseCase) : ObservableObject, IDialogViewModel
+    public partial class RarityCreateViewModel(IRaritiesCommandCoordinator raritiesCommandCoordinator) : ObservableObject, IDialogViewModel
     {
-        [ObservableProperty]
-        private RarityCreateModel _rarityCreateModel = new();
+        public RarityCreateModel RarityCreateModel { get; } = new();
 
         public event Action<IDialogResult>? RequestClose;
 
@@ -28,7 +26,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
 
             try
             {
-                await createRarityUseCase.Handle(RarityCreateModel.ToCreateRarityInput(), ct);
+                await raritiesCommandCoordinator.CreateAsync(RarityCreateModel, true, ct);
                 RequestClose?.Invoke(new DialogResult(ButtonResult.OK));
             }
             catch (OperationCanceledException) { }

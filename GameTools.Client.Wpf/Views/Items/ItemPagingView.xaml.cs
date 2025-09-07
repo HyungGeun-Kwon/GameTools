@@ -3,11 +3,11 @@
 namespace GameTools.Client.Wpf.Views.Items
 {
     /// <summary>
-    /// ItemHeaderView.xaml에 대한 상호 작용 논리
+    /// ItemPagingView.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class ItemHeaderView : UserControl
+    public partial class ItemPagingView : UserControl
     {
-        public ItemHeaderView()
+        public ItemPagingView()
         {
             InitializeComponent();
         }

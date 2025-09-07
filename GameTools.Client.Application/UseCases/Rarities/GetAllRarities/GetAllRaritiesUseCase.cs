@@ -5,7 +5,7 @@ namespace GameTools.Client.Application.UseCases.Rarities.GetAllRarities
 {
     public sealed class GetAllRaritiesUseCase(IRarityGateway gateway)
     {
-        public async Task<IReadOnlyList<Rarity>> Handle(CancellationToken ct)
-            => await gateway.GetAllRaritiesAsync(ct);
+        public Task<IReadOnlyList<Rarity>> Handle(CancellationToken ct)
+            => gateway.GetAllRaritiesAsync(ct);
     }
 }

@@ -6,16 +6,34 @@
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Items"
              xmlns:region="clr-namespace:DotNetHelper.MsDiKit.RegionServices;assembly=DotNetHelper.MsDiKit"
              xmlns:name="clr-namespace:GameTools.Client.Wpf.Common.Names"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items"
+             xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemHostViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
             <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_HeaderRegion}"/>
         </ScrollViewer>
         <ContentControl Grid.Row="1" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_ResultRegion}"/>
+        <ContentControl Grid.Row="2" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_PagingRegion}"/>
+
+        <controls:BusyOverlay
+            Grid.RowSpan="100"
+            IsActive="{Binding ItemPageSearchState.BusyState.QueryBusy}"
+            ShowCancel="True"
+            IsHitTestVisible="True"
+            CancelCommand="{Binding QueryCancelCommand}"/>
+
+        <controls:BusyOverlay
+            Grid.RowSpan="100"
+            IsActive="{Binding ItemPageSearchState.BusyState.CommandBusy}"
+            IsHitTestVisible="True"
+            CancelCommand="{Binding CommandCancelCommand}"/>
     </Grid>
 </UserControl>

@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Items"
-             xmlns:userConrol="clr-namespace:GameTools.Client.Wpf.Views.Shared"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemCreateViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d" >
     <StackPanel Margin="20" Width="320">
         <TextBlock Text="Name"/>
         <TextBox Text="{Binding ItemCreateModel.Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"/>
@@ -19,7 +20,7 @@
 
         <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
             <TextBlock Text="RarityID : "/>
-            <userConrol:RarityFilterControl
+            <controls:RarityFilterControl
                 RarityLookup="{Binding RarityLookup}"
                 SelectedRaityId="{Binding ItemCreateModel.RarityId, UpdateSourceTrigger=PropertyChanged}"
                 ShowErrorMessage="True"

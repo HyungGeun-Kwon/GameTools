@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Navigations"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Navigations"
+             d:DataContext="{d:DesignInstance Type=viewModels:EntityNavigationViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="240">
     <Grid>

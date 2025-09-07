@@ -5,7 +5,7 @@ namespace GameTools.Client.Application.UseCases.Rarities.GetRarityById
 {
     public sealed class GetRarityByIdUseCase(IRarityGateway gateway)
     {
-        public async Task<Rarity?> Handle(byte id, CancellationToken ct)
-            => await gateway.GetByIdAsync(id, ct);
+        public Task<Rarity?> Handle(byte id, CancellationToken ct)
+            => gateway.GetByIdAsync(id, ct);
     }
 }
