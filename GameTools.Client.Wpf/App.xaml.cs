@@ -7,6 +7,7 @@ using DotNetHelper.MsDiKit.Extensions;
 using GameTools.Client.Application.Extensions;
 using GameTools.Client.Infrastructure.Extensions;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
+using GameTools.Client.Wpf.Common.Coordinators.Rarities;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels;
@@ -71,6 +72,9 @@ namespace GameTools.Client.Wpf
                     services.AddRegionService(() => _host.Services);
 
                     services.AddSingleton<ISearchState<RarityEditModel>, SearchState<RarityEditModel>>();
+                    services.AddSingleton<IRaritiesQueryCoordinator, RaritiesQueryCoordinator>();
+                    services.AddSingleton<IRaritiesCommandCoordinator, RaritiesCommandCoordinator>();
+
                     services.AddSingleton<IItemPageSearchState, ItemPageSearchState>();
                     services.AddSingleton<IItemsQueryCoordinator, ItemsQueryCoordinator>();
                     services.AddSingleton<IItemsCommandCoordinator, ItemsCommandCoordinator>();
