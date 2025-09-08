@@ -29,6 +29,6 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         public async void OnRegionActivated(Parameters? parameters)
             => await RarityLookup.LoadCommand.ExecuteAsync(null);
 
-        public void OnRegionDeactivated() { }
+        public void OnRegionDeactivated() => RarityLookup.LoadCancelCommand.Execute(null);
     }
 }

@@ -49,7 +49,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
             RequestClose?.Invoke(new DialogResult(ButtonResult.Cancel));
         }
 
-        public void OnDialogClosed() { }
+        public void OnDialogClosed() => RarityLookup.LoadCancelCommand.Execute(null);
         public async void OnDialogOpened(Parameters? parameters)
             => await RarityLookup.LoadCommand.ExecuteAsync(null);
     }
