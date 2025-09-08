@@ -13,8 +13,8 @@
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
             <ContentControl Margin="10 10 10 0" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_SearchRegion}"/>
         </ScrollViewer>
-        <StackPanel Orientation="Horizontal">
-            <Button Margin="10" Width="100" Content="Add Item" Command="{Binding AddItemCommand}"/>
-        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ContentControl Margin="10 0 10 10" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_CommandRegion}"/>
+        </ScrollViewer>
     </StackPanel>
 </UserControl>

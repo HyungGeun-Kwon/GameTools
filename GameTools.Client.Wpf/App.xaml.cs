@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.IO;
+using System.Net.Http;
 using System.Security.Authentication;
 using System.Text.Json;
 using System.Windows;
@@ -8,6 +9,7 @@ using GameTools.Client.Application.Extensions;
 using GameTools.Client.Infrastructure.Extensions;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Coordinators.Rarities;
+using GameTools.Client.Wpf.Common.FilePickers;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels;
@@ -71,6 +73,8 @@ namespace GameTools.Client.Wpf
                     services.AddDialogService();
                     services.AddRegionService(() => _host.Services);
 
+                    services.AddTransient<IFilePickerService, FilePickerService>();
+
                     services.AddSingleton<ISearchState<RarityEditModel>, SearchState<RarityEditModel>>();
                     services.AddSingleton<IRaritiesQueryCoordinator, RaritiesQueryCoordinator>();
                     services.AddSingleton<IRaritiesCommandCoordinator, RaritiesCommandCoordinator>();
@@ -87,6 +91,7 @@ namespace GameTools.Client.Wpf
 
                     services.AddRegionView<ItemHostView, ItemHostViewModel>(RegionViewNames.Item_HostView);
                     services.AddRegionView<ItemHeaderView, ItemHeaderViewModel>(RegionViewNames.Item_HeaderView);
+                    services.AddRegionView<ItemCommandView, ItemCommandViewModel>(RegionViewNames.Item_CommandView);
                     services.AddRegionView<ItemSearchView, ItemSearchViewModel>(RegionViewNames.Item_SearchView);
                     services.AddRegionView<ItemResultView, ItemResultViewModel>(RegionViewNames.Item_ResultView);
                     services.AddRegionView<ItemPagingView, ItemPagingViewModel>(RegionViewNames.Item_PagingView);
@@ -138,7 +143,7 @@ namespace GameTools.Client.Wpf
                 MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
+            
             Log.Fatal(e.Exception, "UI thread unhandled exception");
         }
 
@@ -206,7 +211,8 @@ namespace GameTools.Client.Wpf
                 || ex is TaskCanceledException
                 || ex is JsonException
                 || ex is AuthenticationException
-                || ex is ArgumentNullException;
+                || ex is ArgumentNullException
+                || ex is IOException;
         }
     }
 }

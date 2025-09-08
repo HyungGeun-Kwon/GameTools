@@ -7,6 +7,7 @@
         
         public const string Item_HeaderRegion = "Items.HeaderRegion";
         public const string Item_SearchRegion = "Items.SearchRegion";
+        public const string Item_CommandRegion = "Items.CommandRegion";
         public const string Item_ResultRegion = "Items.ResultRegion";
         public const string Item_PagingRegion = "Items.PagingRegion";
 

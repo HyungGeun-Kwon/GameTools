@@ -7,6 +7,7 @@
         public const string Item_HostView = "Item.HostView";
         public const string Item_HeaderView = "Item.HeaderView";
         public const string Item_SearchView = "Item.SearchView";
+        public const string Item_CommandView = "Item.CommandView";
         public const string Item_ResultView = "Item.ResultView";
         public const string Item_PagingView = "Item.PagingView";
 

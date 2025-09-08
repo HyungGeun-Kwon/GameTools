@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.DeleteItem;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
@@ -18,6 +19,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         private readonly UpdateItemUseCase _updateItemUseCase;
         private readonly DeleteItemUseCase _deleteItemUseCase;
         private readonly CreateItemUseCase _createItemUseCase;
+        private readonly BulkInsertItemsUseCase _bulkInsertItemsUseCase;
 
         private CancellationTokenSource? _cts;
 
@@ -25,12 +27,14 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
             IItemPageSearchState itemPageSearchState,
             UpdateItemUseCase updateItemUseCase,
             DeleteItemUseCase deleteItemUseCase,
-            CreateItemUseCase createItemUseCase)
+            CreateItemUseCase createItemUseCase,
+            BulkInsertItemsUseCase bulkInsertItemsUseCase)
         {
             _itemPageSearchState = itemPageSearchState;
             _updateItemUseCase = updateItemUseCase;
             _deleteItemUseCase = deleteItemUseCase;
             _createItemUseCase = createItemUseCase;
+            _bulkInsertItemsUseCase = bulkInsertItemsUseCase;
 
             _itemPageSearchState.BusyState.PropertyChanged += OnItemPageSearchStatePropertyChanged;
         }
@@ -62,6 +66,9 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         public Task<Item> UpdateAsync(ItemEditModel itemEditModel, bool throwCancelException = false, CancellationToken external = default)
             => RunExclusiveCommandAsync(ct => _updateItemUseCase.Handle(itemEditModel.ToUpdateItemInput(), ct), throwCancelException, external);
+
+        //public Task<BulkInsertItemsOutput> BulkInsertAsync()
+        //    => _bulkInsertItemsUseCase.Handle(new )
 
         private async Task RunExclusiveCommandAsync(
             Func<CancellationToken, Task> action,

@@ -10,14 +10,15 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
 
         private Snapshot? _isDirtyBaseline;
 
+
         [ObservableProperty]
-        private bool _isDirty;
+        public partial int? Id { get; private set; }
 
         [ObservableProperty]
         public partial string? RowVersionBase64 { get; private set; }
 
         [ObservableProperty]
-        public partial int? Id { get; private set; }
+        private bool _isDirty;
 
         /// <summary>
         /// 신규 추가를 위한 생성자

@@ -1,4 +1,5 @@
 ﻿using GameTools.Client.Application.Ports;
+using GameTools.Client.Infrastructure.Files;
 using GameTools.Client.Infrastructure.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -28,7 +29,9 @@ namespace GameTools.Client.Infrastructure.Extensions
             // 이미 등록되어있다면 Pass
             services.TryAddSingleton<IActorProvider, TActorProvider>();
 
-            services.AddTransient<ActorHeaderHandler>();
+            services.TryAddTransient<ActorHeaderHandler>();
+
+            services.TryAddSingleton<ICsvSerializer, CsvSerializer>();
 
             Uri ResolveBase(IServiceProvider sp) =>
                 opt.BaseAddress

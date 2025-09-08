@@ -16,6 +16,16 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
     {
         public static ItemEditModel ToEditModel(this Item item)
             => new(item.Id, item.Name, item.Price, item.Description, item.RarityId, item.RowVersionBase64);
+        
+        public static Item ToDomain(this ItemEditModel itemEditModel, string grade, string colorCode)
+        {
+            if (!itemEditModel.Id.HasValue)
+                throw new ArgumentException("Id must not be null.", nameof(itemEditModel));
+            ArgumentException.ThrowIfNullOrWhiteSpace(itemEditModel.RowVersionBase64);
+
+            return new(itemEditModel.Id.Value, itemEditModel.Name, itemEditModel.Price, itemEditModel.Description,
+                itemEditModel.RarityId, grade, colorCode, itemEditModel.RowVersionBase64);
+        }
 
         public static IEnumerable<ItemEditModel> ToEditModels(this IEnumerable<Item>? items)
             => (items ?? []).Select(i => i.ToEditModel());
@@ -59,7 +69,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
             {
                 throw new ArgumentNullException(nameof(itemEditModel), "DeleteItemInput requires a valid RowVersionBase64.");
             }
-            return new((int)itemEditModel.Id, itemEditModel.RowVersionBase64);
+            return new(itemEditModel.Id.Value, itemEditModel.RowVersionBase64);
         }
 
         public static UpdateItemInput ToUpdateItemInput(this ItemEditModel itemEditModel)
@@ -74,7 +84,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
             }
 
             return new(
-                (int)itemEditModel.Id, itemEditModel.Name, itemEditModel.Price, itemEditModel.Description,
+                itemEditModel.Id.Value, itemEditModel.Name, itemEditModel.Price, itemEditModel.Description,
                 itemEditModel.RarityId, itemEditModel.RowVersionBase64);
         }
 
@@ -103,7 +113,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
             }
 
             return new(
-                (int)itemEditModel.Id, itemEditModel.Name, itemEditModel.Price, itemEditModel.Description,
+                itemEditModel.Id.Value, itemEditModel.Name, itemEditModel.Price, itemEditModel.Description,
                 itemEditModel.RarityId, itemEditModel.RowVersionBase64);
         }
 
