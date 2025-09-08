@@ -12,5 +12,7 @@
         <Button Margin="0 0 10 0" Width="150" Content="Export Csv" Command="{Binding ExportCsvCommand}"/>
         <Button Margin="0 0 10 0" Width="150" Content="Export Insert Template" Command="{Binding ExportBulkInsertBaseCsvCommand}"/>
         <Button Margin="0 0 10 0" Width="150" Content="Export Update Template" Command="{Binding ExportBulkUpdateBaseCsvCommand}"/>
+        <Button Margin="0 0 10 0" Width="150" Content="Bulk Insert" Command="{Binding BulkInsertCommand}"/>
+        <Button Margin="0 0 10 0" Width="150" Content="Bulk Update" Command="{Binding BulkUpdateCommand}"/>
     </StackPanel>
 </UserControl>

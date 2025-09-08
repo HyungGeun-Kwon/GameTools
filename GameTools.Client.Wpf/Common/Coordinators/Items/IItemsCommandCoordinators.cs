@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
+using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Wpf.Models.Items;
 using GameTools.Client.Wpf.ViewModels.Items.Contracts;
@@ -18,6 +20,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         Task<Item> CreateAsync(ItemCreateModel itemCreateModel, bool throwCancelException = false, CancellationToken external = default);
 
-        // TODO : BulkInsert/Update 함수 추가 예정
+        Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput bulkInsertItemsInput, bool throwCancelException = false, CancellationToken external = default);
+        Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput bulkUpdateItemsInput, bool throwCancelException = false, CancellationToken external = default);
     }
 }

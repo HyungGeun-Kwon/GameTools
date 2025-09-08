@@ -6,13 +6,13 @@ using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.DialogServices;
 using DotNetHelper.MsDiKit.RegionServices;
 using GameTools.Client.Application.Ports;
+using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
+using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.FilePickers;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels.Items.Contracts;
-using GameTools.Contracts.Items.BulkInsertItems;
-using GameTools.Contracts.Items.BulkUpdateItems;
 
 namespace GameTools.Client.Wpf.ViewModels.Items
 {
@@ -20,6 +20,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         IDialogService dialogService,
         IItemPageSearchState itemPageSearchState,
         IItemsQueryCoordinator itemsQueryCoordinator,
+        IItemsCommandCoordinator itemsCommandCoordinator,
         IFilePickerService filePickerService,
         ICsvSerializer csvSerializer) : ObservableObject, IRegionViewModel
     {
@@ -38,7 +39,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
                 return;
             }
 
-            using var fs = await CreateFileStreamFromFilePicker();
+            using var fs = await CreateSaveFileStreamFromFilePicker();
             if (fs is null) return;
 
             await csvSerializer.WriteAsync(
@@ -57,20 +58,56 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         [RelayCommand(AllowConcurrentExecutions = false)]
         private async Task ExportBulkInsertBaseCsv()
         {
-            using var fs = await CreateFileStreamFromFilePicker();
+            using var fs = await CreateSaveFileStreamFromFilePicker();
             if (fs is null) return;
-            await csvSerializer.WriteTemplateAsync<BulkInsertItemRow>(fs);
+            await csvSerializer.WriteTemplateAsync<BulkInsertItemInputRow>(fs);
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private async Task ExportBulkUpdateBaseCsv()
         {
-            using var fs = await CreateFileStreamFromFilePicker();
+            using var fs = await CreateSaveFileStreamFromFilePicker();
             if (fs is null) return;
-            await csvSerializer.WriteTemplateAsync<BulkUpdateItemRow>(fs);
+            await csvSerializer.WriteTemplateAsync<BulkUpdateItemInputRow>(fs);
         }
 
-        private async Task<FileStream?> CreateFileStreamFromFilePicker()
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private async Task BulkInsert()
+        {
+            IReadOnlyList<string> insertCsvPaths = await filePickerService.OpenFilesAsync("Select Insert CSV", [FileDialogFilters.Csv]);
+            if (insertCsvPaths.Count == 0) return;
+
+            List<BulkInsertItemInputRow> rows = [];
+
+            foreach (var path in insertCsvPaths)
+            {
+                await using var fs = File.OpenRead(path);
+                rows.AddRange(await csvSerializer.ReadAsync<BulkInsertItemInputRow>(fs));
+            }
+
+            BulkInsertItemsInput input = new(rows);
+            var ouput = await itemsCommandCoordinator.BulkInsertAsync(input);
+        }
+
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private async Task BulkUpdate()
+        {
+            IReadOnlyList<string> insertCsvPaths = await filePickerService.OpenFilesAsync("Select Update CSV", [FileDialogFilters.Csv]);
+            if (insertCsvPaths.Count == 0) return;
+
+            List<BulkUpdateItemInputRow> rows = [];
+
+            foreach (var path in insertCsvPaths)
+            {
+                await using var fs = File.OpenRead(path);
+                rows.AddRange(await csvSerializer.ReadAsync<BulkUpdateItemInputRow>(fs));
+            }
+
+            BulkUpdateItemsInput input = new(rows);
+            var ouput = await itemsCommandCoordinator.BulkUpdateAsync(input);
+        }
+
+        private async Task<FileStream?> CreateSaveFileStreamFromFilePicker()
         {
             var path = await filePickerService.SaveFileAsync("Save CSV", [FileDialogFilters.Csv, FileDialogFilters.All], "", "csv");
             if (string.IsNullOrEmpty(path)) return null;
