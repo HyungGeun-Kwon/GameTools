@@ -21,6 +21,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         IItemPageSearchState itemPageSearchState,
         IItemsQueryCoordinator itemsQueryCoordinator,
         IItemsCommandCoordinator itemsCommandCoordinator,
+        IItemsCsvCommandCoordinator itemsCsvCoordinator,
         IFilePickerService filePickerService,
         ICsvSerializer csvSerializer) : ObservableObject, IRegionViewModel
     {
@@ -39,37 +40,16 @@ namespace GameTools.Client.Wpf.ViewModels.Items
                 return;
             }
 
-            using var fs = await CreateSaveFileStreamFromFilePicker();
-            if (fs is null) return;
-
-            await csvSerializer.WriteAsync(
-                fs,
-                itemPageSearchState.Results,
-                [
-                    nameof(ItemEditModel.Id),
-                    nameof(ItemEditModel.Name),
-                    nameof(ItemEditModel.Price),
-                    nameof(ItemEditModel.Description),
-                    nameof(ItemEditModel.RarityId),
-                    nameof(ItemEditModel.RowVersionBase64),
-                ]);
+            await itemsCsvCoordinator.ExportPageResultsAsync(itemPageSearchState.Results);
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task ExportBulkInsertBaseCsv()
-        {
-            using var fs = await CreateSaveFileStreamFromFilePicker();
-            if (fs is null) return;
-            await csvSerializer.WriteTemplateAsync<BulkInsertItemInputRow>(fs);
-        }
+        private Task ExportBulkInsertBaseCsv()
+            => itemsCsvCoordinator.ExportBulkInsertTemplateAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task ExportBulkUpdateBaseCsv()
-        {
-            using var fs = await CreateSaveFileStreamFromFilePicker();
-            if (fs is null) return;
-            await csvSerializer.WriteTemplateAsync<BulkUpdateItemInputRow>(fs);
-        }
+        private Task ExportBulkUpdateBaseCsv()
+            => itemsCsvCoordinator.ExportBulkUpdateTemplateAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private async Task BulkInsert()
@@ -86,7 +66,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
             }
 
             BulkInsertItemsInput input = new(rows);
-            var ouput = await itemsCommandCoordinator.BulkInsertAsync(input);
+            var output = await itemsCommandCoordinator.BulkInsertAsync(input);
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
@@ -104,7 +84,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
             }
 
             BulkUpdateItemsInput input = new(rows);
-            var ouput = await itemsCommandCoordinator.BulkUpdateAsync(input);
+            var output = await itemsCommandCoordinator.BulkUpdateAsync(input);
         }
 
         private async Task<FileStream?> CreateSaveFileStreamFromFilePicker()

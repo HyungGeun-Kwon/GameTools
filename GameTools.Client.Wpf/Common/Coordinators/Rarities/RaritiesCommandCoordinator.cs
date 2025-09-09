@@ -37,7 +37,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Rarities
 
         private void OnRaritySearchStatePropertyChanged(object? _, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "QueryBusy") CancelCommand.NotifyCanExecuteChanged();
+            if (e.PropertyName == nameof(_raritySearchState.BusyState.QueryBusy)) CancelCommand.NotifyCanExecuteChanged();
         }
 
         private bool CanCancel() => _raritySearchState.BusyState.QueryBusy;
@@ -47,24 +47,22 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Rarities
 
         private CancellationToken NewToken(CancellationToken external)
         {
-            _cts?.Cancel();
-            _cts?.Dispose();
+            try { _cts?.Cancel(); } catch (ObjectDisposedException) { }
             _cts = CancellationTokenSource.CreateLinkedTokenSource(external);
             return _cts.Token;
         }
 
-        public Task<Rarity> CreateAsync(RarityCreateModel rarityEditModel, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _createRarityUseCase.Handle(rarityEditModel.ToCreateRarityInput(), ct), throwCancelException, external);
+        public Task<Rarity> CreateAsync(RarityCreateModel rarityEditModel, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _createRarityUseCase.Handle(rarityEditModel.ToCreateRarityInput(), ct), external);
 
-        public Task DeleteAsync(RarityEditModel rarityEditModel, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _deleteRarityUseCase.Handle(rarityEditModel.ToDeleteRarityInput(), ct), throwCancelException, external);
+        public Task DeleteAsync(RarityEditModel rarityEditModel, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _deleteRarityUseCase.Handle(rarityEditModel.ToDeleteRarityInput(), ct), external);
 
-        public Task<Rarity> UpdateAsync(RarityEditModel rarityEditModel, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _updateRarityUseCase.Handle(rarityEditModel.ToUpdateRarityInput(), ct), throwCancelException, external);
+        public Task<Rarity> UpdateAsync(RarityEditModel rarityEditModel, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _updateRarityUseCase.Handle(rarityEditModel.ToUpdateRarityInput(), ct), external);
 
         private async Task RunExclusiveCommandAsync(
             Func<CancellationToken, Task> action,
-            bool throwCancelException = false,
             CancellationToken external = default)
         {
             var token = NewToken(external);
@@ -75,20 +73,16 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Rarities
                 SetCommandBusy(true);
                 await action(token);
             }
-            catch (OperationCanceledException)
-            {
-                if (throwCancelException) throw;
-            }
             finally
             {
                 if (ReferenceEquals(myCts, _cts))
                     SetCommandBusy(false);
+                myCts?.Dispose();
             }
         }
 
         private async Task<TResult> RunExclusiveCommandAsync<TResult>(
             Func<CancellationToken, Task<TResult>> action,
-            bool throwCancelException = false,
             CancellationToken external = default)
         {
             var token = NewToken(external);
@@ -99,15 +93,14 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Rarities
                 SetCommandBusy(true);
                 return await action(token);
             }
-            catch (OperationCanceledException)
-            {
-                if (throwCancelException) throw;
-                return default!;
-            }
             finally
             {
                 if (ReferenceEquals(myCts, _cts))
+                {
                     SetCommandBusy(false);
+                    _cts = null;
+                }
+                myCts?.Dispose();
             }
         }
 

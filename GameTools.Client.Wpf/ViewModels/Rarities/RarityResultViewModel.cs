@@ -38,7 +38,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
 
             try
             {
-                await raritiesCommandCoordinator.DeleteAsync(model, true);
+                await raritiesCommandCoordinator.DeleteAsync(model);
                 await raritiesQueryCoordinator.SearchAllAsync();
             }
             catch(OperationCanceledException) { }

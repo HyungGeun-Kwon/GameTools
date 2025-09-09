@@ -26,7 +26,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities
 
             try
             {
-                await raritiesCommandCoordinator.CreateAsync(RarityCreateModel, true, ct);
+                await raritiesCommandCoordinator.CreateAsync(RarityCreateModel, ct);
                 RequestClose?.Invoke(new DialogResult(ButtonResult.OK));
             }
             catch (OperationCanceledException) { }

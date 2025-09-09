@@ -4,6 +4,7 @@ using System.Security.Authentication;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Threading;
+using CsvHelper;
 using DotNetHelper.MsDiKit.Extensions;
 using GameTools.Client.Application.Extensions;
 using GameTools.Client.Infrastructure.Extensions;
@@ -82,6 +83,7 @@ namespace GameTools.Client.Wpf
                     services.AddSingleton<IItemPageSearchState, ItemPageSearchState>();
                     services.AddSingleton<IItemsQueryCoordinator, ItemsQueryCoordinator>();
                     services.AddSingleton<IItemsCommandCoordinator, ItemsCommandCoordinator>();
+                    services.AddSingleton<IItemsCsvCommandCoordinator, ItemsCsvCommandCoordinator>();
 
                     services.AddTransient<RarityLookupViewModel>();
 
@@ -212,7 +214,8 @@ namespace GameTools.Client.Wpf
                 || ex is JsonException
                 || ex is AuthenticationException
                 || ex is ArgumentNullException
-                || ex is IOException;
+                || ex is IOException
+                || ex is CsvHelperException;
         }
     }
 }

@@ -12,8 +12,8 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Rarities
         /// </summary>
         IRelayCommand CancelCommand { get; }
 
-        Task<Rarity> UpdateAsync(RarityEditModel rarityEditModel, bool throwCancelException = false, CancellationToken external = default);
-        Task DeleteAsync(RarityEditModel rarityEditModel, bool throwCancelException = false, CancellationToken external = default);
-        Task<Rarity> CreateAsync(RarityCreateModel rarityEditModel, bool throwCancelException = false, CancellationToken external = default);
+        Task<Rarity> UpdateAsync(RarityEditModel rarityEditModel, CancellationToken external = default);
+        Task DeleteAsync(RarityEditModel rarityEditModel, CancellationToken external = default);
+        Task<Rarity> CreateAsync(RarityCreateModel rarityEditModel, CancellationToken external = default);
     }
 }

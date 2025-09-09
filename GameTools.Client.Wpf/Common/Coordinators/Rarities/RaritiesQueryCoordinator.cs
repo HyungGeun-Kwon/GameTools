@@ -26,7 +26,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         private void OnRaritySearchStatePropertyChanged(object? _, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "QueryBusy") CancelCommand.NotifyCanExecuteChanged();
+            if (e.PropertyName == nameof(_raritySearchState.BusyState.QueryBusy)) CancelCommand.NotifyCanExecuteChanged();
         }
 
         private bool CanCancel() => _raritySearchState.BusyState.QueryBusy;
@@ -36,8 +36,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         private CancellationToken NewToken(CancellationToken external)
         {
-            _cts?.Cancel();
-            _cts?.Dispose();
+            try { _cts?.Cancel(); } catch (ObjectDisposedException) { }
             _cts = CancellationTokenSource.CreateLinkedTokenSource(external);
             return _cts.Token;
         }
@@ -53,11 +52,14 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
                 var result = await _getRaritiesUseCase.Handle(token);
                 _raritySearchState.ReplaceResults(result.ToEditModels());
             }
-            catch (OperationCanceledException) { }
             finally
             {
                 if (ReferenceEquals(myCts, _cts))
+                {
                     SetCommandBusy(false);
+                    _cts = null;
+                }
+                myCts?.Dispose();
             }
         }
 

@@ -12,6 +12,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         IRegionService regionService,
         IItemsQueryCoordinator itemsQueryCoordinator,
         IItemsCommandCoordinator itemsCommandCoordinator,
+        IItemsCsvCommandCoordinator itemsCsvCommandCoordinator,
         IItemPageSearchState itemPageSearchState
         ) : ObservableObject, IRegionViewModel
     {
@@ -20,7 +21,11 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         [RelayCommand]
         private void QueryCancel() => itemsQueryCoordinator.CancelCommand.Execute(null);
         [RelayCommand]
-        private void CommandCancel() => itemsCommandCoordinator.CancelCommand.Execute(null);
+        private void CommandCancel()
+        {
+            itemsCommandCoordinator.CancelCommand.Execute(null);
+            itemsCsvCommandCoordinator.CancelCommand.Execute(null);
+        }
 
         public void OnRegionActivated(Parameters? _)
         {

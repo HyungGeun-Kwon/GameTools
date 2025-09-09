@@ -45,7 +45,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         private void OnItemPageSearchStatePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "CommandBusy") CancelCommand.NotifyCanExecuteChanged();
+            if (e.PropertyName == nameof(_itemPageSearchState.BusyState.CommandBusy)) CancelCommand.NotifyCanExecuteChanged();
         }
 
         private bool CanCancel() => _itemPageSearchState.BusyState.CommandBusy;
@@ -55,32 +55,29 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         private CancellationToken NewToken(CancellationToken external)
         {
-            _cts?.Cancel();
-            _cts?.Dispose();
+            try { _cts?.Cancel(); } catch (ObjectDisposedException) { }
             _cts = CancellationTokenSource.CreateLinkedTokenSource(external);
             return _cts.Token;
         }
 
-        public Task<Item> CreateAsync(ItemCreateModel itemCreateModel, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _createItemUseCase.Handle(itemCreateModel.ToCreateItemInput(), ct), throwCancelException, external);
+        public Task<Item> CreateAsync(ItemCreateModel itemCreateModel, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _createItemUseCase.Handle(itemCreateModel.ToCreateItemInput(), ct), external);
 
+        public Task DeleteAsync(ItemEditModel itemEditModel, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _deleteItemUseCase.Handle(itemEditModel.ToDeleteItemInput(), ct), external);
 
-        public Task DeleteAsync(ItemEditModel itemEditModel, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _deleteItemUseCase.Handle(itemEditModel.ToDeleteItemInput(), ct), throwCancelException, external);
+        public Task<Item> UpdateAsync(ItemEditModel itemEditModel, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _updateItemUseCase.Handle(itemEditModel.ToUpdateItemInput(), ct), external);
 
-        public Task<Item> UpdateAsync(ItemEditModel itemEditModel, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _updateItemUseCase.Handle(itemEditModel.ToUpdateItemInput(), ct), throwCancelException, external);
+        public Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput bulkInsertItemsInput, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _bulkInsertItemsUseCase.Handle(bulkInsertItemsInput, ct), external);
 
-        public Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput bulkInsertItemsInput, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _bulkInsertItemsUseCase.Handle(bulkInsertItemsInput, ct), throwCancelException, external);
-
-        public Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput bulkUpdateItemsInput, bool throwCancelException = false, CancellationToken external = default)
-            => RunExclusiveCommandAsync(ct => _bulkUpdateItemsUseCase.Handle(bulkUpdateItemsInput, ct), throwCancelException, external);
+        public Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput bulkUpdateItemsInput, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _bulkUpdateItemsUseCase.Handle(bulkUpdateItemsInput, ct), external);
 
 
         private async Task RunExclusiveCommandAsync(
             Func<CancellationToken, Task> action,
-            bool throwCancelException = false,
             CancellationToken external = default)
         {
             var token = NewToken(external);
@@ -91,20 +88,16 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
                 SetCommandBusy(true);
                 await action(token);
             }
-            catch (OperationCanceledException)
-            {
-                if (throwCancelException) throw;
-            }
             finally
             {
                 if (ReferenceEquals(myCts, _cts))
                     SetCommandBusy(false);
+                myCts?.Dispose();
             }
         }
 
         private async Task<TResult> RunExclusiveCommandAsync<TResult>(
             Func<CancellationToken, Task<TResult>> action,
-            bool throwCancelException = false,
             CancellationToken external = default)
         {
             var token = NewToken(external);
@@ -115,15 +108,14 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
                 SetCommandBusy(true);
                 return await action(token);
             }
-            catch (OperationCanceledException)
-            {
-                if (throwCancelException) throw;
-                return default!;
-            }
             finally
             {
                 if (ReferenceEquals(myCts, _cts))
+                {
                     SetCommandBusy(false);
+                    _cts = null;
+                }
+                myCts?.Dispose();
             }
         }
         

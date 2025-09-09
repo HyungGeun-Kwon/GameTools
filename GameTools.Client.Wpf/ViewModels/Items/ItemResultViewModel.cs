@@ -41,7 +41,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
 
             try
             {
-                await itemsCommandCoordinator.DeleteAsync(model, true);
+                await itemsCommandCoordinator.DeleteAsync(model);
                 await itemsQueryCoordinator.RefreshAsync();
             }
             catch (OperationCanceledException) { }

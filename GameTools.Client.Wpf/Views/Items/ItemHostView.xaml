@@ -33,6 +33,7 @@
         <controls:BusyOverlay
             Grid.RowSpan="100"
             IsActive="{Binding ItemPageSearchState.BusyState.CommandBusy}"
+            ShowCancel="True"
             IsHitTestVisible="True"
             CancelCommand="{Binding CommandCancelCommand}"/>
     </Grid>

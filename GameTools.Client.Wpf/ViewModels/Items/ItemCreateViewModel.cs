@@ -31,7 +31,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items
 
             try
             {
-                await itemsCommandCoordinator.CreateAsync(ItemCreateModel, true, ct);
+                await itemsCommandCoordinator.CreateAsync(ItemCreateModel, ct);
                 RequestClose?.Invoke(new DialogResult(ButtonResult.OK));
             }
             catch (OperationCanceledException) { }
