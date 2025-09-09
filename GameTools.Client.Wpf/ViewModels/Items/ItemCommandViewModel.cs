@@ -1,18 +1,12 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.DialogServices;
 using DotNetHelper.MsDiKit.RegionServices;
-using GameTools.Client.Application.Ports;
-using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
-using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
-using GameTools.Client.Wpf.Common.FilePickers;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.State;
-using GameTools.Client.Wpf.ViewModels.Items.Contracts;
 
 namespace GameTools.Client.Wpf.ViewModels.Items
 {

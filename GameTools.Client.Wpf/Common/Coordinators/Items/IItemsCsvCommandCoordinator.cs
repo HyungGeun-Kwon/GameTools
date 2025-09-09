@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
-using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
-using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
+﻿using CommunityToolkit.Mvvm.Input;
 using GameTools.Client.Wpf.ViewModels.Items.Contracts;
 
 namespace GameTools.Client.Wpf.Common.Coordinators.Items
