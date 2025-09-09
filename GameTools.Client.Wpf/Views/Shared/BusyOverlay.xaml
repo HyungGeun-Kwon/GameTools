@@ -9,11 +9,12 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <!-- 오버레이: IsActive=true면 표시 -->
     <Grid Background="{Binding OverlayBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
           Visibility="{Binding IsActive, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}"
           IsHitTestVisible="{Binding BlockInput, RelativeSource={RelativeSource AncestorType=UserControl}}">
-
+        <Grid Background="White" Opacity="0.5">
+            
+        </Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <!-- 스피너 -->
             <Viewbox Width="{Binding Size, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -62,8 +63,11 @@
                     Command="{Binding CancelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     CommandParameter="{Binding CancelCommandParameter, RelativeSource={RelativeSource AncestorType=UserControl}}"
                     Margin="0,10,0,0" Padding="12,4"
+                    FontWeight="Bold"
                     HorizontalAlignment="Center"
                     Background="Transparent" BorderThickness="0"
+                    Foreground="Black"
+                    FontSize="15"
                     Visibility="{Binding ShowCancel, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </StackPanel>
     </Grid>
