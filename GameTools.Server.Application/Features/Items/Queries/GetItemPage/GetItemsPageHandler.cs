@@ -8,7 +8,7 @@ namespace GameTools.Server.Application.Features.Items.Queries.GetItemPage
     public sealed class GetItemsPageHandler(IItemReadStore itemReadStore)
         : IRequestHandler<GetItemsPageQuery, PagedResult<ItemReadModel>>
     {
-        public async Task<PagedResult<ItemReadModel>> Handle(GetItemsPageQuery request, CancellationToken ct)
-            => await itemReadStore.GetPageAsync(request.Criteria, ct);
+        public Task<PagedResult<ItemReadModel>> Handle(GetItemsPageQuery request, CancellationToken ct)
+            => itemReadStore.GetPageAsync(request.Criteria, ct);
     }
 }

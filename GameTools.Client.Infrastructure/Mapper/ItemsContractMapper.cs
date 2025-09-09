@@ -53,7 +53,7 @@ namespace GameTools.Client.Infrastructure.Mapper
             => resp.Items.Select(ToDomain).ToList();
 
         public static BulkInsertItemOutputRow ToDomain(this BulkInsertItemResult result)
-            => new(result.Id, result.RowVersionBase64);
+            => new(result.Id, result.Status, result.RowVersionBase64);
 
         public static BulkInsertItemsOutput ToDomain(this BulkInsertItemsResponse resp)
             => new(resp.Results.Select(ToDomain).ToList());

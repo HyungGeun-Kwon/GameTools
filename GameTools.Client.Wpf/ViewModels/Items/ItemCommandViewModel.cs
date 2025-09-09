@@ -20,10 +20,8 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         IDialogService dialogService,
         IItemPageSearchState itemPageSearchState,
         IItemsQueryCoordinator itemsQueryCoordinator,
-        IItemsCommandCoordinator itemsCommandCoordinator,
-        IItemsCsvCommandCoordinator itemsCsvCoordinator,
-        IFilePickerService filePickerService,
-        ICsvSerializer csvSerializer) : ObservableObject, IRegionViewModel
+        IItemsCsvCommandCoordinator itemsCsvCommandCoordinator
+        ) : ObservableObject, IRegionViewModel
     {
         [RelayCommand]
         private void AddItem()
@@ -40,59 +38,27 @@ namespace GameTools.Client.Wpf.ViewModels.Items
                 return;
             }
 
-            await itemsCsvCoordinator.ExportPageResultsAsync(itemPageSearchState.Results);
+            await itemsCsvCommandCoordinator.ExportPageResultsAsync(itemPageSearchState.Results);
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task ExportBulkInsertBaseCsv()
-            => itemsCsvCoordinator.ExportBulkInsertTemplateAsync();
+            => itemsCsvCommandCoordinator.ExportBulkInsertTemplateAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task ExportBulkUpdateBaseCsv()
-            => itemsCsvCoordinator.ExportBulkUpdateTemplateAsync();
+            => itemsCsvCommandCoordinator.ExportBulkUpdateTemplateAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private async Task BulkInsert()
         {
-            IReadOnlyList<string> insertCsvPaths = await filePickerService.OpenFilesAsync("Select Insert CSV", [FileDialogFilters.Csv]);
-            if (insertCsvPaths.Count == 0) return;
-
-            List<BulkInsertItemInputRow> rows = [];
-
-            foreach (var path in insertCsvPaths)
-            {
-                await using var fs = File.OpenRead(path);
-                rows.AddRange(await csvSerializer.ReadAsync<BulkInsertItemInputRow>(fs));
-            }
-
-            BulkInsertItemsInput input = new(rows);
-            var output = await itemsCommandCoordinator.BulkInsertAsync(input);
+            await itemsCsvCommandCoordinator.ImportAndBulkInsertAsync();
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private async Task BulkUpdate()
         {
-            IReadOnlyList<string> insertCsvPaths = await filePickerService.OpenFilesAsync("Select Update CSV", [FileDialogFilters.Csv]);
-            if (insertCsvPaths.Count == 0) return;
-
-            List<BulkUpdateItemInputRow> rows = [];
-
-            foreach (var path in insertCsvPaths)
-            {
-                await using var fs = File.OpenRead(path);
-                rows.AddRange(await csvSerializer.ReadAsync<BulkUpdateItemInputRow>(fs));
-            }
-
-            BulkUpdateItemsInput input = new(rows);
-            var output = await itemsCommandCoordinator.BulkUpdateAsync(input);
-        }
-
-        private async Task<FileStream?> CreateSaveFileStreamFromFilePicker()
-        {
-            var path = await filePickerService.SaveFileAsync("Save CSV", [FileDialogFilters.Csv, FileDialogFilters.All], "", "csv");
-            if (string.IsNullOrEmpty(path)) return null;
-
-            return File.Create(path);
+            await itemsCsvCommandCoordinator.ImportAndBulkUpdateAsync();
         }
 
         private async void ItemEditDialogClosed(IDialogResult? result)
@@ -107,6 +73,11 @@ namespace GameTools.Client.Wpf.ViewModels.Items
                 await itemsQueryCoordinator.RefreshAsync();
             }
             catch (OperationCanceledException) { }
+        }
+
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private async Task DeleteAll()
+        {
         }
 
         public void OnRegionActivated(Parameters? _) { }

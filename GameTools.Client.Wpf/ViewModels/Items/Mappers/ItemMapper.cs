@@ -95,7 +95,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
                 throw new InvalidOperationException("BulkInsertItemInputRow requires Id or RowVersionBase64 to be null.");
             }
 
-            return new(itemEditModel.Name, itemEditModel.Price, itemEditModel.RarityId, itemEditModel.Description);
+            return new(itemEditModel.Name, itemEditModel.Price, itemEditModel.Description, itemEditModel.RarityId);
         }
 
         public static BulkInsertItemsInput ToBulkInsertItemsInput(this IEnumerable<ItemEditModel> itemEditModels)

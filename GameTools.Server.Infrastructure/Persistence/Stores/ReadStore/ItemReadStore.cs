@@ -9,8 +9,8 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.ReadStore
 {
     public sealed class ItemReadStore(AppDbContext db) : IItemReadStore
     {
-        public async Task<ItemReadModel?> GetByIdAsync(int id, CancellationToken ct)
-            => await db.Items.AsNoTracking()
+        public Task<ItemReadModel?> GetByIdAsync(int id, CancellationToken ct)
+            => db.Items.AsNoTracking()
                 .Where(i => i.Id == id)
                 .Select(i => new ItemReadModel(i.Id, i.Name, i.Price, i.Description, i.RarityId, i.Rarity.Grade, i.Rarity.ColorCode, i.RowVersion))
                 .FirstOrDefaultAsync(ct);

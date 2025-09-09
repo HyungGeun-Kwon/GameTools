@@ -19,7 +19,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         Task ExportPageResultsAsync(IEnumerable<ItemEditModel> items, IEnumerable<string>? includeColumns = null, CancellationToken external = default);
         Task ExportBulkInsertTemplateAsync(CancellationToken external = default);
         Task ExportBulkUpdateTemplateAsync(CancellationToken external = default);
-        Task<BulkInsertItemsOutput> ImportAndBulkInsertAsync(CancellationToken external = default);
-        Task<BulkUpdateItemsOutput> ImportAndBulkUpdateAsync(CancellationToken external = default);
+        Task ImportAndBulkInsertAsync(CancellationToken external = default);
+        Task ImportAndBulkUpdateAsync(CancellationToken external = default);
     }
 }

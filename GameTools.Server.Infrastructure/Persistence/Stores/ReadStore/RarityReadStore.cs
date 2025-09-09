@@ -12,8 +12,8 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.ReadStore
                 .Select(r => new RarityReadModel(r.Id, r.Grade, r.ColorCode, r.RowVersion))
                 .ToListAsync(ct);
 
-        public async Task<RarityReadModel?> GetByIdAsync(byte id, CancellationToken ct)
-            => await db.Rarities.AsNoTracking()
+        public Task<RarityReadModel?> GetByIdAsync(byte id, CancellationToken ct)
+            => db.Rarities.AsNoTracking()
                 .Where(r => r.Id == id)
                 .Select(r => new RarityReadModel(r.Id, r.Grade, r.ColorCode, r.RowVersion))
                 .FirstOrDefaultAsync(ct);

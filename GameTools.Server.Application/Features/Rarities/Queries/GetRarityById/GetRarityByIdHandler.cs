@@ -6,7 +6,7 @@ namespace GameTools.Server.Application.Features.Rarities.Queries.GetRarityById
 {
     public sealed class GetRarityByIdHandler(IRarityReadStore rarityReadStore) : IRequestHandler<GetRarityByIdQuery, RarityReadModel?>
     {
-        public async Task<RarityReadModel?> Handle(GetRarityByIdQuery request, CancellationToken ct)
-            => await rarityReadStore.GetByIdAsync(request.Id, ct);
+        public Task<RarityReadModel?> Handle(GetRarityByIdQuery request, CancellationToken ct)
+            => rarityReadStore.GetByIdAsync(request.Id, ct);
     }
 }

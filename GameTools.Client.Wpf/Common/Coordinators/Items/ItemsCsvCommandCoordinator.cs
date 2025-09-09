@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameTools.Client.Application.Ports;
@@ -103,12 +104,12 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
             }, external);
         }
 
-        public async Task<BulkInsertItemsOutput> ImportAndBulkInsertAsync(CancellationToken external = default)
+        public async Task ImportAndBulkInsertAsync(CancellationToken external = default)
         {
             var files = await _filePicker.OpenFilesAsync("Select Insert CSV", [FileDialogFilters.Csv]);
-            if (files.Count == 0) return new BulkInsertItemsOutput([]);
+            if (files.Count == 0) return;
 
-            return await RunExclusiveCommandAsync(async ct =>
+            await RunExclusiveCommandAsync(async ct =>
             {
                 var rows = new List<BulkInsertItemInputRow>();
                 foreach (var file in files)
@@ -117,16 +118,40 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
                     await using var fs = File.OpenRead(file);
                     rows.AddRange(await _csvSerializer.ReadAsync<BulkInsertItemInputRow>(fs, ct: ct));
                 }
-                return await _bulkInsertItemsUseCase.Handle(new(rows), ct);
+                var output = await _bulkInsertItemsUseCase.Handle(new(rows), ct);
+
+                string msg = output.Outputs.Count == 0
+                    ? "No items processed."
+                    : $"Total {output.Outputs.Count} items: " +
+                      string.Join(", ",
+                          output.Outputs
+                                .GroupBy(o => o.Status)
+                                .OrderByDescending(g => g.Count())
+                                .ThenBy(g => g.Key)
+                                .Select(g => $"{g.Key}={g.Count()}"));
+
+                var msgBoxBtnResult = MessageBox.Show("Insert Compltete." + Environment.NewLine +
+                    "Would you like to save the results?" + Environment.NewLine +
+                    msg, "", MessageBoxButton.YesNo);
+
+                if (msgBoxBtnResult != MessageBoxResult.Yes) return;
+
+                var path = await _filePicker.SaveFileAsync(
+                    "Save Insert Result", [FileDialogFilters.Csv, FileDialogFilters.All], "Items_Insert_Result", "csv");
+
+                if (string.IsNullOrWhiteSpace(path)) return;
+
+                await using var saveFs = File.Create(path);
+                await _csvSerializer.WriteAsync(saveFs, output.Outputs, ct: ct);
             }, external);
         }
 
-        public async Task<BulkUpdateItemsOutput> ImportAndBulkUpdateAsync(CancellationToken external = default)
+        public async Task ImportAndBulkUpdateAsync(CancellationToken external = default)
         {
             var files = await _filePicker.OpenFilesAsync("Select Update CSV", [FileDialogFilters.Csv]);
-            if (files.Count == 0) return new BulkUpdateItemsOutput([]);
+            if (files.Count == 0) return;
 
-            return await RunExclusiveCommandAsync(async ct =>
+            await RunExclusiveCommandAsync(async ct =>
             {
                 var rows = new List<BulkUpdateItemInputRow>();
                 foreach (var file in files)
@@ -136,7 +161,31 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
                     rows.AddRange(await _csvSerializer.ReadAsync<BulkUpdateItemInputRow>(fs, ct: ct));
                 }
 
-                return await _bulkUpdateItemsUseCase.Handle(new(rows), ct);
+                BulkUpdateItemsOutput output = await _bulkUpdateItemsUseCase.Handle(new(rows), ct);
+
+                string msg = output.Outputs.Count == 0
+                    ? "No items processed."
+                    : $"Total {output.Outputs.Count} items: " +
+                      string.Join(", ",
+                          output.Outputs
+                                .GroupBy(o => o.Status)
+                                .OrderByDescending(g => g.Count())
+                                .ThenBy(g => g.Key)
+                                .Select(g => $"{g.Key}={g.Count()}"));
+
+                var msgBoxBtnResult = MessageBox.Show("Update Compltete." + Environment.NewLine +
+                    "Would you like to save the results?" + Environment.NewLine +
+                    msg, "", MessageBoxButton.YesNo);
+
+                if (msgBoxBtnResult != MessageBoxResult.Yes) return;
+
+                var path = await _filePicker.SaveFileAsync(
+                    "Save Update Result", [FileDialogFilters.Csv, FileDialogFilters.All], "Items_Update_Result", "csv");
+
+                if (string.IsNullOrWhiteSpace(path)) return;
+
+                await using var saveFs = File.Create(path);
+                await _csvSerializer.WriteAsync(saveFs, output.Outputs, ct: ct);
             }, external);
         }
 

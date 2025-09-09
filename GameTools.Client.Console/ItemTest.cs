@@ -55,10 +55,10 @@ namespace GameTools.Client.Console
             // Bulk Insert
             BulkInsertItemsOutput bulkInsertOutput = await bulkInsertItem.Handle(
                 new BulkInsertItemsInput([
-                    new BulkInsertItemInputRow($"Bulk1_{Stopwatch.GetTimestamp()}", 1000, 1, "BulkInsertTest"),
-                    new BulkInsertItemInputRow($"Bulk2_{Stopwatch.GetTimestamp()}", 1000, 1, "BulkInsertTest"),
-                    new BulkInsertItemInputRow($"Bulk3_{Stopwatch.GetTimestamp()}", 1000, 1, "BulkInsertTest"),
-                    new BulkInsertItemInputRow($"Bulk4_{Stopwatch.GetTimestamp()}", 1000, 1, "BulkInsertTest"),
+                    new BulkInsertItemInputRow($"Bulk1_{Stopwatch.GetTimestamp()}", 1000, "BulkInsertTest", 1),
+                    new BulkInsertItemInputRow($"Bulk2_{Stopwatch.GetTimestamp()}", 1000, "BulkInsertTest", 1),
+                    new BulkInsertItemInputRow($"Bulk3_{Stopwatch.GetTimestamp()}", 1000, "BulkInsertTest", 1),
+                    new BulkInsertItemInputRow($"Bulk4_{Stopwatch.GetTimestamp()}", 1000, "BulkInsertTest", 1),
                 ]), CancellationToken.None);
 
             // Get Bulk Names

@@ -60,7 +60,7 @@ namespace GameTools.Server.Api.Mapper
                     x.RarityId, x.RowVersionBase64.FromBase64RowVersion())).ToList();
 
         internal static BulkInsertItemsResponse ToResponse(this IReadOnlyList<InsertItemResultRow> rows)
-            => new(rows.Select(r => new BulkInsertItemResult(r.Id, r.RowVersion.ToBase64RowVersion())).ToList());
+            => new(rows.Select(r => new BulkInsertItemResult(r.Id, r.StatusCode.ToString(), r.RowVersion?.ToBase64RowVersion())).ToList());
 
         internal static BulkUpdateItemsResponse ToResponse(this IReadOnlyList<UpdateItemResultRow> rows)
             => new(rows.Select(r => new BulkUpdateItemResult(r.Id, r.StatusCode.ToString(), r.NewRowVersion?.ToBase64RowVersion())).ToList());

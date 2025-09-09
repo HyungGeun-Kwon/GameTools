@@ -13,8 +13,8 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
 {
     public sealed class ItemWriteStore(AppDbContext db, ICurrentUser currentUser) : IItemWriteStore
     {
-        public async Task<Item?> GetByIdAsync(int id, CancellationToken ct)
-            => await db.Items
+        public Task<Item?> GetByIdAsync(int id, CancellationToken ct)
+            => db.Items
                 .Include(i => i.Rarity)
                 .SingleOrDefaultAsync(i => i.Id == id, ct);
         public async Task AddAsync(Item entity, CancellationToken ct)
@@ -28,7 +28,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
             db.Entry(entity).Property(e => e.RowVersion).OriginalValue = rowVersion;
         }
 
-        public async Task<IReadOnlyList<(int Id, byte[] NewRowVersion)>> InsertManyTvpAsync(
+        public async Task<IReadOnlyList<(int? Id, byte[]? NewRowVersion, BulkInsertStatusCode StatusCode)>> InsertManyTvpAsync(
             IEnumerable<InsertItemRow> rows, CancellationToken ct)
         {
             var table = TvpTableFactory.CreateItemInsertDataTable(rows);
@@ -57,13 +57,15 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
                 };
                 cmd.Parameters.Add(p);
 
-                var result = new List<(int, byte[])>();
+                var result = new List<(int?, byte[]?, BulkInsertStatusCode)>();
                 await using var reader = await cmd.ExecuteReaderAsync(ct);
                 while (await reader.ReadAsync(ct))
                 {
-                    var id = reader.GetInt32(0);
-                    var rv = (byte[])reader.GetValue(1); // varbinary(8)
-                    result.Add((id, rv));
+                    int? id = await reader.IsDBNullAsync(1, ct) ? null : reader.GetInt32(0);
+                    var newRv = await reader.IsDBNullAsync(1, ct) ? null : (byte[])reader.GetValue(1);
+                    var statusCode = (BulkInsertStatusCode)reader.GetInt32(2);
+
+                    result.Add((id, newRv, statusCode));
                 }
                 return result;
             }
@@ -107,8 +109,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
                 while (await reader.ReadAsync(ct))
                 {
                     var id = reader.GetInt32(0);
-                    var isNull = await reader.IsDBNullAsync(1, ct);
-                    var newRv = isNull ? null : (byte[])reader.GetValue(1);
+                    var newRv = await reader.IsDBNullAsync(1, ct) ? null : (byte[])reader.GetValue(1);
                     var statusCode = (BulkUpdateStatusCode)reader.GetInt32(2);
 
                     result.Add((id, newRv, statusCode));
