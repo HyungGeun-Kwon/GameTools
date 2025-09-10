@@ -1,15 +1,16 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
+using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
 using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
 using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
 using GameTools.Server.Domain.Auditing;
+using GameTools.Server.Domain.Common.Rules;
 using GameTools.Server.Domain.Entities;
 using GameTools.Server.Infrastructure.Persistence.Stores.WriteStore;
 using GameTools.Server.Infrastructure.Persistence.Works;
 using GameTools.Server.Test.Utils;
 using Microsoft.EntityFrameworkCore;
-using GameTools.Server.Domain.Common.Rules;
 
 namespace GameTools.Server.Test.DataBase.ItemTest
 {
@@ -57,30 +58,51 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             audits.All(a => !string.IsNullOrEmpty(a.AfterJson)).Should().BeTrue();
         }
         [Fact]
-        public async Task InsertItemsTvp_FailsOnSameName()
+        public async Task InsertItemsTvp_DuplicateName_ReturnsRowStatuses()
         {
             await using var serverDb = await SqlServerTestDb.CreateAsync();
             var db = serverDb.Db;
 
             var r = serverDb.SeedRarity("COMMON", "#AAAAAA");
 
-            // 기본값 생성
+            // 기존 1개
             await CreateItemTests.CreateHandler(db).Handle(
-                new CreateItemCommand(new CreateItemPayload("Item1", 1, r.Id, null)), CancellationToken.None);
+                new CreateItemCommand(new CreateItemPayload("Item1", 1, r.Id, null)),
+                CancellationToken.None);
 
             var rows = new List<InsertItemRow>
-            {
-                new("Item0", 10, r.Id),
-                new("Item1", 20, r.Id, "dup-again"), // Name 유니크 위반
-                new("Item2", 30, r.Id),
-            };
+                {
+                    new("Item0", 10, r.Id),
+                    new("Item1", 20, r.Id, "dup-again"), // 중복
+                    new("Item2", 30, r.Id),
+                };
 
             var handler = new InsertItemsTvpHandler(new ItemWriteStore(db, new TestCurrentUser()));
-            var act = async () => await handler.Handle(new InsertItemsTvpCommand(rows), CancellationToken.None);
-            await act.Should().ThrowAsync<Exception>();
+            var results = await handler.Handle(new InsertItemsTvpCommand(rows), CancellationToken.None);
 
-            var items = await db.Set<Item>().Select(i => i).ToListAsync();
-            items.Count.Should().Be(1); // 최초에 Insert한 1개만 존재
+            results.Should().HaveCount(3);
+
+            // 성공
+            results[0].Id.Should().BeGreaterThan(0);
+            results[0].RowVersion.Should().NotBeNullOrEmpty();
+
+            // 두 번째 중복으로 실패
+            results[1].Id.Should().BeNull();
+            results[1].RowVersion.Should().BeNull();
+            results[1].StatusCode.Should().Be(BulkInsertStatusCode.DuplicateName);
+
+            // 세 번째 성공
+            results[2].Id.Should().BeGreaterThan(0);
+            results[2].RowVersion.Should().NotBeNullOrEmpty();
+
+            // DB 상태: 총 3개 (기존 1 + 신규 2)
+            var items = await db.Set<Item>().AsNoTracking().ToListAsync();
+            items.Should().HaveCount(3);
+            items.Select(i => i.Name).Should().BeEquivalentTo(new[] { "Item0", "Item1", "Item2" });
+
+            // 감사 로그: Insert 2건 추가 (중복 실패는 감사 없음) + 최초 1건 = 총 3건
+            var audits = await db.Set<ItemAudit>().ToListAsync();
+            audits.Should().HaveCount(3);
         }
 
         [Fact]
@@ -250,6 +272,97 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             v.Validate(cmdNG5).IsValid.Should().BeFalse();
             v.Validate(cmdNG6).IsValid.Should().BeFalse();
             v.Validate(cmdNG7).IsValid.Should().BeFalse();
+        }
+        #endregion
+
+
+
+        #region DeleteTvp
+        [Fact]
+        public async Task DeleteItemsTvp_SucceedsAndReturnsMixedStatusWithAudits()
+        {
+            await using var serverDb = await SqlServerTestDb.CreateAsync();
+            var db = serverDb.Db;
+            var currentUser = new TestCurrentUser();
+
+            var r1 = serverDb.SeedRarity("Common", "#000000");
+            var r2 = serverDb.SeedRarity("Rare", "#111111");
+
+            // 기존 2개 생성
+            var creator = CreateItemTests.CreateHandler(db);
+            var a = await creator.Handle(new CreateItemCommand(new CreateItemPayload("D-A", 10, r1.Id, "a")), CancellationToken.None);
+            var b = await creator.Handle(new CreateItemCommand(new CreateItemPayload("D-B", 20, r2.Id, "b")), CancellationToken.None);
+
+            // b의 RowVersion을 먼저 변경(stale RV 유도)
+            var uowBump = new UnitOfWork(db, currentUser);
+            var entityB = await db.Items.SingleAsync(i => i.Id == b.Id);
+            entityB.SetPrice(entityB.Price + 1);
+            await uowBump.SaveChangesAsync();
+
+            // not found id
+            var notFoundId = 987654321;
+
+            // TVP 삭제 rows:
+            // - a: 정상 삭제 (Deleted)
+            // - nf: 존재하지 않음 (NotFound)
+            // - b: stale RV로 동시성 실패 (Concurrency)
+            var rows = new List<DeleteItemRow>
+            {
+                new(a.Id, a.RowVersion),
+                new(notFoundId, a.RowVersion), // RV는 임의값이어도 무방 (대상 없음)
+                new(b.Id, b.RowVersion), // stale
+            };
+
+            var handler = new DeleteItemsTvpHandler(new ItemWriteStore(db, currentUser));
+            var results = await handler.Handle(new DeleteItemsTvpCommand(rows), CancellationToken.None);
+
+            results.Should().HaveCount(3);
+
+            var resA = results.Single(r => r.Id == a.Id);
+            var resNF = results.Single(r => r.Id == notFoundId);
+            var resB = results.Single(r => r.Id == b.Id);
+
+            resA.StatusCode.Should().Be(BulkDeleteStatusCode.Deleted);
+            resNF.StatusCode.Should().Be(BulkDeleteStatusCode.NotFound);
+            resB.StatusCode.Should().Be(BulkDeleteStatusCode.Concurrency);
+
+            // 실제 DB 확인
+            (await db.Items.AsNoTracking().AnyAsync(i => i.Id == a.Id)).Should().BeFalse(); // a는 삭제됨
+            (await db.Items.AsNoTracking().AnyAsync(i => i.Id == b.Id)).Should().BeTrue();  // b는 남아있음
+
+            // 감사 로그: a는 Delete 1건 생성, b는 실패로 없음, NF는 없음
+            var auditsA = await db.Set<ItemAudit>().Where(x => x.ItemId == a.Id && x.Action == AuditAction.Delete).ToListAsync();
+            auditsA.Should().HaveCount(1);
+            auditsA[0].ChangedBy.Should().Be(currentUser.UserIdOrName);
+            auditsA[0].BeforeJson.Should().NotBeNullOrEmpty(); // 삭제 전 상태
+            auditsA[0].AfterJson.Should().BeNullOrEmpty(); // 삭제 후 상태는 없음
+        }
+
+        [Fact]
+        public void DeleteItemsTvpValidator_InvalidRowsFails()
+        {
+            var v = new DeleteItemsTvpValidator();
+
+            // Empty
+            v.Validate(new DeleteItemsTvpCommand([])).IsValid.Should().BeFalse();
+
+            // 잘못된 필드들
+            var cmdOK = new DeleteItemsTvpCommand(
+            [
+                new DeleteItemRow(1, [ 1, 2, 3, 4 ]) // 정상
+            ]);
+            var cmdNG1 = new DeleteItemsTvpCommand(
+            [
+                new DeleteItemRow(0, [ 1, 2, 3, 4 ]) // Id <= 0
+            ]);
+            var cmdNG2 = new DeleteItemsTvpCommand(
+            [
+                new DeleteItemRow(1, []) // RowVersion empty
+            ]);
+
+            v.Validate(cmdOK).IsValid.Should().BeTrue();
+            v.Validate(cmdNG1).IsValid.Should().BeFalse();
+            v.Validate(cmdNG2).IsValid.Should().BeFalse();
         }
         #endregion
     }

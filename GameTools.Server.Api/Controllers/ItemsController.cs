@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Mvc;
 using GameTools.Contracts.Common;
 using GameTools.Contracts.Items.BulkInsertItems;
 using GameTools.Server.Application.Common.Results;
+using GameTools.Contracts.Items.BulkDeleteItems;
+using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
 
 namespace GameTools.Server.Api.Controllers
 {
@@ -126,6 +128,15 @@ namespace GameTools.Server.Api.Controllers
             [FromBody] BulkUpdateItemsRequest req, CancellationToken ct)
         {
             var reads = await mediator.Send(new UpdateItemsTvpCommand(req.ToRows()), ct);
+            return Ok(reads.ToResponse());
+        }
+
+        // 벌크 삭제 (클래스 단위 Body)
+        [HttpPut("bulk-delete")]
+        public async Task<ActionResult<BulkDeleteItemsResponse>> BulkDelete(
+            [FromBody] BulkDeleteItemsRequest req, CancellationToken ct)
+        {
+            var reads = await mediator.Send(new DeleteItemsTvpCommand(req.ToRows()), ct);
             return Ok(reads.ToResponse());
         }
     }

@@ -2,6 +2,7 @@
 using System.Data.Common;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.Users;
+using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
 using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
 using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
 using GameTools.Server.Domain.Entities;
@@ -61,7 +62,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
                 await using var reader = await cmd.ExecuteReaderAsync(ct);
                 while (await reader.ReadAsync(ct))
                 {
-                    int? id = await reader.IsDBNullAsync(1, ct) ? null : reader.GetInt32(0);
+                    int? id = await reader.IsDBNullAsync(0, ct) ? null : reader.GetInt32(0);
                     var newRv = await reader.IsDBNullAsync(1, ct) ? null : (byte[])reader.GetValue(1);
                     var statusCode = (BulkInsertStatusCode)reader.GetInt32(2);
 
@@ -113,6 +114,51 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
                     var statusCode = (BulkUpdateStatusCode)reader.GetInt32(2);
 
                     result.Add((id, newRv, statusCode));
+                }
+                return result;
+            }
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
+        }
+
+        public async Task<IReadOnlyList<(int? Id, BulkDeleteStatusCode StatusCode)>> DeleteManyTvpAsync(IEnumerable<DeleteItemRow> rows, CancellationToken ct)
+        {
+            var table = TvpTableFactory.CreateItemDeleteDataTable(rows);
+
+            var conn = db.Database.GetDbConnection();
+
+            var openedHere = false;
+            if (conn.State != ConnectionState.Open)
+            {
+                await conn.OpenAsync(ct);
+                openedHere = true;
+            }
+
+            try
+            {
+                await SetSessionActorAsync(conn, ct);
+
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText = TvpNames.ItemDeleteProc;
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                var p = new SqlParameter("@Rows", SqlDbType.Structured)
+                {
+                    TypeName = TvpNames.ItemDeleteType,
+                    Value = table
+                };
+                cmd.Parameters.Add(p);
+
+                var result = new List<(int?, BulkDeleteStatusCode)>();
+                await using var reader = await cmd.ExecuteReaderAsync(ct);
+                while (await reader.ReadAsync(ct))
+                {
+                    int? id = await reader.IsDBNullAsync(0, ct) ? null : reader.GetInt32(0);
+                    var statusCode = (BulkDeleteStatusCode)reader.GetInt32(1);
+
+                    result.Add((id, statusCode));
                 }
                 return result;
             }

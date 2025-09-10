@@ -14,6 +14,8 @@ using GameTools.Contracts.Items.UpdateItem;
 using GameTools.Server.Api.Extensions;
 using GameTools.Contracts.Common;
 using GameTools.Contracts.Items.BulkInsertItems;
+using GameTools.Contracts.Items.BulkDeleteItems;
+using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
 
 namespace GameTools.Server.Api.Mapper
 {
@@ -58,12 +60,18 @@ namespace GameTools.Server.Api.Mapper
                 x => new UpdateItemRow(
                     x.Id, x.Name, x.Price, x.Description, 
                     x.RarityId, x.RowVersionBase64.FromBase64RowVersion())).ToList();
-
+        
+        internal static IReadOnlyList<DeleteItemRow> ToRows(this BulkDeleteItemsRequest req)
+            => req.BulkDeleteItemRows.Select(
+                x => new DeleteItemRow(x.Id, x.RowVersionBase64.FromBase64RowVersion())).ToList();
         internal static BulkInsertItemsResponse ToResponse(this IReadOnlyList<InsertItemResultRow> rows)
             => new(rows.Select(r => new BulkInsertItemResult(r.Id, r.StatusCode.ToString(), r.RowVersion?.ToBase64RowVersion())).ToList());
 
         internal static BulkUpdateItemsResponse ToResponse(this IReadOnlyList<UpdateItemResultRow> rows)
             => new(rows.Select(r => new BulkUpdateItemResult(r.Id, r.StatusCode.ToString(), r.NewRowVersion?.ToBase64RowVersion())).ToList());
+
+        internal static BulkDeleteItemsResponse ToResponse(this IReadOnlyList<DeleteItemResultRow> rows)
+            => new(rows.Select(r => new BulkDeleteItemResult(r.Id, r.StatusCode.ToString())).ToList());
 
         internal static ItemsByRarityResponse ToResponse(this IReadOnlyList<ItemReadModel> rows)
             => new(rows.Select(
