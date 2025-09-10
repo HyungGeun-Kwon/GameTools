@@ -95,7 +95,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         public void Dispose()
         {
             _itemPageSearchState.BusyState.PropertyChanged -= OnItemPageSearchStatePropertyChanged;
-            _cts?.Cancel();
+            try { _cts?.Cancel(); } catch { }
             _cts?.Dispose();
         }
     }

@@ -1,4 +1,5 @@
-﻿using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
+﻿using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
+using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.DeleteItem;
@@ -28,6 +29,7 @@ namespace GameTools.Client.Application.Extensions
             s.AddTransient<UpdateItemUseCase>();
             s.AddTransient<BulkInsertItemsUseCase>();
             s.AddTransient<BulkUpdateItemsUseCase>();
+            s.AddTransient<BulkDeleteItemsUseCase>();
 
             // Rarities
             s.AddTransient<GetRarityByIdUseCase>();

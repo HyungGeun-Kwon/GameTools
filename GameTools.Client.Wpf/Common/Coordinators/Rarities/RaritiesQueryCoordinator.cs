@@ -72,7 +72,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         public void Dispose()
         {
             _raritySearchState.BusyState.PropertyChanged -= OnRaritySearchStatePropertyChanged;
-            _cts?.Cancel();
+            try { _cts?.Cancel(); } catch { }
             _cts?.Dispose();
         }
     }

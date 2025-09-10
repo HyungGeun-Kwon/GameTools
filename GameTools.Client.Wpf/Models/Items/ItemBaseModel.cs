@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
+using GameTools.Client.Domain.Common.Rules;
 
 namespace GameTools.Client.Wpf.Models.Items
 {
@@ -8,7 +9,7 @@ namespace GameTools.Client.Wpf.Models.Items
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required, MinLength(1)]
-        [MaxLength(100)]
+        [MaxLength(ItemRules.NameMax)]
         private string _name = string.Empty;
 
         [ObservableProperty]
@@ -18,7 +19,7 @@ namespace GameTools.Client.Wpf.Models.Items
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
-        [StringLength(500)]
+        [StringLength(ItemRules.DescriptionMax)]
         private string? _description;
 
         [ObservableProperty]

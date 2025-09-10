@@ -7,12 +7,19 @@
              xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemCommandViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
-    <StackPanel Orientation="Horizontal">
-        <Button Margin="0 0 10 0" Width="150" Content="Add Item" Command="{Binding AddItemCommand}"/>
-        <Button Margin="0 0 10 0" Width="150" Content="Export Csv" Command="{Binding ExportCsvCommand}"/>
-        <Button Margin="0 0 10 0" Width="150" Content="Export Insert Template" Command="{Binding ExportBulkInsertBaseCsvCommand}"/>
-        <Button Margin="0 0 10 0" Width="150" Content="Export Update Template" Command="{Binding ExportBulkUpdateBaseCsvCommand}"/>
-        <Button Margin="0 0 10 0" Width="150" Content="Bulk Insert" Command="{Binding BulkInsertCommand}"/>
-        <Button Margin="0 0 10 0" Width="150" Content="Bulk Update" Command="{Binding BulkUpdateCommand}"/>
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Margin="0 0 10 0" Width="150" Content="Add Item" Command="{Binding AddItemCommand}"/>
+            <Button Margin="0 0 10 0" Width="150" Content="Delete All Result" Command="{Binding DeleteAllResultCommand}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+            <Button Margin="0 0 10 0" Width="150" Content="Export This Page Result" Command="{Binding ExportCsvCommand}"/>
+            <Button Margin="0 0 10 0" Width="150" Content="Export Insert Template" Command="{Binding ExportBulkInsertBaseCsvCommand}"/>
+            <Button Margin="0 0 10 0" Width="150" Content="Export Update Template" Command="{Binding ExportBulkUpdateBaseCsvCommand}"/>
+            <Button Margin="0 0 10 0" Width="150" Content="Export Delete Template" Command="{Binding ExportBulkDeleteBaseCsvCommand}"/>
+            <Button Margin="0 0 10 0" Width="150" Content="Bulk Insert" Command="{Binding BulkInsertCommand}"/>
+            <Button Margin="0 0 10 0" Width="150" Content="Bulk Update" Command="{Binding BulkUpdateCommand}"/>
+            <Button Margin="0 0 10 0" Width="150" Content="Bulk Delete" Command="{Binding BulkDeleteCommand}"/>
+        </StackPanel>
     </StackPanel>
 </UserControl>

@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.DeleteItem;
+using GameTools.Client.Application.UseCases.Items.GetItemsPage;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Wpf.Common.State;
@@ -22,16 +24,19 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         private readonly CreateItemUseCase _createItemUseCase;
         private readonly BulkInsertItemsUseCase _bulkInsertItemsUseCase;
         private readonly BulkUpdateItemsUseCase _bulkUpdateItemsUseCase;
+        private readonly BulkDeleteItemsUseCase _bulkDeleteItemsUseCase;
 
         private CancellationTokenSource? _cts;
 
         public ItemsCommandCoordinator(
             IItemPageSearchState itemPageSearchState,
+            GetItemsPageUseCase getItemPageUseCase,
             UpdateItemUseCase updateItemUseCase,
             DeleteItemUseCase deleteItemUseCase,
             CreateItemUseCase createItemUseCase,
             BulkInsertItemsUseCase bulkInsertItemsUseCase,
-            BulkUpdateItemsUseCase bulkUpdateItemsUseCase)
+            BulkUpdateItemsUseCase bulkUpdateItemsUseCase,
+            BulkDeleteItemsUseCase bulkDeleteItemsUseCase)
         {
             _itemPageSearchState = itemPageSearchState;
             _updateItemUseCase = updateItemUseCase;
@@ -39,6 +44,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
             _createItemUseCase = createItemUseCase;
             _bulkInsertItemsUseCase = bulkInsertItemsUseCase;
             _bulkUpdateItemsUseCase = bulkUpdateItemsUseCase;
+            _bulkDeleteItemsUseCase = bulkDeleteItemsUseCase;
 
             _itemPageSearchState.BusyState.PropertyChanged += OnItemPageSearchStatePropertyChanged;
         }
@@ -75,6 +81,8 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         public Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput bulkUpdateItemsInput, CancellationToken external = default)
             => RunExclusiveCommandAsync(ct => _bulkUpdateItemsUseCase.Handle(bulkUpdateItemsInput, ct), external);
 
+        public Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput bulkDeleteItemsInput, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _bulkDeleteItemsUseCase.Handle(bulkDeleteItemsInput, ct), external);
 
         private async Task RunExclusiveCommandAsync(
             Func<CancellationToken, Task> action,
@@ -118,7 +126,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
                 myCts?.Dispose();
             }
         }
-        
+
         private void SetCommandBusy(bool value)
         {
             _itemPageSearchState.BusyState.CommandBusy = value;
@@ -128,7 +136,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         public void Dispose()
         {
             _itemPageSearchState.BusyState.PropertyChanged -= OnItemPageSearchStatePropertyChanged;
-            _cts?.Cancel();
+            try { _cts?.Cancel(); } catch { }
             _cts?.Dispose();
         }
     }

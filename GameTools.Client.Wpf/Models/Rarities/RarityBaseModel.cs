@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
+using GameTools.Client.Domain.Common.Rules;
 
 namespace GameTools.Client.Wpf.Models.Rarities
 {
@@ -8,14 +9,14 @@ namespace GameTools.Client.Wpf.Models.Rarities
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required, MinLength(1)]
-        [MaxLength(32)]
+        [MaxLength(RarityRules.GradeMax)]
         private string _grade = string.Empty;
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required]
-        [RegularExpression("^#[0-9A-F]{6}$", ErrorMessage = "Color must be '#RRGGBB' (uppercase).")]
-        private string _colorCode = "#A0A0A0";
+        [RegularExpression(RarityRules.ColorFormat, ErrorMessage = "Color must be '#RRGGBB' (uppercase).")]
+        private string _colorCode = RarityRules.DefaultColor;
 
         protected RarityBaseModel() => ValidateAllProperties();
 

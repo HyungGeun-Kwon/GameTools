@@ -1,4 +1,5 @@
 ﻿using GameTools.Client.Application.Common.Paging;
+using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
@@ -6,6 +7,7 @@ using GameTools.Client.Application.UseCases.Items.GetItemsPage;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Contracts.Common;
+using GameTools.Contracts.Items.BulkDeleteItems;
 using GameTools.Contracts.Items.BulkInsertItems;
 using GameTools.Contracts.Items.BulkUpdateItems;
 using GameTools.Contracts.Items.Common;
@@ -38,7 +40,10 @@ namespace GameTools.Client.Infrastructure.Mapper
 
         public static BulkUpdateItemsRequest ToContract(this BulkUpdateItemsInput input)
             => new(input.Inputs.Select(i => new BulkUpdateItemRow(i.Id, i.Name, i.Price, i.Description, i.RarityId, i.RowVersionBase64)).ToList());
-        
+
+        public static BulkDeleteItemsRequest ToContract(this BulkDeleteItemsInput input)
+            => new(input.Inputs.Select(i => new BulkDeleteItemRow(i.Id, i.RowVersionBase64)).ToList());
+
         public static Item ToDomain(this ItemResponse r) 
             => new(
                 r.Id, r.Name, r.Price, r.Description, 
@@ -62,6 +67,12 @@ namespace GameTools.Client.Infrastructure.Mapper
             => new(result.Id, result.Status, result.NewRowVersionBase64);
 
         public static BulkUpdateItemsOutput ToDomain(this BulkUpdateItemsResponse resp)
+            => new(resp.Results.Select(ToDomain).ToList());
+
+        public static BulkDeleteItemOutputRow ToDomain(this BulkDeleteItemResult result)
+            => new(result.Id, result.Status);
+
+        public static BulkDeleteItemsOutput ToDomain(this BulkDeleteItemsResponse resp)
             => new(resp.Results.Select(ToDomain).ToList());
     }
 }

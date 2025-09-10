@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Domain.Items;
@@ -22,5 +23,6 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput bulkInsertItemsInput, CancellationToken external = default);
         Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput bulkUpdateItemsInput, CancellationToken external = default);
+        Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput bulkDeleteItemsInput, CancellationToken external = default);
     }
 }

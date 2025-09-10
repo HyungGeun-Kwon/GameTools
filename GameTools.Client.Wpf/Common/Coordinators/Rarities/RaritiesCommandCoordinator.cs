@@ -114,7 +114,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Rarities
         {
             _raritySearchState.BusyState.PropertyChanged -= OnRaritySearchStatePropertyChanged;
 
-            _cts?.Cancel();
+            try { _cts?.Cancel(); } catch { }
             _cts?.Dispose();
         }
     }

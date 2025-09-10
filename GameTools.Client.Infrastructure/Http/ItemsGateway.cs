@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using GameTools.Client.Application.Common.Paging;
 using GameTools.Client.Application.Ports;
+using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
@@ -12,6 +13,7 @@ using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Infrastructure.Mapper;
 using GameTools.Contracts.Common;
+using GameTools.Contracts.Items.BulkDeleteItems;
 using GameTools.Contracts.Items.BulkInsertItems;
 using GameTools.Contracts.Items.BulkUpdateItems;
 using GameTools.Contracts.Items.Common;
@@ -108,6 +110,18 @@ namespace GameTools.Client.Infrastructure.Http
             res.EnsureSuccessStatusCode();
 
             var body = await res.Content.ReadFromJsonAsync<BulkUpdateItemsResponse>(cancellationToken: ct)
+                ?? throw new InvalidOperationException("Empty response");
+
+            return body.ToDomain();
+        }
+
+        public async Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput input, CancellationToken ct)
+        {
+            BulkDeleteItemsRequest req = input.ToContract();
+            using var res = await http.PutAsJsonAsync("/api/items/bulk-delete", req, ct);
+            res.EnsureSuccessStatusCode();
+
+            var body = await res.Content.ReadFromJsonAsync<BulkDeleteItemsResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
             return body.ToDomain();

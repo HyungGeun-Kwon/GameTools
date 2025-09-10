@@ -1,4 +1,5 @@
 ﻿using GameTools.Client.Application.Common.Paging;
+using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
@@ -36,6 +37,9 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
         public static PagedOutput<ItemEditModel> ToPagedItemEditModel(this PagedOutput<Item> pagedOutput)
             => new(pagedOutput.Items.ToEditModels().ToList(), pagedOutput.TotalCount, pagedOutput.PageNumber, pagedOutput.PageSize);
 
+        public static BulkDeleteItemsInput ToBulkDeleteItemsInput(this PagedOutput<Item> pagedOutput)
+            => new(pagedOutput.Items.Select(i => new BulkDeleteItemInputRow(i.Id, i.RowVersionBase64)).ToList());
+
         public static GetItemsPageInput ToGetItemPageInput(this IItemPageSearchState itemPageSearchState)
             => new
             (
@@ -47,6 +51,13 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
             => new
             (
                 new(page, itemPageSearchState.PageSize),
+                new(itemPageSearchState.NameFilter, itemPageSearchState.RarityIdFilter)
+            );
+
+        public static GetItemsPageInput GetItemPageInputFromNewPage(this IItemPageSearchState itemPageSearchState, int page, int pageSize)
+            => new
+            (
+                new(page, pageSize),
                 new(itemPageSearchState.NameFilter, itemPageSearchState.RarityIdFilter)
             );
 

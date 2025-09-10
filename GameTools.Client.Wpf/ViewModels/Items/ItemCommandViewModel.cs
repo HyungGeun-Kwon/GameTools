@@ -19,20 +19,26 @@ namespace GameTools.Client.Wpf.ViewModels.Items
     {
         [RelayCommand]
         private void AddItem()
+            => dialogService.ShowDialog(DialogViewNames.Item_EditDialog, null, ItemEditDialogClosed);
+
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private Task DeleteAllResult()
         {
-            dialogService.ShowDialog(DialogViewNames.Item_EditDialog, null, ItemEditDialogClosed);
+            var btnResult = MessageBox.Show("Are you sure you want to delete it?", "", MessageBoxButton.YesNo);
+            if (btnResult != MessageBoxResult.Yes) return Task.CompletedTask;
+            return itemsCsvCommandCoordinator.ImportAndAllResultDeleteAsync();
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task ExportCsv()
+        private Task ExportCsv()
         {
             if (itemPageSearchState.Results.Count == 0)
             {
                 MessageBox.Show("No results to export.");
-                return;
+                return Task.CompletedTask;
             }
 
-            await itemsCsvCommandCoordinator.ExportPageResultsAsync(itemPageSearchState.Results);
+            return itemsCsvCommandCoordinator.ExportPageResultsAsync(itemPageSearchState.Results);
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
@@ -44,16 +50,16 @@ namespace GameTools.Client.Wpf.ViewModels.Items
             => itemsCsvCommandCoordinator.ExportBulkUpdateTemplateAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task BulkInsert()
-        {
-            await itemsCsvCommandCoordinator.ImportAndBulkInsertAsync();
-        }
+        private Task BulkInsert()
+            => itemsCsvCommandCoordinator.ImportAndBulkInsertAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task BulkUpdate()
-        {
-            await itemsCsvCommandCoordinator.ImportAndBulkUpdateAsync();
-        }
+        private Task BulkUpdate()
+            => itemsCsvCommandCoordinator.ImportAndBulkUpdateAsync();
+
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private Task BulkDelete()
+            => itemsCsvCommandCoordinator.ImportAndBulkDeleteAsync();
 
         private async void ItemEditDialogClosed(IDialogResult? result)
         {
@@ -67,11 +73,6 @@ namespace GameTools.Client.Wpf.ViewModels.Items
                 await itemsQueryCoordinator.RefreshAsync();
             }
             catch (OperationCanceledException) { }
-        }
-
-        [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task DeleteAll()
-        {
         }
 
         public void OnRegionActivated(Parameters? _) { }

@@ -10,11 +10,11 @@
              mc:Ignorable="d">
     <StackPanel Orientation="Horizontal">
         <Label VerticalContentAlignment="Center" Content="Page number : "/>
-        <TextBox Text="{Binding SearchPageNumber}" Width="50" VerticalAlignment="Center"/>
+        <TextBox Text="{Binding SearchPageNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" Width="50" VerticalAlignment="Center"/>
         <Label VerticalContentAlignment="Center" Content="Page size : " Margin="20 0 0 0 "/>
-        <TextBox Text="{Binding SearchPageSize}" Width="50" VerticalAlignment="Center"/>
+        <TextBox Text="{Binding SearchPageSize, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" Width="50" VerticalAlignment="Center"/>
         <Label VerticalContentAlignment="Center" Content="Name filter : " Margin="20 0 0 0 "/>
-        <TextBox Text="{Binding NameFilter}" Width="100" VerticalAlignment="Center"/>
+        <TextBox Text="{Binding NameFilter, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" Width="100" VerticalAlignment="Center"/>
         <TextBlock VerticalAlignment="Center" Text="RarityId filter : " Margin="20 0 0 0 "/>
         <Button 
             Margin="0 0 10 0" 
