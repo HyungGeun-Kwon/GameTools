@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace GameTools.Client.Domain.Common.Rules
+﻿namespace GameTools.Client.Domain.Common.Rules
 {
     public static class RarityRules
     {

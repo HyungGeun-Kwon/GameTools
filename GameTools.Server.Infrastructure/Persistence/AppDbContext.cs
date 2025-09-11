@@ -1,5 +1,6 @@
 ﻿using GameTools.Server.Domain.Auditing;
 using GameTools.Server.Domain.Entities;
+using GameTools.Server.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Infrastructure.Persistence
@@ -10,6 +11,7 @@ namespace GameTools.Server.Infrastructure.Persistence
         public DbSet<Rarity> Rarities => Set<Rarity>();
         public DbSet<ItemAudit> ItemAudits => Set<ItemAudit>();
         public DbSet<RarityAudit> RarityAudits => Set<RarityAudit>();
+        public DbSet<RestoreRunRow> RestoreRunRows => Set<RestoreRunRow>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
