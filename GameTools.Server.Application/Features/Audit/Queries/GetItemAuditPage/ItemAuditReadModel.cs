@@ -1,7 +1,7 @@
 ﻿namespace GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage
 {
     public sealed record ItemAuditReadModel(
-        long? AuditId,
+        long AuditId,
         int ItemId,
         string Action,
         string? BeforeJson,

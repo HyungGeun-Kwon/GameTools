@@ -1,26 +1,28 @@
 ﻿using System.Net.Mime;
-using GameTools.Server.Api.Mapper;
-using GameTools.Server.Application.Features.Items.Commands.CreateItem;
-using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
-using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
-using GameTools.Server.Application.Features.Items.Commands.UpdateItem;
-using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
-using GameTools.Server.Application.Features.Items.Models;
-using GameTools.Server.Application.Features.Items.Queries.GetItemById;
-using GameTools.Server.Application.Features.Items.Queries.GetItemPage;
+using GameTools.Contracts.Common;
+using GameTools.Contracts.Items.BulkDeleteItems;
+using GameTools.Contracts.Items.BulkInsertItems;
 using GameTools.Contracts.Items.BulkUpdateItems;
 using GameTools.Contracts.Items.Common;
 using GameTools.Contracts.Items.CreateItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
+using GameTools.Contracts.Items.RestoreItemsAsOf;
 using GameTools.Contracts.Items.UpdateItem;
+using GameTools.Server.Api.Mapper;
+using GameTools.Server.Application.Common.Results;
+using GameTools.Server.Application.Features.Items.Commands.CreateItem;
+using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
+using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
+using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
+using GameTools.Server.Application.Features.Items.Commands.RestoreItemsAsOf;
+using GameTools.Server.Application.Features.Items.Commands.UpdateItem;
+using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
+using GameTools.Server.Application.Features.Items.Models;
+using GameTools.Server.Application.Features.Items.Queries.GetItemById;
+using GameTools.Server.Application.Features.Items.Queries.GetItemPage;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using GameTools.Contracts.Common;
-using GameTools.Contracts.Items.BulkInsertItems;
-using GameTools.Server.Application.Common.Results;
-using GameTools.Contracts.Items.BulkDeleteItems;
-using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
 
 namespace GameTools.Server.Api.Controllers
 {
@@ -138,6 +140,16 @@ namespace GameTools.Server.Api.Controllers
         {
             var reads = await mediator.Send(new DeleteItemsTvpCommand(req.ToRows()), ct);
             return Ok(reads.ToResponse());
+        }
+
+        // 복원
+        [HttpPost("restore-asof")]
+        public async Task<ActionResult<object>> RestoreAsOf(
+            [FromBody] RestoreItemsAsOfRequest req, 
+            CancellationToken ct)
+        {
+            var result = await mediator.Send(new RestoreItemsAsOfCommand(req.ToPayload()), ct);
+            return Ok(result.ToResponse());
         }
     }
 }
