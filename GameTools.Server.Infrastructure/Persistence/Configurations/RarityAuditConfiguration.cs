@@ -17,12 +17,12 @@ namespace GameTools.Server.Infrastructure.Persistence.Configurations
 
             b.HasKey(r => r.AuditId);
             b.Property(r => r.AuditId)
-             .UseIdentityColumn();
+                .UseIdentityColumn();
 
             b.Property(r => r.Action)
-             .HasConversion<string>()
-             .HasMaxLength(10)
-             .IsRequired();
+                .HasConversion<string>()
+                .HasMaxLength(10)
+                .IsRequired();
 
             b.Property(r => r.RarityId)
                 .IsRequired();
@@ -32,9 +32,9 @@ namespace GameTools.Server.Infrastructure.Persistence.Configurations
             b.Property(r => r.AfterJson);
 
             b.Property(r => r.ChangedBy)
-             .IsRequired()
-             .HasMaxLength(64)
-             .HasDefaultValue("system");
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue("system");
 
             b.Property(r => r.ChangedAtUtc)
                 .IsRequired()

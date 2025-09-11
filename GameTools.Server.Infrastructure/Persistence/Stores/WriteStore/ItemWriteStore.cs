@@ -4,6 +4,7 @@ using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.Users;
 using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
 using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
+using GameTools.Server.Application.Features.Items.Commands.RestoreItemsAsOf;
 using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
 using GameTools.Server.Domain.Entities;
 using GameTools.Server.Infrastructure.Persistence.Tvp;
@@ -161,6 +162,58 @@ namespace GameTools.Server.Infrastructure.Persistence.Stores.WriteStore
                     result.Add((id, statusCode));
                 }
                 return result;
+            }
+            finally
+            {
+                if (openedHere) await conn.CloseAsync();
+            }
+        }
+
+        public async Task<(Guid RestoreId, int Deleted, int Inserted, int Updated)> RestoreItemsAsOfAsync(
+            RestoreItemsAsOfPayload payload, CancellationToken ct)
+        {
+            var conn = db.Database.GetDbConnection();
+            var openedHere = false;
+            if (conn.State != ConnectionState.Open)
+            {
+                await conn.OpenAsync(ct);
+                openedHere = true;
+            }
+
+            try
+            {
+                await SetSessionActorAsync(conn, ct);
+
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText = "dbo.Item_Restore_AsOf";
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                var pAsOf = cmd.CreateParameter(); pAsOf.ParameterName = "@AsOfUtc"; pAsOf.Value = payload.AsOfUtc;
+                var pItem = cmd.CreateParameter(); pItem.ParameterName = "@ItemId"; pItem.Value = (object?)payload.ItemId?? DBNull.Value;
+                var pDry = cmd.CreateParameter(); pDry.ParameterName = "@DryRun"; pDry.Value = payload.DryRun;
+                var pNotes = cmd.CreateParameter(); pNotes.ParameterName = "@Notes"; pNotes.Value = (object?)payload.Notes ?? DBNull.Value;
+                var pActor = cmd.CreateParameter(); pActor.ParameterName = "@Actor"; pActor.Value = currentUser.UserIdOrName ?? "unknown";
+
+                cmd.Parameters.Add(pAsOf);
+                cmd.Parameters.Add(pItem);
+                cmd.Parameters.Add(pDry);
+                cmd.Parameters.Add(pActor);
+                cmd.Parameters.Add(pNotes);
+
+                await using var reader = await cmd.ExecuteReaderAsync(ct);
+
+                Guid restoreId = Guid.Empty;
+                int deleted = 0, inserted = 0, updated = 0;
+
+                if (await reader.ReadAsync(ct))
+                {
+                    restoreId = reader.GetGuid(0);
+                    deleted = reader.GetInt32(1);
+                    inserted = reader.GetInt32(2);
+                    updated = reader.GetInt32(3);
+                }
+
+                return (restoreId, deleted, inserted, updated);
             }
             finally
             {

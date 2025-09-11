@@ -199,7 +199,7 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             return await handler.Handle(cmd, CancellationToken.None);
         }
 
-        private static UpdateItemHandler UpdateItemHandler(AppDbContext db)
+        internal static UpdateItemHandler UpdateItemHandler(AppDbContext db)
             => new(
                 new ItemWriteStore(db, new TestCurrentUser()),
                 new RarityWriteStore(db),

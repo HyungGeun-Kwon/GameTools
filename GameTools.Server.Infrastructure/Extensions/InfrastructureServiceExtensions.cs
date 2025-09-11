@@ -28,6 +28,8 @@ namespace GameTools.Server.Infrastructure.Extensions
             services.AddScoped<IRarityWriteStore, RarityWriteStore>();
             services.AddScoped<IItemReadStore, ItemReadStore>();
             services.AddScoped<IRarityReadStore, RarityReadStore>();
+            services.AddScoped<IItemAuditReadStore, ItemAuditReadStore>();
+            services.AddScoped<IRestoreRunReadStore, RestoreRunReadStore>();
 
             return services;
         }

@@ -22,31 +22,31 @@ namespace GameTools.Server.Infrastructure.Persistence.Configurations
 
             b.HasKey(r => r.Id);
             b.Property(r => r.Id)
-             .UseIdentityColumn();
+                .UseIdentityColumn();
 
             b.Property(i => i.RowVersion)
                 .IsRequired()
                 .IsRowVersion();
 
             b.Property(r => r.Grade)
-             .IsRequired()
-             .HasMaxLength(RarityRules.GradeMax);
+                .IsRequired()
+                .HasMaxLength(RarityRules.GradeMax);
 
             b.Property(r => r.ColorCode)
-             .IsRequired()
-             .HasColumnType("char(7)") // '#RRGGBB'
-             .HasDefaultValue("#A0A0A0");
+                .IsRequired()
+                .HasColumnType("char(7)") // '#RRGGBB'
+                .HasDefaultValue("#A0A0A0");
 
             b.HasIndex(r => r.Grade)
-             .IsUnique();
+                .IsUnique();
 
             b.HasIndex(r => r.ColorCode)
-             .IsUnique();
+                .IsUnique();
 
             // 컬렉션 백킹필드(_items) 사용
             b.Navigation(r => r.Items)
-             .HasField("_items")
-             .UsePropertyAccessMode(PropertyAccessMode.Field);
+                .HasField("_items")
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

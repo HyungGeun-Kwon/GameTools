@@ -103,7 +103,7 @@ namespace GameTools.Server.Test.DataBase.ItemTest
             statusCode.Should().Be(WriteStatusCode.NotFound);
         }
 
-        private static DeleteItemHandler DeleteHandler(AppDbContext db)
+        internal static DeleteItemHandler DeleteHandler(AppDbContext db)
             => new(
                 new ItemWriteStore(db, new TestCurrentUser()),
                 new UnitOfWork(db, new TestCurrentUser())

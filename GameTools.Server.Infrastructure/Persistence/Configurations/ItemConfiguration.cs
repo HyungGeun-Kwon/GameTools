@@ -25,23 +25,23 @@ namespace GameTools.Server.Infrastructure.Persistence.Configurations
 
             // Columns
             b.Property(i => i.Name)
-             .IsRequired()
-             .HasMaxLength(ItemRules.NameMax);
+                .IsRequired()
+                .HasMaxLength(ItemRules.NameMax);
 
             b.Property(i => i.Price)
-             .IsRequired();
+                .IsRequired();
 
             b.Property(i => i.Description)
-             .HasMaxLength(ItemRules.DescriptionMax);
+                .HasMaxLength(ItemRules.DescriptionMax);
 
             b.Property( i => i.RarityId)
-             .IsRequired();
+                .IsRequired();
 
             // FK
             b.HasOne(i => i.Rarity)
-             .WithMany(r => r.Items)
-             .HasForeignKey(i => i.RarityId)
-             .OnDelete(DeleteBehavior.Restrict);
+                .WithMany(r => r.Items)
+                .HasForeignKey(i => i.RarityId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Index
             b.HasIndex(i => i.RarityId);

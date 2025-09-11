@@ -14,15 +14,15 @@ namespace GameTools.Server.Infrastructure.Persistence.Configurations
                 t.HasCheckConstraint("CK_ItemAudit_Before_IsJson", "([BeforeJson] IS NULL OR ISJSON([BeforeJson]) = 1)");
                 t.HasCheckConstraint("CK_ItemAudit_After_IsJson", "([AfterJson]  IS NULL OR ISJSON([AfterJson])  = 1)");
             });
-            
+
             b.HasKey(i => i.AuditId);
             b.Property(i => i.AuditId)
-             .UseIdentityColumn();
+                .UseIdentityColumn();
 
             b.Property(i => i.Action)
-             .HasConversion<string>()
-             .HasMaxLength(10)
-             .IsRequired();
+                .HasConversion<string>()
+                .HasMaxLength(10)
+                .IsRequired();
 
             b.Property(i => i.ItemId).IsRequired();
 
@@ -31,9 +31,9 @@ namespace GameTools.Server.Infrastructure.Persistence.Configurations
             b.Property(i => i.AfterJson);
 
             b.Property(i => i.ChangedBy)
-             .IsRequired()
-             .HasMaxLength(64)
-             .HasDefaultValue("system");
+                .IsRequired()
+                .HasMaxLength(64)
+                .HasDefaultValue("system");
 
             b.Property(i => i.ChangedAtUtc)
                 .IsRequired()
