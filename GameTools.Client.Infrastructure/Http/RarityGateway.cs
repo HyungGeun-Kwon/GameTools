@@ -23,7 +23,7 @@ namespace GameTools.Client.Infrastructure.Http
 
             res.EnsureSuccessStatusCode();
             var body = await res.Content.ReadFromJsonAsync<RarityResponse>(cancellationToken: ct);
-            return body?.ToDomain();
+            return body?.ToClient();
         }
 
         public async Task<IReadOnlyList<Rarity>> GetAllRaritiesAsync(CancellationToken ct)
@@ -33,7 +33,7 @@ namespace GameTools.Client.Infrastructure.Http
             res.EnsureSuccessStatusCode();
             var resp = await res.Content.ReadFromJsonAsync<AllRarityResponse>(cancellationToken: ct)
                 ?? new AllRarityResponse([]);
-            return resp.ToDomain();
+            return resp.ToClient();
         }
 
         public async Task<Rarity> CreateAsync(CreateRarityInput input, CancellationToken ct)
@@ -44,7 +44,7 @@ namespace GameTools.Client.Infrastructure.Http
             var body = await res.Content.ReadFromJsonAsync<RarityResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
-            return body.ToDomain();
+            return body.ToClient();
         }
 
         public async Task<Rarity> UpdateAsync(UpdateRarityInput input, CancellationToken ct)
@@ -56,7 +56,7 @@ namespace GameTools.Client.Infrastructure.Http
             var body = await res.Content.ReadFromJsonAsync<RarityResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
-            return body.ToDomain();
+            return body.ToClient();
         }
 
         public async Task DeleteAsync(DeleteRarityInput input, CancellationToken ct)

@@ -4,6 +4,7 @@ using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.GetItemsPage;
+using GameTools.Client.Application.UseCases.Items.RestoreItemsAsOf;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Contracts.Common;
@@ -14,6 +15,7 @@ using GameTools.Contracts.Items.Common;
 using GameTools.Contracts.Items.CreateItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
+using GameTools.Contracts.Items.RestoreItemsAsOf;
 using GameTools.Contracts.Items.UpdateItem;
 
 namespace GameTools.Client.Infrastructure.Mapper
@@ -44,35 +46,41 @@ namespace GameTools.Client.Infrastructure.Mapper
         public static BulkDeleteItemsRequest ToContract(this BulkDeleteItemsInput input)
             => new(input.Inputs.Select(i => new BulkDeleteItemRow(i.Id, i.RowVersionBase64)).ToList());
 
-        public static Item ToDomain(this ItemResponse r) 
+        public static RestoreItemsAsOfRequest ToContract(this RestoreItemsAsOfInput input)
+            => new(input.AsOfUtc, input.ItemId, input.DryRun, input.Notes);
+
+        public static Item ToClient(this ItemResponse r) 
             => new(
                 r.Id, r.Name, r.Price, r.Description, 
                 r.RarityId, r.RarityGrade, r.RarityColorCode, 
                 r.RowVersionBase64
             );
 
-        public static PagedOutput<Item> ToDomain(this PagedResponse<ItemResponse> p) 
-            => new(p.Items.Select(ToDomain).ToList(), p.TotalCount, p.PageNumber, p.PageSize);
+        public static PagedOutput<Item> ToClient(this PagedResponse<ItemResponse> p) 
+            => new(p.Items.Select(ToClient).ToList(), p.TotalCount, p.PageNumber, p.PageSize);
 
-        public static IReadOnlyList<Item> ToDomain(this ItemsByRarityResponse resp) 
-            => resp.Items.Select(ToDomain).ToList();
+        public static IReadOnlyList<Item> ToClient(this ItemsByRarityResponse resp) 
+            => resp.Items.Select(ToClient).ToList();
 
-        public static BulkInsertItemOutputRow ToDomain(this BulkInsertItemResult result)
+        public static BulkInsertItemOutputRow ToClient(this BulkInsertItemResult result)
             => new(result.Id, result.Status, result.RowVersionBase64);
 
-        public static BulkInsertItemsOutput ToDomain(this BulkInsertItemsResponse resp)
-            => new(resp.Results.Select(ToDomain).ToList());
+        public static BulkInsertItemsOutput ToClient(this BulkInsertItemsResponse resp)
+            => new(resp.Results.Select(ToClient).ToList());
 
-        public static BulkUpdateItemOutputRow ToDomain(this BulkUpdateItemResult result)
+        public static BulkUpdateItemOutputRow ToClient(this BulkUpdateItemResult result)
             => new(result.Id, result.Status, result.NewRowVersionBase64);
 
-        public static BulkUpdateItemsOutput ToDomain(this BulkUpdateItemsResponse resp)
-            => new(resp.Results.Select(ToDomain).ToList());
+        public static BulkUpdateItemsOutput ToClient(this BulkUpdateItemsResponse resp)
+            => new(resp.Results.Select(ToClient).ToList());
 
-        public static BulkDeleteItemOutputRow ToDomain(this BulkDeleteItemResult result)
+        public static BulkDeleteItemOutputRow ToClient(this BulkDeleteItemResult result)
             => new(result.Id, result.Status);
 
-        public static BulkDeleteItemsOutput ToDomain(this BulkDeleteItemsResponse resp)
-            => new(resp.Results.Select(ToDomain).ToList());
+        public static BulkDeleteItemsOutput ToClient(this BulkDeleteItemsResponse resp)
+            => new(resp.Results.Select(ToClient).ToList());
+
+        public static RestoreItemsAsOfOutput ToClient(this RestoreItemsAsOfResponse resp)
+            => new(resp.RestoreId, resp.Deleted, resp.Inserted, resp.Updated, resp.IsChanged);
     }
 }

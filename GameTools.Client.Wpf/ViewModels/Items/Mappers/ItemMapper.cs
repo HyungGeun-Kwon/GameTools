@@ -18,7 +18,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
         public static ItemEditModel ToEditModel(this Item item)
             => new(item.Id, item.Name, item.Price, item.Description, item.RarityId, item.RowVersionBase64);
         
-        public static Item ToDomain(this ItemEditModel itemEditModel, string grade, string colorCode)
+        public static Item ToClient(this ItemEditModel itemEditModel, string grade, string colorCode)
         {
             if (!itemEditModel.Id.HasValue)
                 throw new ArgumentException("Id must not be null.", nameof(itemEditModel));

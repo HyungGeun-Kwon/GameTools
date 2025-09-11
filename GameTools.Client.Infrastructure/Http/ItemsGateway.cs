@@ -9,6 +9,7 @@ using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.DeleteItem;
 using GameTools.Client.Application.UseCases.Items.GetItemsPage;
+using GameTools.Client.Application.UseCases.Items.RestoreItemsAsOf;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Infrastructure.Mapper;
@@ -20,6 +21,7 @@ using GameTools.Contracts.Items.Common;
 using GameTools.Contracts.Items.CreateItem;
 using GameTools.Contracts.Items.GetItemPage;
 using GameTools.Contracts.Items.GetItemsByRarity;
+using GameTools.Contracts.Items.RestoreItemsAsOf;
 using GameTools.Contracts.Items.UpdateItem;
 
 namespace GameTools.Client.Infrastructure.Http
@@ -33,7 +35,7 @@ namespace GameTools.Client.Infrastructure.Http
 
             res.EnsureSuccessStatusCode();
             ItemResponse? body = await res.Content.ReadFromJsonAsync<ItemResponse>(cancellationToken: ct);
-            return body?.ToDomain();
+            return body?.ToClient();
         }
 
         public async Task<IReadOnlyList<Item>> GetByRarityAsync(byte rarityId, CancellationToken ct)
@@ -41,7 +43,7 @@ namespace GameTools.Client.Infrastructure.Http
             var resp = await http.GetFromJsonAsync<ItemsByRarityResponse>($"/api/items/by-rarity/{rarityId}", ct)
                ?? new ItemsByRarityResponse([]);
 
-            return resp.ToDomain();
+            return resp.ToClient();
         }
 
         public async Task<PagedOutput<Item>> GetPageAsync(GetItemsPageInput input, CancellationToken ct)
@@ -53,7 +55,7 @@ namespace GameTools.Client.Infrastructure.Http
             var page = await res.Content.ReadFromJsonAsync<PagedResponse<ItemResponse>>(cancellationToken: ct)
                        ?? new PagedResponse<ItemResponse>([], 0, req.PageNumber, req.PageSize);
 
-            return page.ToDomain();
+            return page.ToClient();
         }
 
         public async Task<Item> CreateAsync(CreateItemInput input, CancellationToken ct)
@@ -65,7 +67,7 @@ namespace GameTools.Client.Infrastructure.Http
             var body = await res.Content.ReadFromJsonAsync<ItemResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
             
-            return body.ToDomain();
+            return body.ToClient();
         }
 
         public async Task<Item> UpdateAsync(UpdateItemInput input, CancellationToken ct)
@@ -77,7 +79,7 @@ namespace GameTools.Client.Infrastructure.Http
             var body = await res.Content.ReadFromJsonAsync<ItemResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
-            return body.ToDomain();
+            return body.ToClient();
         }
 
         public async Task DeleteAsync(DeleteItemInput input, CancellationToken ct)
@@ -100,7 +102,7 @@ namespace GameTools.Client.Infrastructure.Http
             var body = await res.Content.ReadFromJsonAsync<BulkInsertItemsResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
-            return body.ToDomain();
+            return body.ToClient();
         }
 
         public async Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput input, CancellationToken ct)
@@ -112,7 +114,7 @@ namespace GameTools.Client.Infrastructure.Http
             var body = await res.Content.ReadFromJsonAsync<BulkUpdateItemsResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
-            return body.ToDomain();
+            return body.ToClient();
         }
 
         public async Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput input, CancellationToken ct)
@@ -124,7 +126,20 @@ namespace GameTools.Client.Infrastructure.Http
             var body = await res.Content.ReadFromJsonAsync<BulkDeleteItemsResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response");
 
-            return body.ToDomain();
+            return body.ToClient();
+        }
+
+        public async Task<RestoreItemsAsOfOutput> RestoreAsOfAsync(RestoreItemsAsOfInput input, CancellationToken ct)
+        {
+            RestoreItemsAsOfRequest req = input.ToContract();
+
+            using var res = await http.PostAsJsonAsync("/api/items/restore-asof", req, ct);
+            res.EnsureSuccessStatusCode();
+
+            var body = await res.Content.ReadFromJsonAsync<RestoreItemsAsOfResponse>(cancellationToken: ct)
+                ?? throw new InvalidOperationException("Empty response");
+
+            return body.ToClient();
         }
     }
 }

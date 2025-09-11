@@ -5,6 +5,7 @@ using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.DeleteItem;
 using GameTools.Client.Application.UseCases.Items.GetItemsPage;
+using GameTools.Client.Application.UseCases.Items.RestoreItemsAsOf;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 
@@ -22,5 +23,6 @@ namespace GameTools.Client.Application.Ports
         Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput input, CancellationToken ct);
         Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput input, CancellationToken ct);
         Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput input, CancellationToken ct);
+        Task<RestoreItemsAsOfOutput> RestoreAsOfAsync(RestoreItemsAsOfInput input, CancellationToken ct);
     }
 }

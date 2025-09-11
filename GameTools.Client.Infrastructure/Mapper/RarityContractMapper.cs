@@ -16,11 +16,11 @@ namespace GameTools.Client.Infrastructure.Mapper
         public static UpdateRarityRequest ToContract(this UpdateRarityInput input)
             => new(input.Id, input.Grade, input.ColorCode, input.RowVersionBase64);
 
-        public static Rarity ToDomain(this RarityResponse r)
+        public static Rarity ToClient(this RarityResponse r)
             => new(r.Id, r.Grade, r.ColorCode, r.RowVersionBase64);
 
-        public static IReadOnlyList<Rarity> ToDomain(this AllRarityResponse r)
-            => r.Rarities.Select(ToDomain).ToList();
+        public static IReadOnlyList<Rarity> ToClient(this AllRarityResponse r)
+            => r.Rarities.Select(ToClient).ToList();
 
     }
 }
