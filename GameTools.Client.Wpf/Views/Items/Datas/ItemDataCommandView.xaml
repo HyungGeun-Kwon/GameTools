@@ -1,11 +1,10 @@
-﻿<UserControl x:Class="GameTools.Client.Wpf.Views.Items.ItemCommandView"
+﻿<UserControl x:Class="GameTools.Client.Wpf.Views.Items.Datas.ItemDataCommandView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Items"
-             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items"
-             d:DataContext="{d:DesignInstance Type=viewModels:ItemCommandViewModel, IsDesignTimeCreatable=False}"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items.Datas"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemDataCommandViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
     <StackPanel>
         <StackPanel Orientation="Horizontal">

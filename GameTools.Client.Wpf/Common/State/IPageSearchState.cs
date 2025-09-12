@@ -2,7 +2,7 @@
 
 namespace GameTools.Client.Wpf.Common.State
 {
-    public interface IPageSearchState<T> : ISearchState<T>
+    public interface IPageState
     {
         int PageNumber { get; }
         int TotalPageNumber { get; }
@@ -13,7 +13,9 @@ namespace GameTools.Client.Wpf.Common.State
         int EndIndex { get; }
         bool HasPreview { get; }
         bool HasNext { get; }
-
+    }
+    public interface IPageSearchState<T> : ISearchState<T>, IPageState
+    {
         void ReplacePageResults(PagedOutput<T> page);
     }
 }

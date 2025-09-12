@@ -5,9 +5,9 @@ using DotNetHelper.MsDiKit.RegionServices;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.State;
 
-namespace GameTools.Client.Wpf.ViewModels.Items
+namespace GameTools.Client.Wpf.ViewModels.Items.Datas
 {
-    public sealed partial class ItemPagingViewModel(
+    public sealed partial class ItemDataPagingViewModel(
         IItemPageSearchState itemPageSearchState,
         IItemsQueryCoordinator itemsQueryCoordinator)
         : ObservableObject, IRegionViewModel
@@ -21,10 +21,10 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         private Task GoLastPageAsync() => GoToPageAsync(PageState.TotalPageNumber);
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private Task GetNextPageAsync() => GoToPageAsync(PageState.PageNumber + 1);
+        private Task GoNextPageAsync() => GoToPageAsync(PageState.PageNumber + 1);
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private Task GotPreviewPageAsync() => GoToPageAsync(PageState.PageNumber - 1);
+        private Task GoPreviewPageAsync() => GoToPageAsync(PageState.PageNumber - 1);
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task RefreshPage() => itemsQueryCoordinator.RefreshAsync();

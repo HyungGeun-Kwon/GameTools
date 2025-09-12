@@ -5,11 +5,20 @@
         public const string Main_EntityNavigationView = "Main.EntityNavigationView";
 
         public const string Item_HostView = "Item.HostView";
-        public const string Item_HeaderView = "Item.HeaderView";
-        public const string Item_SearchView = "Item.SearchView";
-        public const string Item_CommandView = "Item.CommandView";
-        public const string Item_ResultView = "Item.ResultView";
-        public const string Item_PagingView = "Item.PagingView";
+        public const string Item_Data_HostView = "Item.Data.HostView";
+        public const string Item_Audit_HostView = "Item.Audit.HostView";
+
+        public const string Item_Data_HeaderView = "Item.Data.HeaderView";
+        public const string Item_Data_SearchView = "Item.Data.SearchView";
+        public const string Item_Data_CommandView = "Item.Data.CommandView";
+        public const string Item_Data_ResultView = "Item.Data.ResultView";
+        public const string Item_Data_PagingView = "Item.Data.PagingView";
+
+        public const string Item_Audit_HeaderView = "Item.Audit.HeaderView";
+        public const string Item_Audit_SearchView = "Item.Audit.SearchView";
+        public const string Item_Audit_CommandView = "Item.Audit.CommandView";
+        public const string Item_Audit_ResultView = "Item.Audit.ResultView";
+        public const string Item_Audit_PagingView = "Item.Audit.PagingView";
 
         public const string Rarity_HostView = "Rarity.HostView";
         public const string Rarity_HeaderView = "Rarity.HeaderView";

@@ -7,9 +7,9 @@ using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Models.Items;
 using Serilog;
 
-namespace GameTools.Client.Wpf.ViewModels.Items
+namespace GameTools.Client.Wpf.ViewModels.Items.Datas
 {
-    public partial class ItemCreateViewModel(
+    public partial class ItemDataCreateViewModel(
         IItemsCommandCoordinator itemsCommandCoordinator,
         RarityLookupViewModel rarityLookupViewModel
         ) : ObservableObject, IDialogViewModel

@@ -12,14 +12,19 @@ using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Coordinators.Rarities;
 using GameTools.Client.Wpf.Common.FilePickers;
 using GameTools.Client.Wpf.Common.Names;
+using GameTools.Client.Wpf.Common.Regions;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels;
 using GameTools.Client.Wpf.ViewModels.Items;
+using GameTools.Client.Wpf.ViewModels.Items.Audits;
+using GameTools.Client.Wpf.ViewModels.Items.Datas;
 using GameTools.Client.Wpf.ViewModels.Navigations;
 using GameTools.Client.Wpf.ViewModels.Rarities;
 using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
 using GameTools.Client.Wpf.Views;
 using GameTools.Client.Wpf.Views.Items;
+using GameTools.Client.Wpf.Views.Items.Audits;
+using GameTools.Client.Wpf.Views.Items.Datas;
 using GameTools.Client.Wpf.Views.Navigations;
 using GameTools.Client.Wpf.Views.Rarities;
 using Microsoft.Extensions.Configuration;
@@ -73,6 +78,7 @@ namespace GameTools.Client.Wpf
 
                     services.AddDialogService();
                     services.AddRegionService(() => _host.Services);
+                    TabRegionAttached.Configure(() => _host.Services);
 
                     services.AddTransient<IFilePickerService, FilePickerService>();
 
@@ -86,18 +92,29 @@ namespace GameTools.Client.Wpf
                     services.AddSingleton<IItemsCsvCommandCoordinator, ItemsCsvCommandCoordinator>();
 
                     services.AddTransient<RarityLookupViewModel>();
+                    services.AddTransient<TabsHostViewModel>();
 
                     services.AddSingleton<MainViewModel>();
 
                     services.AddRegionView<EntityNavigationView, EntityNavigationViewModel>(RegionViewNames.Main_EntityNavigationView);
 
                     services.AddRegionView<ItemHostView, ItemHostViewModel>(RegionViewNames.Item_HostView);
-                    services.AddRegionView<ItemHeaderView, ItemHeaderViewModel>(RegionViewNames.Item_HeaderView);
-                    services.AddRegionView<ItemCommandView, ItemCommandViewModel>(RegionViewNames.Item_CommandView);
-                    services.AddRegionView<ItemSearchView, ItemSearchViewModel>(RegionViewNames.Item_SearchView);
-                    services.AddRegionView<ItemResultView, ItemResultViewModel>(RegionViewNames.Item_ResultView);
-                    services.AddRegionView<ItemPagingView, ItemPagingViewModel>(RegionViewNames.Item_PagingView);
-                    services.AddDialogView<ItemCreateView, ItemCreateViewModel>(DialogViewNames.Item_EditDialog);
+
+                    services.AddRegionView<ItemDataHostView, ItemDataHostViewModel>(RegionViewNames.Item_Data_HostView);
+                    services.AddRegionView<ItemDataHeaderView, ItemDataHeaderViewModel>(RegionViewNames.Item_Data_HeaderView);
+                    services.AddRegionView<ItemDataCommandView, ItemDataCommandViewModel>(RegionViewNames.Item_Data_CommandView);
+                    services.AddRegionView<ItemDataSearchView, ItemDataSearchViewModel>(RegionViewNames.Item_Data_SearchView);
+                    services.AddRegionView<ItemDataResultView, ItemDataResultViewModel>(RegionViewNames.Item_Data_ResultView);
+                    services.AddRegionView<ItemDataPagingView, ItemDataPagingViewModel>(RegionViewNames.Item_Data_PagingView);
+                    services.AddDialogView<ItemDataCreateView, ItemDataCreateViewModel>(DialogViewNames.Item_EditDialog);
+
+                    services.AddRegionView<ItemAuditHostView, ItemAuditHostViewModel>(RegionViewNames.Item_Audit_HostView);
+                    services.AddRegionView<ItemAuditHeaderView, ItemAuditHeaderViewModel>(RegionViewNames.Item_Audit_HeaderView);
+                    services.AddRegionView<ItemAuditCommandView, ItemAuditCommandViewModel>(RegionViewNames.Item_Audit_CommandView);
+                    services.AddRegionView<ItemAuditSearchView, ItemAuditSearchViewModel>(RegionViewNames.Item_Audit_SearchView);
+                    services.AddRegionView<ItemAuditResultView, ItemAuditResultViewModel>(RegionViewNames.Item_Audit_ResultView);
+                    services.AddRegionView<ItemAuditPagingView, ItemAuditPagingViewModel>(RegionViewNames.Item_Audit_PagingView);
+                    services.AddDialogView<ItemAuditRestoreAsOfView, ItemAuditRestoreAsOfViewModel>(DialogViewNames.Item_RestoreAsOfDialog);
 
                     services.AddRegionView<RarityHostView, RarityHostViewModel>(RegionViewNames.Rarity_HostView);
                     services.AddRegionView<RarityHeaderView, RarityHeaderViewModel>(RegionViewNames.Rarity_HeaderView);
@@ -145,7 +162,7 @@ namespace GameTools.Client.Wpf
                 MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            
+
             Log.Fatal(e.Exception, "UI thread unhandled exception");
         }
 
@@ -155,7 +172,7 @@ namespace GameTools.Client.Wpf
             var terminating = e.IsTerminating;
 
             var title = e.IsTerminating ? "Fatal Error" : "Unhandled Error";
-            
+
             Log.Fatal(ex, $"Unhandled exception. IsTerminating={terminating}");
 
             try

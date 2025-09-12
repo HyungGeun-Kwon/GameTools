@@ -7,9 +7,9 @@ using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels.Items.Contracts;
 
-namespace GameTools.Client.Wpf.ViewModels.Items
+namespace GameTools.Client.Wpf.ViewModels.Items.Datas
 {
-    public sealed partial class ItemResultViewModel(
+    public sealed partial class ItemDataResultViewModel(
         IItemPageSearchState itemPageSearchState,
         IItemsQueryCoordinator itemsQueryCoordinator,
         IItemsCommandCoordinator itemsCommandCoordinator,

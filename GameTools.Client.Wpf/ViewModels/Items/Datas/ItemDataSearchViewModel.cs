@@ -7,9 +7,9 @@ using GameTools.Client.Application.Common.Paging;
 using GameTools.Client.Domain.Common.Rules;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
 
-namespace GameTools.Client.Wpf.ViewModels.Items
+namespace GameTools.Client.Wpf.ViewModels.Items.Datas
 {
-    public partial class ItemSearchViewModel(
+    public partial class ItemDataSearchViewModel(
         IItemsQueryCoordinator itemsQueryCoordinator,
         RarityLookupViewModel rarityLookupViewModel
         ) : ObservableValidator, IRegionViewModel

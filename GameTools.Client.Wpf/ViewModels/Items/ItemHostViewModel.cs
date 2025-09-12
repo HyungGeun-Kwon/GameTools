@@ -1,42 +1,27 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.RegionServices;
-using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Names;
-using GameTools.Client.Wpf.Common.State;
+using GameTools.Client.Wpf.Models.Tabs;
+using GameTools.Client.Wpf.ViewModels.Navigations;
 
 namespace GameTools.Client.Wpf.ViewModels.Items
 {
-    public sealed partial class ItemHostViewModel(
-        IRegionService regionService,
-        IItemsQueryCoordinator itemsQueryCoordinator,
-        IItemsCommandCoordinator itemsCommandCoordinator,
-        IItemsCsvCommandCoordinator itemsCsvCommandCoordinator,
-        IItemPageSearchState itemPageSearchState
-        ) : ObservableObject, IRegionViewModel
+    public sealed partial class ItemHostViewModel : ObservableObject, IRegionViewModel
     {
-        public IItemPageSearchState ItemPageSearchState => itemPageSearchState;
+        public TabsHostViewModel TabsHostViewModel { get; }
 
-        [RelayCommand]
-        private void QueryCancel() => itemsQueryCoordinator.CancelCommand.Execute(null);
-        [RelayCommand]
-        private void CommandCancel()
+        public ItemHostViewModel(TabsHostViewModel tabsHostViewModel)
         {
-            itemsCommandCoordinator.CancelCommand.Execute(null);
-            itemsCsvCommandCoordinator.CancelCommand.Execute(null);
+            tabsHostViewModel.AddTab(new RegionTabItem("Data", RegionViewNames.Item_Data_HostView), true);
+            tabsHostViewModel.AddTab(new RegionTabItem("Audit", RegionViewNames.Item_Audit_HostView));
+            TabsHostViewModel = tabsHostViewModel;
+
         }
 
         public void OnRegionActivated(Parameters? _)
         {
-            regionService.SetView(RegionNames.Item_HeaderRegion, RegionViewNames.Item_HeaderView);
-            regionService.SetView(RegionNames.Item_ResultRegion, RegionViewNames.Item_ResultView);
-            regionService.SetView(RegionNames.Item_PagingRegion, RegionViewNames.Item_PagingView);
         }
-        public void OnRegionDeactivated()
-        {
-            QueryCancelCommand.Execute(null);
-            CommandCancelCommand.Execute(null);
-        }
+        public void OnRegionDeactivated() { }
     }
 }

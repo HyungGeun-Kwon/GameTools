@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Items"
              xmlns:region="clr-namespace:DotNetHelper.MsDiKit.RegionServices;assembly=DotNetHelper.MsDiKit"
+             xmlns:localRegion="clr-namespace:GameTools.Client.Wpf.Common.Regions"
              xmlns:name="clr-namespace:GameTools.Client.Wpf.Common.Names"
              xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items"
              xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
@@ -12,29 +13,23 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-            <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_HeaderRegion}"/>
-        </ScrollViewer>
-        <ContentControl Grid.Row="1" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_ResultRegion}"/>
-        <ContentControl Grid.Row="2" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_PagingRegion}"/>
+        <TabControl 
+            ItemsSource="{Binding TabsHostViewModel.Tabs}"
+            SelectedItem="{Binding TabsHostViewModel.SelectedTab}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Header}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
 
-        <controls:BusyOverlay
-            Grid.RowSpan="100"
-            IsActive="{Binding ItemPageSearchState.BusyState.QueryBusy}"
-            ShowCancel="True"
-            IsHitTestVisible="True"
-            CancelCommand="{Binding QueryCancelCommand}"/>
-
-        <controls:BusyOverlay
-            Grid.RowSpan="100"
-            IsActive="{Binding ItemPageSearchState.BusyState.CommandBusy}"
-            ShowCancel="True"
-            IsHitTestVisible="True"
-            CancelCommand="{Binding CommandCancelCommand}"/>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentControl
+                        localRegion:TabRegionAttached.RegionName="{Binding RegionName}"
+                        localRegion:TabRegionAttached.ViewKey="{Binding ViewKey}"
+                        localRegion:TabRegionAttached.Parameters="{Binding Parameters}" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
     </Grid>
 </UserControl>

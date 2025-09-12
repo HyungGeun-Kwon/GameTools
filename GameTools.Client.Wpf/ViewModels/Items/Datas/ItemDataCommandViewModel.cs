@@ -8,9 +8,9 @@ using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.State;
 
-namespace GameTools.Client.Wpf.ViewModels.Items
+namespace GameTools.Client.Wpf.ViewModels.Items.Datas
 {
-    public sealed partial class ItemCommandViewModel(
+    public sealed partial class ItemDataCommandViewModel(
         IDialogService dialogService,
         IItemPageSearchState itemPageSearchState,
         IItemsQueryCoordinator itemsQueryCoordinator,
@@ -48,6 +48,10 @@ namespace GameTools.Client.Wpf.ViewModels.Items
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task ExportBulkUpdateBaseCsv()
             => itemsCsvCommandCoordinator.ExportBulkUpdateTemplateAsync();
+
+        [RelayCommand(AllowConcurrentExecutions = false)]
+        private Task ExportBulkDeleteBaseCsv()
+            => itemsCsvCommandCoordinator.ExportBulkDeleteTemplateAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task BulkInsert()

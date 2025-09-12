@@ -1,13 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace GameTools.Client.Wpf.Views.Items
+namespace GameTools.Client.Wpf.Views.Items.Datas
 {
     /// <summary>
     /// ItemCommandView.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class ItemCommandView : UserControl
+    public partial class ItemDataCommandView : UserControl
     {
-        public ItemCommandView()
+        public ItemDataCommandView()
         {
             InitializeComponent();
         }
