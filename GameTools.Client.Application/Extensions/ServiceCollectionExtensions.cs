@@ -6,12 +6,14 @@ using GameTools.Client.Application.UseCases.Items.DeleteItem;
 using GameTools.Client.Application.UseCases.Items.GetItemById;
 using GameTools.Client.Application.UseCases.Items.GetItemsByRarity;
 using GameTools.Client.Application.UseCases.Items.GetItemsPage;
+using GameTools.Client.Application.UseCases.Items.RestoreItemsAsOf;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Application.UseCases.Rarities.CreateRarity;
 using GameTools.Client.Application.UseCases.Rarities.DeleteRarity;
 using GameTools.Client.Application.UseCases.Rarities.GetAllRarities;
 using GameTools.Client.Application.UseCases.Rarities.GetRarityById;
 using GameTools.Client.Application.UseCases.Rarities.UpdateRarity;
+using GameTools.Client.Application.UseCases.Restores.GetRestoresPage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameTools.Client.Application.Extensions
@@ -30,6 +32,9 @@ namespace GameTools.Client.Application.Extensions
             s.AddTransient<BulkInsertItemsUseCase>();
             s.AddTransient<BulkUpdateItemsUseCase>();
             s.AddTransient<BulkDeleteItemsUseCase>();
+            s.AddTransient<GetItemAuditsPageUseCase>();
+            s.AddTransient<GetRestoresPageUseCase>();
+            s.AddTransient<RestoreItemsAsOfUseCase>();
 
             // Rarities
             s.AddTransient<GetRarityByIdUseCase>();

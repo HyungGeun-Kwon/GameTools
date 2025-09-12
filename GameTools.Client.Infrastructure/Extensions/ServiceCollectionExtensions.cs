@@ -46,6 +46,14 @@ namespace GameTools.Client.Infrastructure.Extensions
             services.AddHttpClient<IRarityGateway, RarityGateway>((sp, c) => c.BaseAddress = ResolveBase(sp))
                 .AddHttpMessageHandler<ActorHeaderHandler>();
 
+            // Audits
+            services.AddHttpClient<IAuditsGateway, AuditsGateway>((sp, c) => c.BaseAddress = ResolveBase(sp))
+                .AddHttpMessageHandler<ActorHeaderHandler>();
+
+            // Restore
+            services.AddHttpClient<IRestoreGateway, RestoresGateway>((sp, c) => c.BaseAddress = ResolveBase(sp))
+                .AddHttpMessageHandler<ActorHeaderHandler>();
+
             return services;
         }
 
