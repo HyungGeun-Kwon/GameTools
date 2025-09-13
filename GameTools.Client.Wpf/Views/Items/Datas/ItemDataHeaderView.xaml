@@ -10,10 +10,10 @@
              mc:Ignorable="d">
     <StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-            <ContentControl Margin="10 10 10 0" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Data_SearchRegion}"/>
+            <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Data_SearchRegion}"/>
         </ScrollViewer>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-            <ContentControl Margin="10 0 10 10" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Data_CommandRegion}"/>
+            <ContentControl Margin="0 10 0 0" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Data_CommandRegion}"/>
         </ScrollViewer>
     </StackPanel>
 </UserControl>

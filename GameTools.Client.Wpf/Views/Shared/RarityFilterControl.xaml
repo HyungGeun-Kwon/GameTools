@@ -6,22 +6,16 @@
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Shared"
              xmlns:localConverter="clr-namespace:GameTools.Client.Wpf.Common.Converters"
              mc:Ignorable="d">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <localConverter:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
-            <localConverter:NotNullOrNotEmptyToVisibilityConverter x:Key="NotNullOrNotEmptyToVisibilityConverter"/>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <StackPanel>
         <ComboBox 
-            Width="100"
+            Width="130"
             DisplayMemberPath="Grade"
             SelectedValuePath="Id"
             VerticalAlignment="Center"
             SelectedValue="{Binding SelectedRaityId, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
-            IsEnabled="{Binding RarityLookup.IsLoading, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvertBooleanConverter}}">
+            IsEnabled="{Binding RarityLookup.IsLoading, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={localConverter:InvertBooleanConverter}}">
             <ComboBox.Style>
-                <Style TargetType="ComboBox">
+                <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                     <Setter Property="ToolTip" Value="{x:Null}"/>
                     <Setter Property="ItemsSource">
                         <Setter.Value>
@@ -57,7 +51,7 @@
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding ShowRetryIfError, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True"/>
-                                    <Condition Binding="{Binding RarityLookup.Error, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NotNullOrNotEmptyToVisibilityConverter}}" Value="True"/>
+                                    <Condition Binding="{Binding RarityLookup.Error, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={localConverter:NotNullOrNotEmptyToVisibilityConverter}}" Value="True"/>
                                 </MultiDataTrigger.Conditions>
                                 <Setter Property="Visibility" Value="Visible"/>
                             </MultiDataTrigger>
@@ -65,24 +59,6 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <TextBlock 
-                Foreground="Tomato"
-                Text="{Binding RarityLookup.Error, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding ShowErrorMessage, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True"/>
-                                    <Condition Binding="{Binding RarityLookup.Error, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NotNullOrNotEmptyToVisibilityConverter}}" Value="True"/>
-                                </MultiDataTrigger.Conditions>
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
         </StackPanel>
     </StackPanel>
 </UserControl>

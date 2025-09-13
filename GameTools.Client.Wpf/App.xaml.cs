@@ -8,6 +8,7 @@ using CsvHelper;
 using DotNetHelper.MsDiKit.Extensions;
 using GameTools.Client.Application.Extensions;
 using GameTools.Client.Infrastructure.Extensions;
+using GameTools.Client.Wpf.Common.Coordinators.Audits;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Coordinators.Rarities;
 using GameTools.Client.Wpf.Common.FilePickers;
@@ -90,6 +91,9 @@ namespace GameTools.Client.Wpf
                     services.AddSingleton<IItemsQueryCoordinator, ItemsQueryCoordinator>();
                     services.AddSingleton<IItemsCommandCoordinator, ItemsCommandCoordinator>();
                     services.AddSingleton<IItemsCsvCommandCoordinator, ItemsCsvCommandCoordinator>();
+
+                    services.AddSingleton<IItemAuditPageSearchState, ItemAuditPageSearchState>();
+                    services.AddSingleton<IItemAuditsQueryCoordinator, ItemAuditsQueryCoordinator>();
 
                     services.AddTransient<RarityLookupViewModel>();
                     services.AddTransient<TabsHostViewModel>();

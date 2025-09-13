@@ -6,7 +6,7 @@
              xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
              xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items.Datas"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemDataCreateViewModel, IsDesignTimeCreatable=False}"
-             mc:Ignorable="d" >
+             mc:Ignorable="d">
     <StackPanel Margin="20" Width="320">
         <TextBlock Text="Name"/>
         <TextBox Text="{Binding ItemCreateModel.Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"/>

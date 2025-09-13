@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="240">
     <Grid>
-        <ListBox ItemsSource="{Binding Entities}" SelectedItem="{Binding SelectedEntity, Mode=TwoWay}">
+        <ListBox ItemsSource="{Binding Entities}" SelectedItem="{Binding SelectedEntity, Mode=TwoWay}" FontSize="25">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding EntityName}"/>

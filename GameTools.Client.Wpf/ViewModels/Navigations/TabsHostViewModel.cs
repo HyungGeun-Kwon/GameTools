@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DotNetHelper.MsDiKit.RegionServices;
 using GameTools.Client.Wpf.Models.Tabs;
 
 namespace GameTools.Client.Wpf.ViewModels.Navigations

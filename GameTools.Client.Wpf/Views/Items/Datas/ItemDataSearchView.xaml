@@ -30,6 +30,6 @@
             ShowErrorMessage="False" 
             ShowRetryIfError="False"
             UseAllOptions="True"/>
-        <Button Margin="20 10 0 10" Width="100" Content="Search" Command="{Binding GetItemsCommand}"/>
+        <Button Margin="20 0 0 0" Width="100" Content="Search" Command="{Binding GetItemsCommand}"/>
     </StackPanel>
 </UserControl>

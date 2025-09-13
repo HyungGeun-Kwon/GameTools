@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection.PortableExecutable;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
@@ -7,6 +8,7 @@ using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.DeleteItem;
 using GameTools.Client.Application.UseCases.Items.GetItemsPage;
+using GameTools.Client.Application.UseCases.Items.RestoreItemsAsOf;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Wpf.Common.State;
@@ -25,6 +27,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         private readonly BulkInsertItemsUseCase _bulkInsertItemsUseCase;
         private readonly BulkUpdateItemsUseCase _bulkUpdateItemsUseCase;
         private readonly BulkDeleteItemsUseCase _bulkDeleteItemsUseCase;
+        private readonly RestoreItemsAsOfUseCase _restoreItemsAsOfUseCase;
 
         private CancellationTokenSource? _cts;
 
@@ -36,7 +39,8 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
             CreateItemUseCase createItemUseCase,
             BulkInsertItemsUseCase bulkInsertItemsUseCase,
             BulkUpdateItemsUseCase bulkUpdateItemsUseCase,
-            BulkDeleteItemsUseCase bulkDeleteItemsUseCase)
+            BulkDeleteItemsUseCase bulkDeleteItemsUseCase,
+            RestoreItemsAsOfUseCase restoreItemsAsOfUseCase)
         {
             _itemPageSearchState = itemPageSearchState;
             _updateItemUseCase = updateItemUseCase;
@@ -45,6 +49,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
             _bulkInsertItemsUseCase = bulkInsertItemsUseCase;
             _bulkUpdateItemsUseCase = bulkUpdateItemsUseCase;
             _bulkDeleteItemsUseCase = bulkDeleteItemsUseCase;
+            _restoreItemsAsOfUseCase = restoreItemsAsOfUseCase;
 
             _itemPageSearchState.BusyState.PropertyChanged += OnItemPageSearchStatePropertyChanged;
         }
@@ -83,6 +88,9 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         public Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput bulkDeleteItemsInput, CancellationToken external = default)
             => RunExclusiveCommandAsync(ct => _bulkDeleteItemsUseCase.Handle(bulkDeleteItemsInput, ct), external);
+
+        public Task<RestoreItemsAsOfOutput> RestoreAsOfAsync(RestoreItemsAsOfInput restoreItemsAsOfInput, CancellationToken external = default)
+            => RunExclusiveCommandAsync(ct => _restoreItemsAsOfUseCase.Handle(restoreItemsAsOfInput, ct), external);
 
         private async Task RunExclusiveCommandAsync(
             Func<CancellationToken, Task> action,

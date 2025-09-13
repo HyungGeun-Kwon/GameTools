@@ -11,10 +11,10 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-            <ContentControl Margin="10 10 10 0" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_SearchRegion}"/>
+            <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_SearchRegion}"/>
         </ScrollViewer>
-        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
-            <ContentControl Margin="10 10 10 0" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_CommandRegion}"/>
+        <ScrollViewer Margin="0 10 0 0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_CommandRegion}"/>
         </ScrollViewer>
     </StackPanel>
 </UserControl>

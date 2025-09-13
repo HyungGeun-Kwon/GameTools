@@ -19,7 +19,14 @@
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
             <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_HeaderRegion}"/>
         </ScrollViewer>
-        <ContentControl Grid.Row="1" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_ResultRegion}"/>
+        <ContentControl Grid.Row="1" Margin="0 10 0 0" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_ResultRegion}"/>
         <ContentControl Grid.Row="2" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Audit_PagingRegion}"/>
+
+        <controls:BusyOverlay
+            Grid.RowSpan="100"
+            IsActive="{Binding ItemAuditPageSearchState.BusyState.QueryBusy}"
+            ShowCancel="True"
+            IsHitTestVisible="True"
+            CancelCommand="{Binding QueryCancelCommand}"/>
     </Grid>
 </UserControl>

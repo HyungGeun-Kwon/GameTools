@@ -6,8 +6,7 @@
              xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
              xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items.Audits"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemAuditPagingViewModel, IsDesignTimeCreatable=False}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d">
     <Grid>
         <controls:PagingBar
             PageState="{Binding PageState}"

@@ -10,23 +10,13 @@
              d:DataContext="{d:DesignInstance Type=viewModels:RarityResultViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <localConverter:IsDirtyToBrushConverter x:Key="IsDirtyToBrushConverter"/>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/GameTools.Client.Wpf;component/Resources/DataGridStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-
     <Grid>
         <DataGrid 
             ItemsSource="{Binding State.Results}"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
             CanUserDeleteRows="False"
-            IsReadOnly="False"
-            RowStyle="{StaticResource ErrorRowStyle}">
+            IsReadOnly="False">
             <DataGrid.Columns>
 
                 <!-- Id -->
@@ -82,7 +72,7 @@
                             <!-- 더티면 주황, 최신이면 초록색 -->
                             <TextBlock 
                                 Text="●" FontSize="14"
-                                Foreground="{Binding IsDirty, Converter={StaticResource IsDirtyToBrushConverter}}"
+                                Foreground="{Binding IsDirty, Converter={localConverter:IsDirtyToBrushConverter}}"
                                 HorizontalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
@@ -112,7 +102,7 @@
                                     Command="{Binding DataContext.UpdateRarityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}">
                                     <Button.Style>
-                                        <Style TargetType="Button">
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                             <Setter Property="IsEnabled" Value="False"/>
                                             <Style.Triggers>
                                                 <!-- 더티이고 에러 없을 때만 활성화 -->
@@ -135,7 +125,7 @@
                                     Command="{Binding DataContext.RevertRarityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}">
                                     <Button.Style>
-                                        <Style TargetType="Button">
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                             <Setter Property="IsEnabled" Value="False"/>
                                             <Style.Triggers>
                                                 <!-- 더티일 때만 활성화 -->

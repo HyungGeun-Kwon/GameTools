@@ -6,7 +6,7 @@
              xmlns:controls="clr-namespace:GameTools.Client.Wpf.Views.Shared"
              xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items.Datas"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemDataPagingViewModel, IsDesignTimeCreatable=False}"
-             mc:Ignorable="d" FontSize="17">
+             mc:Ignorable="d">
     <Grid>
         <controls:PagingBar
             PageState="{Binding PageState}"

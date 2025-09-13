@@ -9,6 +9,51 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Label Content="Item Audit ResultView"/>
+        <DataGrid
+            ItemsSource="{Binding PageState.Results}"
+            BorderThickness="1"
+            AutoGenerateColumns="False"
+            IsReadOnly="True">
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="#DDD" BorderThickness="1" Padding="8" Margin="4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Before" FontWeight="Bold" Margin="0,0,0,4"/>
+                                <ScrollViewer MaxHeight="320">
+                                    <TextBox
+                                        IsReadOnly="True" BorderThickness="0"
+                                        FontFamily="Consolas" TextWrapping="Wrap"
+                                        Text="{Binding BeforeJson, Converter={localConverter:JsonDisplayConverter}}"/>
+                                </ScrollViewer>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="After" FontWeight="Bold" Margin="0,0,0,4"/>
+                                <ScrollViewer MaxHeight="320">
+                                    <TextBox
+                                        IsReadOnly="True" BorderThickness="0"
+                                        FontFamily="Consolas" TextWrapping="Wrap"
+                                        Text="{Binding AfterJson, Converter={localConverter:JsonDisplayConverter}}"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding AuditId}"/>
+                <DataGridTextColumn Header="Action" Binding="{Binding Action}"/>
+                <DataGridTextColumn Header="Changed At (UTC)" Binding="{Binding ChangedAtUtc}"/>
+                <DataGridTextColumn Header="Changed By" Binding="{Binding ChangedBy}"/>
+            </DataGrid.Columns>
+            
+        </DataGrid>
     </Grid>
 </UserControl>

@@ -2,6 +2,7 @@
 using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
+using GameTools.Client.Application.UseCases.Items.RestoreItemsAsOf;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Wpf.Models.Items;
 using GameTools.Client.Wpf.ViewModels.Items.Contracts;
@@ -24,5 +25,7 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
         Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput bulkInsertItemsInput, CancellationToken external = default);
         Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput bulkUpdateItemsInput, CancellationToken external = default);
         Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput bulkDeleteItemsInput, CancellationToken external = default);
+
+        Task<RestoreItemsAsOfOutput> RestoreAsOfAsync(RestoreItemsAsOfInput restoreItemsAsOfInput, CancellationToken external = default);
     }
 }

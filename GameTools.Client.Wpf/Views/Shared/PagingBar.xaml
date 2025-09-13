@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Shared"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="60"
-             FontSize="17">
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="60">
     <Grid>
         <Border Padding="8" Background="#FAFAFA" BorderBrush="#DDD" BorderThickness="1,1,1,0">
             <Grid>
@@ -40,7 +39,7 @@
                             Content="◀️"
                             BorderThickness="0"
                             Background="Transparent"
-                            Command="{Binding GotPreviewPageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            Command="{Binding GoPreviewPageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             IsEnabled="{Binding PageState.HasPreview, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
                         <!-- 현재 페이지 / 전체 페이지 -->
@@ -55,7 +54,7 @@
                             Content="▶"
                             BorderThickness="0"
                             Background="Transparent"
-                            Command="{Binding GetNextPageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            Command="{Binding GoNextPageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             IsEnabled="{Binding PageState.HasNext, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
                         <Button 
@@ -67,7 +66,7 @@
                     </StackPanel>
 
                     <Separator Width="1" Height="18" Margin="4,0"/>
-                    <Button Content="Refresh"
+                    <Button Content="Refresh" Width="100"
                             Command="{Binding RefreshPageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 </StackPanel>
             </Grid>

@@ -15,10 +15,11 @@
     <Grid>
         <TabControl 
             ItemsSource="{Binding TabsHostViewModel.Tabs}"
-            SelectedItem="{Binding TabsHostViewModel.SelectedTab}">
+            SelectedItem="{Binding TabsHostViewModel.SelectedTab}"
+            Background="{DynamicResource MahApps.Brushes.Window.Background}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Header}" />
+                    <TextBlock Text="{Binding Header}" FontSize="20"/>
                 </DataTemplate>
             </TabControl.ItemTemplate>
 

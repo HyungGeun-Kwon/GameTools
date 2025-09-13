@@ -9,46 +9,27 @@
              d:DataContext="{d:DesignInstance Type=viewModels:ItemDataResultViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <localConverter:IsDirtyToBrushConverter x:Key="IsDirtyToBrushConverter"/>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/GameTools.Client.Wpf;component/Resources/DataGridStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid>
         <DataGrid 
             ItemsSource="{Binding PageState.Results}"
+            BorderThickness="1"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
             CanUserDeleteRows="False"
-            IsReadOnly="False"
-            RowStyle="{StaticResource ErrorRowStyle}">
+            IsReadOnly="False">
             <DataGrid.Columns>
-                <!-- Id -->
                 <DataGridTextColumn 
-                    Header="ID"
-                    Binding="{Binding Id}"
-                    IsReadOnly="True"
-                    Width="80"/>
-
-                <!-- Name -->
+                    Header="ID" 
+                    Binding="{Binding Id}" IsReadOnly="True"/>
                 <DataGridTextColumn 
                     Header="Name"
                     Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
-
-                <!-- Price -->
                 <DataGridTextColumn 
                     Header="Price"
                     Binding="{Binding Price, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
-
-                <!-- Description -->
                 <DataGridTextColumn 
                     Header="Description"
                     Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
-
-                <!-- Rarity -->
                 <DataGridTemplateColumn Header="Rarity">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -61,22 +42,18 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
-                <!-- RowVersion -->
                 <DataGridTextColumn 
                     Header="RowVersion"
                     Binding="{Binding RowVersionBase64}"
                     IsReadOnly="True"
                     Width="*"/>
-
-                <!-- IsDirty -->
-                <DataGridTemplateColumn Header=" " Width="40" IsReadOnly="True">
+                <DataGridTemplateColumn Header=" " Width="50" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <!-- 더티면 주황, 최신이면 초록색 -->
                             <TextBlock 
                                 Text="●" FontSize="14"
-                                Foreground="{Binding IsDirty, Converter={StaticResource IsDirtyToBrushConverter}}"
+                                Foreground="{Binding IsDirty, Converter={localConverter:IsDirtyToBrushConverter}}"
                                 HorizontalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
@@ -94,8 +71,6 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
-                <!-- Actions -->
                 <DataGridTemplateColumn Width="180" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -106,7 +81,7 @@
                                     Command="{Binding DataContext.UpdateItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}">
                                     <Button.Style>
-                                        <Style TargetType="Button">
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                             <Setter Property="IsEnabled" Value="False"/>
                                             <Style.Triggers>
                                                 <!-- 더티이고 에러 없을 때만 활성화 -->
@@ -129,7 +104,7 @@
                                     Command="{Binding DataContext.RevertItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}">
                                     <Button.Style>
-                                        <Style TargetType="Button">
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                             <Setter Property="IsEnabled" Value="False"/>
                                             <Style.Triggers>
                                                 <!-- 더티일 때만 활성화 -->

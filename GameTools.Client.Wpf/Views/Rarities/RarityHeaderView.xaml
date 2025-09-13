@@ -13,7 +13,6 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Button Margin="10" Width="100" Content="Add Rarity" Command="{Binding AddRarityCommand}"/>
-            <!--<Button Margin="10" Width="100" Content="Export csv" Command="{Binding ExportCsvCommand}"/>-->
         </StackPanel>
     </StackPanel>
 </UserControl>

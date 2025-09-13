@@ -9,14 +9,14 @@ using GameTools.Client.Wpf.Common.Coordinators.Items;
 
 namespace GameTools.Client.Wpf.ViewModels.Items.Datas
 {
-    public partial class ItemDataSearchViewModel(
+    public sealed partial class ItemDataSearchViewModel(
         IItemsQueryCoordinator itemsQueryCoordinator,
         RarityLookupViewModel rarityLookupViewModel
         ) : ObservableValidator, IRegionViewModel
     {
         [ObservableProperty]
         [NotifyDataErrorInfo]
-        [Range(1, PagingRules.MaxPageSize)]
+        [Range(1, int.MaxValue)]
         private int _searchPageNumber = PagingRules.DefaultPageNumber;
 
         [ObservableProperty]
