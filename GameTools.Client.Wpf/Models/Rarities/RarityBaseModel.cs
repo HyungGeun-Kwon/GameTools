@@ -10,13 +10,13 @@ namespace GameTools.Client.Wpf.Models.Rarities
         [NotifyDataErrorInfo]
         [Required, MinLength(1)]
         [MaxLength(RarityRules.GradeMax)]
-        private string _grade = string.Empty;
+        public partial string Grade { get; set; } = string.Empty;
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required]
         [RegularExpression(RarityRules.ColorFormat, ErrorMessage = "Color must be '#RRGGBB' (uppercase).")]
-        private string _colorCode = RarityRules.DefaultColor;
+        public partial string ColorCode { get; set; } = RarityRules.DefaultColor;
 
         protected RarityBaseModel() => ValidateAllProperties();
 

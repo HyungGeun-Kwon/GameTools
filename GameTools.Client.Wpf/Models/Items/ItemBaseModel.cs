@@ -10,26 +10,26 @@ namespace GameTools.Client.Wpf.Models.Items
         [NotifyDataErrorInfo]
         [Required, MinLength(1)]
         [MaxLength(ItemRules.NameMax)]
-        private string _name = string.Empty;
+        public partial string Name { get; set; } = string.Empty;
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(0, int.MaxValue)]
-        private int _price;
+        public partial int Price { get; set; }
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [StringLength(ItemRules.DescriptionMax)]
-        private string? _description;
+        public partial string? Description { get; set; }
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(1, byte.MaxValue, ErrorMessage = "Select a rarity.")]
-        private byte _rarityId;
+        public partial byte RarityId { get; set; }
 
         protected ItemBaseModel() => ValidateAllProperties();
 
-        partial void OnNameChanged(string? oldValue, string newValue)
+        partial void OnNameChanged(string oldValue, string newValue)
         {
             var normalized = (newValue ?? string.Empty).Trim();
             if (!ReferenceEquals(newValue, normalized) && newValue != normalized)

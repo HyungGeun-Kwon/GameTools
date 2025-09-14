@@ -11,7 +11,7 @@ namespace GameTools.Client.Wpf.Common.State
         public SearchState() => Results = new(_inner);
 
         [ObservableProperty]
-        private Exception? _error;
+        public partial Exception? Error { get; set; }
 
         public void ReplaceResults(IEnumerable<T> items)
         {

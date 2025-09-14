@@ -6,11 +6,11 @@ namespace GameTools.Client.Wpf.Common.State
     {
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsBusy))]
-        private bool _queryBusy;
+        public partial bool QueryBusy { get; set; }
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsBusy))]
-        private bool _commandBusy;
+        public partial bool CommandBusy { get; set; }
 
         public bool IsBusy => QueryBusy || CommandBusy;
     }

@@ -19,7 +19,7 @@ namespace GameTools.Client.Wpf.ViewModels.Navigations
         ];
 
         [ObservableProperty]
-        private EntityNavigationItem? _selectedEntity;
+        public partial EntityNavigationItem? SelectedEntity { get; set; }
 
         partial void OnSelectedEntityChanged(EntityNavigationItem? value)
         {

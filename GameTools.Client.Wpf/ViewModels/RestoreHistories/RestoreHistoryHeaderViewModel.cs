@@ -15,21 +15,21 @@ namespace GameTools.Client.Wpf.ViewModels.RestoreHistories
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(1, int.MaxValue)]
-        private int _searchPageNumber = PagingRules.DefaultPageNumber;
+        public partial int SearchPageNumber { get; set; } = PagingRules.DefaultPageNumber;
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(1, PagingRules.MaxPageSize)]
-        private int _searchPageSize = PagingRules.DefaultPageSize;
+        public partial int SearchPageSize { get; set; } = PagingRules.DefaultPageSize;
 
         [ObservableProperty]
-        private DateTime? _fromUtcFilter;
-        
-        [ObservableProperty]
-        private DateTime? _toUtcFilter;
+        public partial DateTime? FromUtcFilter { get; set; }
 
         [ObservableProperty]
-        private string? _actorFilter;
+        public partial DateTime? ToUtcFilter { get; set; }
+
+        [ObservableProperty]
+        public partial string? ActorFilter { get; set; }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task RestoreSearchAsync()

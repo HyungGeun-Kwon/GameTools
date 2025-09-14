@@ -9,10 +9,11 @@ namespace GameTools.Client.Wpf.ViewModels.Items
 {
     public sealed partial class RarityLookupViewModel(GetAllRaritiesUseCase getAllRaritiesUseCase) : ObservableObject
     {
-        [ObservableProperty] 
-        private bool _isLoading;
-        [ObservableProperty] 
-        private string? _error;
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+
+        [ObservableProperty]
+        public partial string? Error { get; set; }
 
         public ObservableCollection<RarityOptionModel> Options { get; } = [];
         public ObservableCollection<RarityOptionModel> AllOptions { get; } = [];

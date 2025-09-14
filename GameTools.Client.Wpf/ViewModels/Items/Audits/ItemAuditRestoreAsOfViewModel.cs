@@ -19,18 +19,18 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Audits
         public IItemPageSearchState ItemPageSearchState => itemPageSearchState;
 
         [ObservableProperty]
-        private DateTime _asOfUtc;
+        public partial DateTime AsOfUtc { get; set; }
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(1, int.MaxValue)]
-        private int? _itemId;
+        public partial int? ItemId { get; set; }
 
         [ObservableProperty]
-        private bool _dryRun = false;
+        public partial bool DryRun { get; set; } = false;
 
         [ObservableProperty]
-        private string? _notes;
+        public partial string? Notes { get; set; }
 
         public event Action<IDialogResult>? RequestClose;
 

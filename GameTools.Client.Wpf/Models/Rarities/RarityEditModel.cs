@@ -12,8 +12,7 @@ namespace GameTools.Client.Wpf.ViewModels.Rarities.Contracts
         private Snapshot? _editBackup;
 
         [ObservableProperty]
-        private bool _isDirty;
-
+        public partial bool IsDirty { get; set; }
         [ObservableProperty]
         public partial string? RowVersionBase64 { get; private set; }
 

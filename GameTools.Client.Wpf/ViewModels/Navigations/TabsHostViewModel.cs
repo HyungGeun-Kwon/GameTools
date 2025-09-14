@@ -7,7 +7,7 @@ namespace GameTools.Client.Wpf.ViewModels.Navigations
     public partial class TabsHostViewModel : ObservableObject
     {
         [ObservableProperty]
-        private RegionTabItem? _selectedTab;
+        public partial RegionTabItem? SelectedTab { get; set; }
 
         public event EventHandler<RegionTabItem?>? Navigating;
         public event EventHandler<RegionTabItem?>? Navigated;

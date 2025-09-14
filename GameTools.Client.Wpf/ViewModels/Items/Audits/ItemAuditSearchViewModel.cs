@@ -16,26 +16,26 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Audits
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(1, int.MaxValue)]
-        private int _searchPageNumber = PagingRules.DefaultPageNumber;
+        public partial int SearchPageNumber { get; set; } = PagingRules.DefaultPageNumber;
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(1, PagingRules.MaxPageSize)]
-        private int _searchPageSize = PagingRules.DefaultPageSize;
+        public partial int SearchPageSize { get; set; } = PagingRules.DefaultPageSize;
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Range(1, int.MaxValue)]
-        private int? _itemIdFilter;
+        public partial int? ItemIdFilter { get; set; }
 
         [ObservableProperty]
-        private AuditActionType? _actionFilter = AuditActionType.ALL;
+        public partial AuditActionType? ActionFilter { get; set; } = AuditActionType.ALL;
 
         [ObservableProperty]
-        private DateTime? _fromUtcFilter;
+        public partial DateTime? FromUtcFilter { get; set; }
 
         [ObservableProperty]
-        private DateTime? _toUtcFilter;
+        public partial DateTime? ToUtcFilter { get; set; }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task GetItemAuditsAsync()

@@ -18,7 +18,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Contracts
         public partial string? RowVersionBase64 { get; private set; }
 
         [ObservableProperty]
-        private bool _isDirty;
+        public partial bool IsDirty { get; set; }
 
         /// <summary>
         /// 신규 추가를 위한 생성자
