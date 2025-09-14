@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Reflection.PortableExecutable;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;

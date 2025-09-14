@@ -21,5 +21,9 @@
 
         public const string Rarity_SearchRegion = "Rarity.SearchRegion";
         public const string Rarity_ResultRegion = "Rarity.ResultRegion";
+
+        public const string Restore_SearchRegion = "Restore.SearchRegion";
+        public const string Restore_ResultRegion = "Restore.ResultRegion";
+        public const string Restore_PagingRegion = "Restore.PagingRegion";
     }
 }

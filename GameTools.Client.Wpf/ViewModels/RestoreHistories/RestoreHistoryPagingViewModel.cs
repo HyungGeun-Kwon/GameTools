@@ -2,18 +2,17 @@
 using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.RegionServices;
-using GameTools.Client.Wpf.Common.Coordinators.Audits;
+using GameTools.Client.Wpf.Common.Coordinators.RestoreHistories;
 using GameTools.Client.Wpf.Common.State;
 
-namespace GameTools.Client.Wpf.ViewModels.Items.Audits
+namespace GameTools.Client.Wpf.ViewModels.RestoreHistories
 {
-    public sealed partial class ItemAuditPagingViewModel(
-        IItemAuditPageSearchState itemAuditPageSearchState,
-        IItemAuditsQueryCoordinator itemAuditsQueryCoordinator
-        ) : ObservableObject, IRegionViewModel
+    public sealed partial class RestoreHistoryPagingViewModel(
+        IRestoreHistoryPageSearchState restoreHistoryPageSearchState,
+        IRestoreHistoriesQueryCoordinator restoreHistoriesQueryCoordinator
+    ) : ObservableObject, IRegionViewModel
     {
-        public IItemAuditPageSearchState PageState => itemAuditPageSearchState;
-
+        public IRestoreHistoryPageSearchState PageState => restoreHistoryPageSearchState;
 
         [RelayCommand(AllowConcurrentExecutions = false)]
         private Task GoFirstPageAsync() => GoToPageAsync(1);
@@ -28,21 +27,15 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Audits
         private Task GoPreviewPageAsync() => GoToPageAsync(PageState.PageNumber - 1);
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private Task RefreshPage() => itemAuditsQueryCoordinator.RefreshAsync();
+        private Task RefreshPage() => restoreHistoriesQueryCoordinator.RefreshAsync();
 
         private Task GoToPageAsync(int page)
         {
             if (page < 1 || page > PageState.TotalPageNumber) return Task.CompletedTask;
-            return itemAuditsQueryCoordinator.GoToPageAsync(page);
+            return restoreHistoriesQueryCoordinator.GoToPageAsync(page);
         }
 
-
-        public void OnRegionActivated(Parameters? parameters)
-        {
-        }
-
-        public void OnRegionDeactivated()
-        {
-        }
+        public void OnRegionActivated(Parameters? parameters) { }
+        public void OnRegionDeactivated() { }
     }
 }

@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.RegionServices;
 using GameTools.Client.Wpf.Common.Coordinators.Audits;
-using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.State;
 

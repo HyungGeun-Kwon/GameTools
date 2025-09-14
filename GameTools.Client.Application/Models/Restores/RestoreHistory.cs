@@ -1,6 +1,6 @@
 ﻿namespace GameTools.Client.Application.Models.Restores
 {
-    public sealed record Restore(
+    public sealed record RestoreHistory(
         Guid RestoreId,
         DateTime AsOfUtc,
         string Actor,

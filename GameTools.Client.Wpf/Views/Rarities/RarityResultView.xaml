@@ -13,26 +13,20 @@
     <Grid>
         <DataGrid 
             ItemsSource="{Binding State.Results}"
+            BorderThickness="1"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
             CanUserDeleteRows="False"
             IsReadOnly="False">
             <DataGrid.Columns>
-
-                <!-- Id -->
                 <DataGridTextColumn 
-                    Header="ID"
-                    Binding="{Binding Id}"
-                    IsReadOnly="True"
-                    Width="80"/>
-
-                <!-- Grade -->
+                    Header="ID" Binding="{Binding Id}" IsReadOnly="True" Width="80"/>
+                
                 <DataGridTextColumn 
                     Header="Grade"
                     Binding="{Binding Grade, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"
                     Width="120"/>
 
-                <!-- ColorCode -->
                 <DataGridTemplateColumn Header="ColorCode" Width="200">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -58,14 +52,12 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- RowVersion -->
                 <DataGridTextColumn 
                     Header="RowVersion"
                     Binding="{Binding RowVersionBase64}"
                     IsReadOnly="True"
                     Width="*"/>
 
-                <!-- IsDirty -->
                 <DataGridTemplateColumn Header=" " Width="40" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -91,12 +83,10 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- Actions -->
                 <DataGridTemplateColumn Width="180" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <!-- Update -->
                                 <Button 
                                     Content="Update"
                                     Command="{Binding DataContext.UpdateRarityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"

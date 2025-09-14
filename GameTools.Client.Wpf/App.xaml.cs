@@ -11,6 +11,7 @@ using GameTools.Client.Infrastructure.Extensions;
 using GameTools.Client.Wpf.Common.Coordinators.Audits;
 using GameTools.Client.Wpf.Common.Coordinators.Items;
 using GameTools.Client.Wpf.Common.Coordinators.Rarities;
+using GameTools.Client.Wpf.Common.Coordinators.RestoreHistories;
 using GameTools.Client.Wpf.Common.FilePickers;
 using GameTools.Client.Wpf.Common.Names;
 using GameTools.Client.Wpf.Common.Regions;
@@ -22,12 +23,14 @@ using GameTools.Client.Wpf.ViewModels.Items.Datas;
 using GameTools.Client.Wpf.ViewModels.Navigations;
 using GameTools.Client.Wpf.ViewModels.Rarities;
 using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
+using GameTools.Client.Wpf.ViewModels.RestoreHistories;
 using GameTools.Client.Wpf.Views;
 using GameTools.Client.Wpf.Views.Items;
 using GameTools.Client.Wpf.Views.Items.Audits;
 using GameTools.Client.Wpf.Views.Items.Datas;
 using GameTools.Client.Wpf.Views.Navigations;
 using GameTools.Client.Wpf.Views.Rarities;
+using GameTools.Client.Wpf.Views.RestoreHistories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -95,6 +98,9 @@ namespace GameTools.Client.Wpf
                     services.AddSingleton<IItemAuditPageSearchState, ItemAuditPageSearchState>();
                     services.AddSingleton<IItemAuditsQueryCoordinator, ItemAuditsQueryCoordinator>();
 
+                    services.AddSingleton<IRestoreHistoriesQueryCoordinator, RestoreHistoriesQueryCoordinator>();
+                    services.AddSingleton<IRestoreHistoryPageSearchState, RestoreHistoryPageSearchState>();
+
                     services.AddTransient<RarityLookupViewModel>();
                     services.AddTransient<TabsHostViewModel>();
 
@@ -124,6 +130,13 @@ namespace GameTools.Client.Wpf
                     services.AddRegionView<RarityHeaderView, RarityHeaderViewModel>(RegionViewNames.Rarity_HeaderView);
                     services.AddRegionView<RarityResultView, RarityResultViewModel>(RegionViewNames.Rarity_ResultView);
                     services.AddDialogView<RarityCreateView, RarityCreateViewModel>(DialogViewNames.Rarity_EditDialog);
+
+
+                    services.AddRegionView<RestoreHistoryHostView, RestoreHistoryHostViewModel>(RegionViewNames.Restore_HostView);
+                    services.AddRegionView<RestoreHistoryHeaderView, RestoreHistoryHeaderViewModel>(RegionViewNames.Restore_HeaderView);
+                    services.AddRegionView<RestoreHistoryResultView, RestoreHistoryResultViewModel>(RegionViewNames.Restore_ResultView);
+                    services.AddRegionView<RestoreHistoryPagingView, RestoreHistoryPagingViewModel>(RegionViewNames.Restore_PagingView);
+
 
                 }).Build();
 

@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameTools.Client.Application.UseCases.Audits.GetItemAuditsPage;
-using GameTools.Client.Application.UseCases.Items.GetItemsPage;
 using GameTools.Client.Wpf.Common.Enums;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels.Items.Mappers;

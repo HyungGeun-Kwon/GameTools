@@ -23,5 +23,11 @@
         public const string Rarity_HostView = "Rarity.HostView";
         public const string Rarity_HeaderView = "Rarity.HeaderView";
         public const string Rarity_ResultView = "Rarity.ResultView";
+
+        public const string Restore_HostView = "Restore.HostView";
+        public const string Restore_HeaderView = "Restore.HeaderView";
+        public const string Restore_ResultView = "Restore.ResultView";
+        public const string Restore_PagingView = "Restore.PagingView";
+
     }
 }

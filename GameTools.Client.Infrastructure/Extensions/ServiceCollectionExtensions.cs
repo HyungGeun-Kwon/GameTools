@@ -51,7 +51,7 @@ namespace GameTools.Client.Infrastructure.Extensions
                 .AddHttpMessageHandler<ActorHeaderHandler>();
 
             // Restore
-            services.AddHttpClient<IRestoreGateway, RestoresGateway>((sp, c) => c.BaseAddress = ResolveBase(sp))
+            services.AddHttpClient<IRestoreGateway, RestoreGateway>((sp, c) => c.BaseAddress = ResolveBase(sp))
                 .AddHttpMessageHandler<ActorHeaderHandler>();
 
             return services;

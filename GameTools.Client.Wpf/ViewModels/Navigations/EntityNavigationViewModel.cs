@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DotNetHelper.MsDiKit.Common;
 using DotNetHelper.MsDiKit.RegionServices;
+using GameTools.Client.Application.Models.Restores;
 using GameTools.Client.Domain.Items;
 using GameTools.Client.Domain.Rarities;
 using GameTools.Client.Wpf.Common.Names;
@@ -14,6 +15,7 @@ namespace GameTools.Client.Wpf.ViewModels.Navigations
         [
             new(nameof(Item), RegionViewNames.Item_HostView),
             new(nameof(Rarity), RegionViewNames.Rarity_HostView),
+            new(nameof(RestoreHistory), RegionViewNames.Restore_HostView),
         ];
 
         [ObservableProperty]

@@ -1,6 +1,6 @@
 ﻿using GameTools.Client.Application.Common.Paging;
 using GameTools.Client.Application.Models.Restores;
-using GameTools.Client.Application.UseCases.Restores.GetRestoresPage;
+using GameTools.Client.Application.UseCases.Restores.GetRestoreHistoryPage;
 using GameTools.Contracts.Common;
 using GameTools.Contracts.Restores.Common;
 using GameTools.Contracts.Restores.GetRestoresPage;
@@ -9,7 +9,7 @@ namespace GameTools.Client.Infrastructure.Mapper
 {
     public static class RestoreMapper
     {
-        public static RestoreRunPageRequest ToContract(this GetRestoresPageInput input)
+        public static RestoreRunPageRequest ToContract(this GetRestoreHistoriesPageInput input)
             => new(
                 input.Pagination.PageNumber,
                 input.Pagination.PageSize,
@@ -19,7 +19,7 @@ namespace GameTools.Client.Infrastructure.Mapper
                 input.Filter?.DryOnly
             );
 
-        public static Restore ToClient(this RestoreRunResponse res)
+        public static RestoreHistory ToClient(this RestoreRunResponse res)
             => new(
                 res.RestoreId,
                 res.AsOfUtc,
@@ -32,7 +32,7 @@ namespace GameTools.Client.Infrastructure.Mapper
                 res.FiltersJson
             );
 
-        public static PagedOutput<Restore> ToClient(this PagedResponse<RestoreRunResponse> p)
+        public static PagedOutput<RestoreHistory> ToClient(this PagedResponse<RestoreRunResponse> p)
             => new(p.Items.Select(ToClient).ToList(), p.TotalCount, p.PageNumber, p.PageSize);
 
     }
