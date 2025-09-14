@@ -14,6 +14,7 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Datas
         IDialogService dialogService,
         IItemPageSearchState itemPageSearchState,
         IItemsQueryCoordinator itemsQueryCoordinator,
+        IItemsCommandCoordinator itemsCommandCoordinator,
         IItemsCsvCommandCoordinator itemsCsvCommandCoordinator
         ) : ObservableObject, IRegionViewModel
     {
@@ -22,11 +23,12 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Datas
             => dialogService.ShowDialog(DialogViewNames.Item_EditDialog, null, ItemEditDialogClosed);
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private Task DeleteAllResult()
+        private async Task DeleteAllResult()
         {
             var btnResult = MessageBox.Show("Are you sure you want to delete it?", "", MessageBoxButton.YesNo);
-            if (btnResult != MessageBoxResult.Yes) return Task.CompletedTask;
-            return itemsCsvCommandCoordinator.ImportAndAllResultDeleteAsync();
+            if (btnResult != MessageBoxResult.Yes) return;
+            await itemsCommandCoordinator.BulkDeleteAsync(itemPageSearchState.Results);
+            await RefreshIfNeedAsync();
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
@@ -54,29 +56,38 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Datas
             => itemsCsvCommandCoordinator.ExportBulkDeleteTemplateAsync();
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private Task BulkInsert()
-            => itemsCsvCommandCoordinator.ImportAndBulkInsertAsync();
+        private async Task BulkInsert()
+        {
+            await itemsCsvCommandCoordinator.ImportAndBulkInsertAsync();
+            await RefreshIfNeedAsync();
+        }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private Task BulkUpdate()
-            => itemsCsvCommandCoordinator.ImportAndBulkUpdateAsync();
+        private async Task BulkUpdate()
+        {
+            await itemsCsvCommandCoordinator.ImportAndBulkUpdateAsync();
+            await RefreshIfNeedAsync();
+        }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private Task BulkDelete()
-            => itemsCsvCommandCoordinator.ImportAndBulkDeleteAsync();
+        private async Task BulkDelete()
+        {
+            await itemsCsvCommandCoordinator.ImportAndBulkDeleteAsync();
+            await RefreshIfNeedAsync();
+        }
 
         private async void ItemEditDialogClosed(IDialogResult? result)
         {
             if (result?.ButtonResult != ButtonResult.OK) return;
+            await RefreshIfNeedAsync();
+        }
 
-            try
-            {
-                if (itemPageSearchState.Results.Count == 0) return;
+        private Task RefreshIfNeedAsync()
+        {
+            if (itemPageSearchState.Results.Count == 0) return Task.CompletedTask;
 
-                // 가장 최근에 검색했던 방식으로 검색.
-                await itemsQueryCoordinator.RefreshAsync();
-            }
-            catch (OperationCanceledException) { }
+            // 가장 최근에 검색했던 방식으로 검색.
+            return itemsQueryCoordinator.RefreshAsync();
         }
 
         public void OnRegionActivated(Parameters? _) { }

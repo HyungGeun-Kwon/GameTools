@@ -109,8 +109,21 @@ namespace GameTools.Client.Wpf.ViewModels.Items.Mappers
             return new(itemEditModel.Name, itemEditModel.Price, itemEditModel.Description, itemEditModel.RarityId);
         }
 
+        public static BulkDeleteItemInputRow ToBulkDeleteItemInputRow(this ItemEditModel itemEditModel)
+        {
+            if (itemEditModel.Id is null || itemEditModel.RowVersionBase64 is null)
+            {
+                throw new InvalidOperationException("BulkDeleteItemInputRow requires Id or RowVersionBase64 to be not null.");
+            }
+
+            return new((int)itemEditModel.Id, itemEditModel.RowVersionBase64);
+        }
+
         public static BulkInsertItemsInput ToBulkInsertItemsInput(this IEnumerable<ItemEditModel> itemEditModels)
             => new(itemEditModels.Select(im => im.ToBulkInsertItemInputRow()).ToList());
+
+        public static BulkDeleteItemsInput ToBulkDeleteItemsInput(this IEnumerable<ItemEditModel> itemEditModels)
+            => new(itemEditModels.Select(im => im.ToBulkDeleteItemInputRow()).ToList());
 
         public static BulkUpdateItemInputRow ToBulkUpdateItemInputRow(this ItemEditModel itemEditModel)
         {

@@ -22,9 +22,9 @@ namespace GameTools.Client.Wpf.Common.Coordinators.Items
 
         Task<Item> CreateAsync(ItemCreateModel itemCreateModel, CancellationToken external = default);
 
-        Task<BulkInsertItemsOutput> BulkInsertAsync(BulkInsertItemsInput bulkInsertItemsInput, CancellationToken external = default);
-        Task<BulkUpdateItemsOutput> BulkUpdateAsync(BulkUpdateItemsInput bulkUpdateItemsInput, CancellationToken external = default);
-        Task<BulkDeleteItemsOutput> BulkDeleteAsync(BulkDeleteItemsInput bulkDeleteItemsInput, CancellationToken external = default);
+        Task<BulkInsertItemsOutput> BulkInsertAsync(IEnumerable<ItemEditModel> items, CancellationToken external = default);
+        Task<BulkUpdateItemsOutput> BulkUpdateAsync(IEnumerable<ItemEditModel> items, CancellationToken external = default);
+        Task<BulkDeleteItemsOutput> BulkDeleteAsync(IEnumerable<ItemEditModel> items, CancellationToken external = default);
 
         Task<RestoreItemsAsOfOutput> RestoreAsOfAsync(RestoreItemsAsOfInput restoreItemsAsOfInput, CancellationToken external = default);
     }
