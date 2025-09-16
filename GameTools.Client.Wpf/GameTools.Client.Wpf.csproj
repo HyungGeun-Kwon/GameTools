@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="DotNetHelper.MsDiKit" Version="1.4.0-ga8c7cbce11" />
+    <PackageReference Include="MahApps.Metro" Version="2.4.10" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.1-dev-02307" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameTools.Client.Application\GameTools.Client.Application.csproj" />
+    <ProjectReference Include="..\GameTools.Client.Domain\GameTools.Client.Domain.csproj" />
+    <ProjectReference Include="..\GameTools.Client.Infrastructure\GameTools.Client.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+  	<None Update="appsettings.json">
+  	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
+</Project>

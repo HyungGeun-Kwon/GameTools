@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="GameTools.Client.Wpf.Views.Items.Audits.ItemAuditResultView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items.Audits"
+             xmlns:localConverter="clr-namespace:GameTools.Client.Wpf.Common.Converters"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemAuditResultViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DataGrid
+            ItemsSource="{Binding PageState.Results}"
+            BorderThickness="1"
+            AutoGenerateColumns="False"
+            IsReadOnly="True">
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="#DDD" BorderThickness="1" Padding="8" Margin="4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Before" FontWeight="Bold" Margin="0,0,0,4"/>
+                                <ScrollViewer MaxHeight="320">
+                                    <TextBox
+                                        IsReadOnly="True" BorderThickness="0"
+                                        FontFamily="Consolas" TextWrapping="Wrap"
+                                        Text="{Binding BeforeJson, Converter={localConverter:JsonDisplayConverter}}"/>
+                                </ScrollViewer>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="After" FontWeight="Bold" Margin="0,0,0,4"/>
+                                <ScrollViewer MaxHeight="320">
+                                    <TextBox
+                                        IsReadOnly="True" BorderThickness="0"
+                                        FontFamily="Consolas" TextWrapping="Wrap"
+                                        Text="{Binding AfterJson, Converter={localConverter:JsonDisplayConverter}}"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding AuditId}"/>
+                <DataGridTextColumn Header="Action" Binding="{Binding Action}"/>
+                <DataGridTextColumn Header="Changed At (UTC)" Binding="{Binding ChangedAtUtc}"/>
+                <DataGridTextColumn Header="Changed By" Binding="{Binding ChangedBy}"/>
+            </DataGrid.Columns>
+            
+        </DataGrid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameTools.Client.Application\GameTools.Client.Application.csproj" />
+    <ProjectReference Include="..\GameTools.Client.Domain\GameTools.Client.Domain.csproj" />
+    <ProjectReference Include="..\GameTools.Contracts\GameTools.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

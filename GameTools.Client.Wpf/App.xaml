@@ -1,0 +1,22 @@
+﻿<Application x:Class="GameTools.Client.Wpf.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:GameTools.Client.Wpf"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
+                
+            </ResourceDictionary.MergedDictionaries>
+
+
+            <sys:Double x:Key="MahApps.Font.Size.Default">15</sys:Double>
+            <sys:Double x:Key="MahApps.Font.Size.Content">15</sys:Double>
+            <sys:Double x:Key="MahApps.Font.Size.Button">12</sys:Double>
+            <sys:Double x:Key="MahApps.Font.Size.Button.Flat">15</sys:Double>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

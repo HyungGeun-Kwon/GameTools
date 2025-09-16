@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="GameTools.Client.Wpf.Views.Rarities.RarityHeaderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameTools.Client.Wpf.Views.Rarities"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Rarities"
+             d:DataContext="{d:DesignInstance Type=viewModels:RarityHeaderViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Margin="10" Width="100" Content="Search" Command="{Binding RaritySearchCommand}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Margin="10" Width="100" Content="Add Rarity" Command="{Binding AddRarityCommand}"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

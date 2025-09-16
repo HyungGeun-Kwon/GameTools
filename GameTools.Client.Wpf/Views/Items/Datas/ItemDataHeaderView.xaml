@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="GameTools.Client.Wpf.Views.Items.Datas.ItemDataHeaderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:region="clr-namespace:DotNetHelper.MsDiKit.RegionServices;assembly=DotNetHelper.MsDiKit"
+             xmlns:name="clr-namespace:GameTools.Client.Wpf.Common.Names"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels.Items.Datas"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemDataHeaderViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ContentControl region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Data_SearchRegion}"/>
+        </ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <ContentControl Margin="0 10 0 0" region:RegionServiceAttached.RegionName="{x:Static name:RegionNames.Item_Data_CommandRegion}"/>
+        </ScrollViewer>
+    </StackPanel>
+</UserControl>
