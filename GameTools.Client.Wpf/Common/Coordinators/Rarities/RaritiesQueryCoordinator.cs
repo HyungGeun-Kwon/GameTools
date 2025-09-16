@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using GameTools.Client.Application.UseCases.Rarities.GetAllRarities;
+﻿using GameTools.Client.Application.UseCases.Rarities.GetAllRarities;
 using GameTools.Client.Wpf.Common.State;
 using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
 using GameTools.Client.Wpf.ViewModels.Rarities.Mappers;

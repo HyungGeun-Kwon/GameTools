@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+
+    <FileVersion>1.0.0.0</FileVersion>
+
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+
+    <InformationalVersion>$(Version)</InformationalVersion>
+
+    <!-- 커밋 해시 자동 포함 (예: 1.0.0+abcdef) -->
+    <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+</Project>

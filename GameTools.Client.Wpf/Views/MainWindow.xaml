@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:GameTools.Client.Wpf.Views"
         xmlns:region="clr-namespace:DotNetHelper.MsDiKit.RegionServices;assembly=DotNetHelper.MsDiKit"
         xmlns:names="clr-namespace:GameTools.Client.Wpf.Common.Names;assembly=GameTools.Client.Wpf"
+        xmlns:common="clr-namespace:GameTools.Client.Wpf.Common"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.ViewModels"
@@ -19,13 +20,28 @@
         </b:EventTrigger>
     </b:Interaction.Triggers>
     <Grid Margin="0 10 0 0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <ContentControl region:RegionServiceAttached.RegionName="{x:Static names:RegionNames.Main_LeftNavigationRegion}"/>
+            <ContentControl region:RegionServiceAttached.RegionName="{x:Static names:RegionNames.Main_LeftNavigationRegion}"/>
 
-        <ContentControl Grid.Column="1" region:RegionServiceAttached.RegionName="{x:Static names:RegionNames.Main_MainContentRegion}"/>
+            <ContentControl Grid.Column="1" region:RegionServiceAttached.RegionName="{x:Static names:RegionNames.Main_MainContentRegion}"/>
+        </Grid>
+
+        <StatusBar Grid.Row="1" Opacity="0.7">
+            <StatusBarItem HorizontalAlignment="Right">
+                <TextBlock>
+                    <Run Text="v"/>
+                    <Run Text="{x:Static common:VersionInfo.UserVersion}"/>
+                </TextBlock>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </mah:MetroWindow>

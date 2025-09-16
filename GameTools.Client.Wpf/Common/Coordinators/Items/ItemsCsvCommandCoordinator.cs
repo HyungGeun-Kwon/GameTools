@@ -1,8 +1,5 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using GameTools.Client.Application.Ports;
 using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;

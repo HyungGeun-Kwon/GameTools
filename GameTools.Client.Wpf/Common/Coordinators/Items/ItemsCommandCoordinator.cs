@@ -1,12 +1,8 @@
-﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
+﻿using GameTools.Client.Application.UseCases.Items.BulkDeleteItems;
 using GameTools.Client.Application.UseCases.Items.BulkInsertItems;
 using GameTools.Client.Application.UseCases.Items.BulkUpdateItems;
 using GameTools.Client.Application.UseCases.Items.CreateItem;
 using GameTools.Client.Application.UseCases.Items.DeleteItem;
-using GameTools.Client.Application.UseCases.Items.GetItemsPage;
 using GameTools.Client.Application.UseCases.Items.RestoreItemsAsOf;
 using GameTools.Client.Application.UseCases.Items.UpdateItem;
 using GameTools.Client.Domain.Items;
