@@ -7,7 +7,7 @@ MSSQL 기반 서버와 WPF 클라이언트로 구성된 CRUD/일괄처리 데스
 
 ## UI
 
-<details close>
+<details open>
   <summary><strong>Screenshots</strong></summary>
 
 - **초기 UI**  
