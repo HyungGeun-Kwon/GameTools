@@ -8,29 +8,14 @@ using CsvHelper;
 using DotNetHelper.MsDiKit.Extensions;
 using GameTools.Client.Application.Extensions;
 using GameTools.Client.Infrastructure.Extensions;
-using GameTools.Client.Wpf.Common.Coordinators.Audits;
-using GameTools.Client.Wpf.Common.Coordinators.Items;
-using GameTools.Client.Wpf.Common.Coordinators.Rarities;
-using GameTools.Client.Wpf.Common.Coordinators.RestoreHistories;
-using GameTools.Client.Wpf.Common.FilePickers;
-using GameTools.Client.Wpf.Common.Names;
-using GameTools.Client.Wpf.Common.Regions;
-using GameTools.Client.Wpf.Common.State;
-using GameTools.Client.Wpf.ViewModels;
-using GameTools.Client.Wpf.ViewModels.Items;
-using GameTools.Client.Wpf.ViewModels.Items.Audits;
-using GameTools.Client.Wpf.ViewModels.Items.Datas;
-using GameTools.Client.Wpf.ViewModels.Navigations;
-using GameTools.Client.Wpf.ViewModels.Rarities;
-using GameTools.Client.Wpf.ViewModels.Rarities.Contracts;
-using GameTools.Client.Wpf.ViewModels.RestoreHistories;
-using GameTools.Client.Wpf.Views;
-using GameTools.Client.Wpf.Views.Items;
-using GameTools.Client.Wpf.Views.Items.Audits;
-using GameTools.Client.Wpf.Views.Items.Datas;
-using GameTools.Client.Wpf.Views.Navigations;
-using GameTools.Client.Wpf.Views.Rarities;
-using GameTools.Client.Wpf.Views.RestoreHistories;
+using GameTools.Client.Wpf.Compositions;
+using GameTools.Client.Wpf.Features.Items.Modules;
+using GameTools.Client.Wpf.Features.Navigations.Modules;
+using GameTools.Client.Wpf.Features.Rarities.Modules;
+using GameTools.Client.Wpf.Features.RestoreHistories.Modules;
+using GameTools.Client.Wpf.Shared.UI.Behaviors;
+using GameTools.Client.Wpf.Shell.ViewModels;
+using GameTools.Client.Wpf.Shell.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -76,71 +61,24 @@ namespace GameTools.Client.Wpf
                 {
                     var baseUri = context.Configuration.GetValue<string>("Api:BaseUri")
                         ?? throw new InvalidOperationException("Config 'Api:BaseUri' is missing.");
-
                     services.AddClientApplication();
                     services.AddClientInfrastructure(baseUri);
 
+                    services.AddPresentation();
+
                     services.AddDialogService();
                     services.AddRegionService(() => _host.Services);
-                    TabRegionAttached.Configure(() => _host.Services);
 
-                    services.AddTransient<IFilePickerService, FilePickerService>();
-
-                    services.AddSingleton<ISearchState<RarityEditModel>, SearchState<RarityEditModel>>();
-                    services.AddSingleton<IRaritiesQueryCoordinator, RaritiesQueryCoordinator>();
-                    services.AddSingleton<IRaritiesCommandCoordinator, RaritiesCommandCoordinator>();
-
-                    services.AddSingleton<IItemPageSearchState, ItemPageSearchState>();
-                    services.AddSingleton<IItemsQueryCoordinator, ItemsQueryCoordinator>();
-                    services.AddSingleton<IItemsCommandCoordinator, ItemsCommandCoordinator>();
-                    services.AddSingleton<IItemsCsvCommandCoordinator, ItemsCsvCommandCoordinator>();
-
-                    services.AddSingleton<IItemAuditPageSearchState, ItemAuditPageSearchState>();
-                    services.AddSingleton<IItemAuditsQueryCoordinator, ItemAuditsQueryCoordinator>();
-
-                    services.AddSingleton<IRestoreHistoriesQueryCoordinator, RestoreHistoriesQueryCoordinator>();
-                    services.AddSingleton<IRestoreHistoryPageSearchState, RestoreHistoryPageSearchState>();
-
-                    services.AddTransient<RarityLookupViewModel>();
-                    services.AddTransient<TabsHostViewModel>();
-
-                    services.AddSingleton<MainViewModel>();
-
-                    services.AddRegionView<EntityNavigationView, EntityNavigationViewModel>(RegionViewNames.Main_EntityNavigationView);
-
-                    services.AddRegionView<ItemHostView, ItemHostViewModel>(RegionViewNames.Item_HostView);
-
-                    services.AddRegionView<ItemDataHostView, ItemDataHostViewModel>(RegionViewNames.Item_Data_HostView);
-                    services.AddRegionView<ItemDataHeaderView, ItemDataHeaderViewModel>(RegionViewNames.Item_Data_HeaderView);
-                    services.AddRegionView<ItemDataCommandView, ItemDataCommandViewModel>(RegionViewNames.Item_Data_CommandView);
-                    services.AddRegionView<ItemDataSearchView, ItemDataSearchViewModel>(RegionViewNames.Item_Data_SearchView);
-                    services.AddRegionView<ItemDataResultView, ItemDataResultViewModel>(RegionViewNames.Item_Data_ResultView);
-                    services.AddRegionView<ItemDataPagingView, ItemDataPagingViewModel>(RegionViewNames.Item_Data_PagingView);
-                    services.AddDialogView<ItemDataCreateView, ItemDataCreateViewModel>(DialogViewNames.Item_EditDialog);
-
-                    services.AddRegionView<ItemAuditHostView, ItemAuditHostViewModel>(RegionViewNames.Item_Audit_HostView);
-                    services.AddRegionView<ItemAuditHeaderView, ItemAuditHeaderViewModel>(RegionViewNames.Item_Audit_HeaderView);
-                    services.AddRegionView<ItemAuditCommandView, ItemAuditCommandViewModel>(RegionViewNames.Item_Audit_CommandView);
-                    services.AddRegionView<ItemAuditSearchView, ItemAuditSearchViewModel>(RegionViewNames.Item_Audit_SearchView);
-                    services.AddRegionView<ItemAuditResultView, ItemAuditResultViewModel>(RegionViewNames.Item_Audit_ResultView);
-                    services.AddRegionView<ItemAuditPagingView, ItemAuditPagingViewModel>(RegionViewNames.Item_Audit_PagingView);
-                    services.AddDialogView<ItemAuditRestoreAsOfView, ItemAuditRestoreAsOfViewModel>(DialogViewNames.Item_RestoreAsOfDialog);
-
-                    services.AddRegionView<RarityHostView, RarityHostViewModel>(RegionViewNames.Rarity_HostView);
-                    services.AddRegionView<RarityHeaderView, RarityHeaderViewModel>(RegionViewNames.Rarity_HeaderView);
-                    services.AddRegionView<RarityResultView, RarityResultViewModel>(RegionViewNames.Rarity_ResultView);
-                    services.AddDialogView<RarityCreateView, RarityCreateViewModel>(DialogViewNames.Rarity_EditDialog);
-
-
-                    services.AddRegionView<RestoreHistoryHostView, RestoreHistoryHostViewModel>(RegionViewNames.Restore_HostView);
-                    services.AddRegionView<RestoreHistoryHeaderView, RestoreHistoryHeaderViewModel>(RegionViewNames.Restore_HeaderView);
-                    services.AddRegionView<RestoreHistoryResultView, RestoreHistoryResultViewModel>(RegionViewNames.Restore_ResultView);
-                    services.AddRegionView<RestoreHistoryPagingView, RestoreHistoryPagingViewModel>(RegionViewNames.Restore_PagingView);
-
+                    services.AddItemsFeature();
+                    services.AddRaritiesFeature();
+                    services.AddNavigationsFeature();
+                    services.AddRestoreHistoriesFeature();
 
                 }).Build();
 
             _host.StartAsync().GetAwaiter().GetResult();
+
+            TabRegionAttached.Configure(() => _host.Services);
 
             var mainViewModel = _host.Services.GetRequiredService<MainViewModel>();
             var mainWindow = new MainWindow() { DataContext = mainViewModel };
@@ -179,7 +117,6 @@ namespace GameTools.Client.Wpf
                 MessageBox.Show(e.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
             Log.Fatal(e.Exception, "UI thread unhandled exception");
         }
 

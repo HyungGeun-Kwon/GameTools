@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="GameTools.Client.Wpf.Features.Items.Data.Views.ItemDataPagingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:pagingControls="clr-namespace:GameTools.Client.Wpf.Shared.Components.Pagination"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.Features.Items.Data.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemDataPagingViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <Grid>
+        <pagingControls:PagingBar
+            PageState="{Binding PageState}"
+            GoFirstPageCommand="{Binding GoFirstPageCommand}"
+            GoPreviewPageCommand="{Binding GoPreviewPageCommand}"
+            GoNextPageCommand="{Binding GoNextPageCommand}"
+            GoLastPageCommand="{Binding GoLastPageCommand}"/>
+    </Grid>
+</UserControl>

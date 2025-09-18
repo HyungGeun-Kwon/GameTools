@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="GameTools.Client.Wpf.Features.Items.Audits.Views.ItemAuditSearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:localMarkups="clr-namespace:GameTools.Client.Wpf.Shared.UI.Markups"
+             xmlns:localConverter="clr-namespace:GameTools.Client.Wpf.Shared.UI.Converters"
+             xmlns:localEnums="clr-namespace:GameTools.Client.Wpf.Shared.Enums"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.Features.Items.Audits.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemAuditSearchViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <StackPanel Orientation="Horizontal">
+        <Label VerticalContentAlignment="Center" Content="Page number : "/>
+        <TextBox Text="{Binding SearchPageNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" Width="50" VerticalAlignment="Center"/>
+        <Label VerticalContentAlignment="Center" Content="Page size : " Margin="20 0 0 0 "/>
+        <TextBox Text="{Binding SearchPageSize, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" Width="50" VerticalAlignment="Center"/>
+        <Label VerticalContentAlignment="Center" Content="Item Id : " Margin="20 0 0 0 "/>
+        <TextBox Text="{Binding ItemIdFilter, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" Width="50" VerticalAlignment="Center"/>
+        <Label VerticalContentAlignment="Center" Content="Action : " Margin="20 0 0 0 "/>
+        <ComboBox 
+            Width="80"
+            ItemsSource="{localMarkups:EnumValues EnumType={x:Type localEnums:AuditActionType}}"
+            DisplayMemberPath="Text"
+            SelectedValuePath="Value"
+            SelectedValue="{Binding ActionFilter, Mode=TwoWay}">
+        </ComboBox>
+
+        <Label VerticalContentAlignment="Center" Content="From (UTC) : " Margin="20 0 0 0 "/>
+        <mah:DateTimePicker PickerVisibility="All" SelectedDateTime="{Binding FromUtcFilter}"/>
+
+        <Label VerticalContentAlignment="Center" Content="To (UTC) : " Margin="20 0 0 0 "/>
+        <mah:DateTimePicker PickerVisibility="All" SelectedDateTime="{Binding ToUtcFilter}"/>
+
+        <Button Margin="20 0 0 0" Width="100" Content="Search" Command="{Binding GetItemAuditsCommand}" />
+    </StackPanel>
+</UserControl>

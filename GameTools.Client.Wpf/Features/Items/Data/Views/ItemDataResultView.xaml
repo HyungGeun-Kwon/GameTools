@@ -1,0 +1,132 @@
+﻿<UserControl x:Class="GameTools.Client.Wpf.Features.Items.Data.Views.ItemDataResultView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:localConverter="clr-namespace:GameTools.Client.Wpf.Shared.UI.Converters"
+             xmlns:rarityControls="clr-namespace:GameTools.Client.Wpf.Shared.Components.Lookups.Rarities"
+             xmlns:viewModels="clr-namespace:GameTools.Client.Wpf.Features.Items.Data.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemDataResultViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DataGrid 
+            ItemsSource="{Binding PageState.Results}"
+            BorderThickness="1"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            IsReadOnly="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn 
+                    Header="ID" 
+                    Binding="{Binding Id}" IsReadOnly="True"/>
+                <DataGridTextColumn 
+                    Header="Name"
+                    Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
+                <DataGridTextColumn 
+                    Header="Price"
+                    Binding="{Binding Price, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
+                <DataGridTextColumn 
+                    Header="Description"
+                    Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, ValidatesOnNotifyDataErrors=True}"/>
+                <DataGridTemplateColumn Header="Rarity">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <rarityControls:RarityFilterControl
+                                VerticalAlignment="Center"
+                                RarityLookup="{Binding DataContext.RarityLookup, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                SelectedRaityId="{Binding RarityId, UpdateSourceTrigger=LostFocus}"
+                                ShowErrorMessage="True"
+                                ShowRetryIfError="True"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn 
+                    Header="RowVersion"
+                    Binding="{Binding RowVersionBase64}"
+                    IsReadOnly="True"
+                    Width="*"/>
+                <DataGridTemplateColumn Header=" " Width="50" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <!-- 더티면 주황, 최신이면 초록색 -->
+                            <TextBlock 
+                                Text="●" FontSize="14"
+                                Foreground="{Binding IsDirty, Converter={localConverter:IsDirtyToBrushConverter}}"
+                                HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <!-- 기본(최신/초록) -->
+                                        <Setter Property="ToolTip" Value="All changes saved"/>
+                                        <!-- 더티(주황) -->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                                                <Setter Property="ToolTip" Value="Unsaved changes"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="180" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <!-- Update -->
+                                <Button 
+                                    Content="Update"
+                                    Command="{Binding DataContext.UpdateItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <!-- 더티이고 에러 없을 때만 활성화 -->
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding IsDirty}" Value="True"/>
+                                                        <Condition Binding="{Binding HasErrors}" Value="False"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <!-- Revert (마지막 저장본으로 되돌리기) -->
+                                <Button 
+                                    Margin="10 0 0 0"
+                                    Content="Revert"
+                                    Command="{Binding DataContext.RevertItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Style.Triggers>
+                                                <!-- 더티일 때만 활성화 -->
+                                                <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+
+                                <!-- Delete -->
+                                <Button 
+                                    Margin="10 0 0 0"
+                                    Content="Delete"
+                                    Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
