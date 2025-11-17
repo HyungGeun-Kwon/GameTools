@@ -21,13 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Application\GameTools.Server.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Infrastructure\GameTools.Server.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameTools.Server.Application\GameTools.Server.Application.csproj" />
-    <ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
-    <ProjectReference Include="..\GameTools.Server.Infrastructure\GameTools.Server.Infrastructure.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
 </Project>

@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\GameTools.Contracts\GameTools.Contracts.csproj" />
-    <ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
-  </ItemGroup>
-
 </Project>

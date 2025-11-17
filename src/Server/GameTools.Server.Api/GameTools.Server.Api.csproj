@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GameTools.Contracts\GameTools.Contracts.csproj" />
     <ProjectReference Include="..\GameTools.Server.Application\GameTools.Server.Application.csproj" />
-    <ProjectReference Include="..\GameTools.Contracts\GameTools.Contracts.csproj" />
     <ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
     <ProjectReference Include="..\GameTools.Server.Infrastructure\GameTools.Server.Infrastructure.csproj" />
   </ItemGroup>
