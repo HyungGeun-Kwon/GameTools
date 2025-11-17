@@ -1,4 +1,6 @@
-﻿namespace GameTools.Server.Domain.Features.Items.ValueObjects
+﻿using GameTools.Server.Domain.Features.Items.Exceptions;
+
+namespace GameTools.Server.Domain.Features.Items.ValueObjects
 {
     public sealed record ItemPrice
     {
@@ -8,7 +10,7 @@
 
         public ItemPrice(int value)
         {
-            if (value < MinValue) throw new ArgumentOutOfRangeException(nameof(value), $"Price must be > {MinValue}.");
+            if (value < MinValue) throw new ItemPriceTooSmallException(MinValue);
             Value = value;
         }
 

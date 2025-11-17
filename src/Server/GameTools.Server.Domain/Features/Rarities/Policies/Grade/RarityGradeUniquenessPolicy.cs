@@ -1,0 +1,14 @@
+﻿using GameTools.Server.Domain.Features.Rarities.Exceptions;
+using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+
+namespace GameTools.Server.Domain.Features.Rarities.Policies.Grade
+{
+    public sealed class RarityGradeUniquenessPolicy(IRarityGradeUniquenessChecker checker)
+    {
+        public async Task EnsureUniqueAsync(RarityGrade grade, CancellationToken ct)
+        {
+            if (await checker.ExistsAsync(grade, ct))
+                throw new RarityGradeNotUniqueException(grade);
+        }
+    }
+}

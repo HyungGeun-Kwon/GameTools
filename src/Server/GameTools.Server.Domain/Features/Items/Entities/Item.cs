@@ -14,7 +14,7 @@ namespace GameTools.Server.Domain.Features.Items.Entities
 
         private Item() { } // EF Core
 
-        public Item(ItemId id, ItemName name, ItemPrice price, ItemDescription description, RarityId rarityId)
+        internal Item(ItemId id, ItemName name, ItemPrice price, ItemDescription description, RarityId rarityId)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -39,7 +39,7 @@ namespace GameTools.Server.Domain.Features.Items.Entities
             // _domainEvents.Add(new ItemPriceChanged(Id, old: Price, newPrice));
         }
 
-        public void UpdateDescription(ItemDescription newDescription)
+        public void ChangeDescription(ItemDescription newDescription)
         {
             ArgumentNullException.ThrowIfNull(newDescription);
             if (newDescription == Description) return;

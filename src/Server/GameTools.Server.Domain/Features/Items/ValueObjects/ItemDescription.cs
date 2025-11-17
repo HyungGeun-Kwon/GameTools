@@ -1,4 +1,6 @@
-﻿namespace GameTools.Server.Domain.Features.Items.ValueObjects
+﻿using GameTools.Server.Domain.Features.Items.Exceptions;
+
+namespace GameTools.Server.Domain.Features.Items.ValueObjects
 {
     public sealed record ItemDescription
     {
@@ -16,7 +18,7 @@
 
             var s = value.Trim();
             if (s.Length > MaxLength)
-                throw new ArgumentException($"Item Description is too long (max {MaxLength}).", nameof(value));
+                throw new ItemDescriptionTooLongException(MaxLength);
 
             Value = s;
         }

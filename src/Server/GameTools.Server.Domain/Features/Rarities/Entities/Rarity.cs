@@ -10,7 +10,7 @@ namespace GameTools.Server.Domain.Features.Rarities.Entities
 
         private Rarity() { } // EF Core
 
-        public Rarity(RarityId id, RarityGrade grade, RarityColorCode colorCode)
+        internal Rarity(RarityId id, RarityGrade grade, RarityColorCode colorCode)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Grade = grade ?? throw new ArgumentNullException(nameof(grade));

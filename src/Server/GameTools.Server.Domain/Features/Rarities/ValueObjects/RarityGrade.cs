@@ -1,20 +1,19 @@
-﻿namespace GameTools.Server.Domain.Features.Rarities.ValueObjects
+﻿using GameTools.Server.Domain.Features.Rarities.Exceptions;
+
+namespace GameTools.Server.Domain.Features.Rarities.ValueObjects
 {
     public sealed record RarityGrade
     {
+        public const int MinLength = 1;
         public const int MaxLength = 32;
 
         public string Value { get; }
 
         public RarityGrade(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Rarity grade cannot be null or whitespace.", nameof(value));
-
-            var s = value.Trim();
-            if (s.Length > MaxLength) // Assuming a max length rule
-                throw new ArgumentException($"Rarity grade is too long (max {MaxLength}).", nameof(value));
-
+            var s = (value ?? throw new ArgumentNullException(nameof(value))).Trim();
+            if (s.Length < MinLength) throw new RarityGradeTooShortException(MinLength);
+            if (s.Length > MaxLength) throw new RarityGradeTooLongException(MaxLength);
 
             Value = s;
         }
