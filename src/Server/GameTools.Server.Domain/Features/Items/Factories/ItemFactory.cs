@@ -5,7 +5,7 @@ using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 
 namespace GameTools.Server.Domain.Features.Items.Factories
 {
-    public sealed class ItemFactory(ItemNameUniquenessPolicy itemNameUniqunessPolicy) : IItemFactory
+    public sealed class ItemFactory(IItemNameUniquenessPolicy itemNameUniqunessPolicy) : IItemFactory
     {
         public async Task<Item> CreateAsync(ItemName name, ItemPrice price, ItemDescription description, RarityId rarityId, CancellationToken ct)
         {

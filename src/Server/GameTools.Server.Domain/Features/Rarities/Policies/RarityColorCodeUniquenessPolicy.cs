@@ -1,9 +1,10 @@
 ﻿using GameTools.Server.Domain.Features.Rarities.Exceptions;
+using GameTools.Server.Domain.Features.Rarities.Services;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 
-namespace GameTools.Server.Domain.Features.Rarities.Policies.ColorCode
+namespace GameTools.Server.Domain.Features.Rarities.Policies
 {
-    public sealed class RarityColorCodeUniquenessPolicy(IRarityColorCodeUniquenessChecker checker)
+    public sealed class RarityColorCodeUniquenessPolicy(IRarityColorCodeUniquenessChecker checker) : IRarityColorCodeUniquenessPolicy
     {
         public async Task EnsureUniqueAsync(RarityColorCode colorCode, CancellationToken ct)
         {
