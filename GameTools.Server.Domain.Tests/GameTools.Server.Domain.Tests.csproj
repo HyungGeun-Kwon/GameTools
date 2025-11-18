@@ -21,12 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Rarities\Entities\" />
-    <Folder Include="Features\Rarities\Factories\" />
-    <Folder Include="Features\Rarities\ValueObjects\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\src\Server\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
   </ItemGroup>
 

@@ -20,7 +20,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
                 RarityId.From(rarityGuid ?? Guid.NewGuid()));
 
         [Fact]
-        public void Rename_Should_Change_Name_When_Different()
+        public void Rename_Should_Change_When_Different()
         {
             var item = CreateItem(name: "Sword");
             var newName = new ItemName("New Sword");
@@ -42,7 +42,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         }
 
         [Fact]
-        public void ChangePrice_Should_Change_Price_When_Different()
+        public void ChangePrice_Should_Change_When_Different()
         {
             var item = CreateItem(price: 100);
             var newPrice = new ItemPrice(200);
@@ -64,7 +64,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         }
 
         [Fact]
-        public void ChangeDescription_Should_Change_Description_When_Different()
+        public void ChangeDescription_Should_Change_When_Different()
         {
             var item = CreateItem(description: "Old description");
             var newDescription = new ItemDescription("New description");
@@ -86,7 +86,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         }
 
         [Fact]
-        public void ChangeRarity_Should_Change_RarityId_When_Different()
+        public void ChangeRarity_Should_Change_When_Different()
         {
             var item = CreateItem(rarityGuid: Guid.NewGuid());
             var newRarityId = RarityId.New();

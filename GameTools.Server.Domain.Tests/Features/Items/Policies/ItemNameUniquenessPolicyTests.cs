@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
+using GameTools.Server.Domain.Features.Items.Exceptions;
 using GameTools.Server.Domain.Features.Items.Policies;
 using GameTools.Server.Domain.Features.Items.Services;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
@@ -17,8 +13,9 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Policies
         {
             var checkerMock = new Mock<IItemNameUniquenessChecker>();
             checkerMock
-                .Setup(x => x.ExistsAsync(It.IsAny<ItemName>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.ExistsAsync(new ItemName("test"), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(reValue);
+
             return checkerMock;
         }
 
@@ -46,7 +43,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Policies
             
             Func<Task> act = async () => await policy.EnsureUniqueAsync(name, CancellationToken.None);
             
-            await act.Should().ThrowAsync<Exception>();
+            await act.Should().ThrowAsync<ItemNameNotUniqueException>();
             checkerMock.Verify(x => x.ExistsAsync(name, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
