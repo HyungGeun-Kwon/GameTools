@@ -13,7 +13,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Policies
         {
             var checkerMock = new Mock<IItemNameUniquenessChecker>();
             checkerMock
-                .Setup(x => x.ExistsAsync(new ItemName("test"), It.IsAny<CancellationToken>()))
+                .Setup(x => x.ExistsAsync(It.IsAny<ItemName>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(reValue);
 
             return checkerMock;
