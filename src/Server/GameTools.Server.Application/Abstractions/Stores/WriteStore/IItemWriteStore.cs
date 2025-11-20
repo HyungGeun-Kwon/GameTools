@@ -1,24 +1,33 @@
-﻿using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
-using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
-using GameTools.Server.Application.Features.Items.Commands.RestoreItemsAsOf;
-using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
-using GameTools.Server.Domain.Entities;
+﻿using GameTools.Server.Application.Features.Items.Commands.Common.Bulk;
+using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
+using GameTools.Server.Domain.Features.Items.Entities;
 
 namespace GameTools.Server.Application.Abstractions.Stores.WriteStore
 {
-    public interface IItemWriteStore : IWriteStore<Item, int>
+    public interface IItemWriteStore : IWriteStore<Item, Guid>
     {
-        Task<IReadOnlyList<(int? Id, byte[]? NewRowVersion, BulkInsertStatusCode StatusCode)>> InsertManyTvpAsync(
-            IEnumerable<InsertItemRow> rows, CancellationToken ct);
+        /// <summary>
+        /// Executes a bulk insert in a single roundtrip (e.g. TVP).
+        /// This method manages its own transaction / SaveChanges internally.
+        /// </summary>
+        Task<IReadOnlyList<BulkResultRow>> BulkInsertAsync(
+            IReadOnlyList<CreateItemSpec> items,
+            CancellationToken ct);
 
-        Task<IReadOnlyList<(int Id, byte[]? NewRowVersion, BulkUpdateStatusCode StatusCode)>> UpdateManyTvpAsync(
-            IEnumerable<UpdateItemRow> rows, CancellationToken ct);
+        /// <summary>
+        /// Executes a bulk update in a single roundtrip (e.g. TVP).
+        /// This method manages its own transaction / SaveChanges internally.
+        /// </summary>
+        Task<IReadOnlyList<BulkResultRow>> BulkUpdateAsync(
+            IReadOnlyList<UpdateItemSpec> items,
+            CancellationToken ct);
 
-        Task<IReadOnlyList<(int? Id, BulkDeleteStatusCode StatusCode)>> DeleteManyTvpAsync(
-            IEnumerable<DeleteItemRow> rows, CancellationToken ct);
-
-        Task<(Guid RestoreId, int Deleted, int Inserted, int Updated)> RestoreItemsAsOfAsync(
-            RestoreItemsAsOfPayload payload, CancellationToken ct);
-        void SetOriginalRowVersion(Item entity, byte[] rowVersion);
+        /// <summary>
+        /// Executes a bulk delete in a single roundtrip (e.g. TVP).
+        /// This method manages its own transaction / SaveChanges internally.
+        /// </summary>
+        Task<IReadOnlyList<BulkResultRow>> BulkDeleteAsync(
+            IReadOnlyList<DeleteItemSpec> items,
+            CancellationToken ct);
     }
 }

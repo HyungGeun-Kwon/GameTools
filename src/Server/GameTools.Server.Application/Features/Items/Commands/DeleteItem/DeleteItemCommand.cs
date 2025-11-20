@@ -1,7 +1,7 @@
-﻿using GameTools.Server.Application.Common.Results;
+﻿using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 using MediatR;
 
 namespace GameTools.Server.Application.Features.Items.Commands.DeleteItem
 {
-    public sealed record DeleteItemCommand(DeleteItemPayload Payload) : IRequest<WriteStatusCode>;
+    public sealed record DeleteItemCommand(DeleteItemSpec Spec) : IRequest<DeleteItemResult>;
 }

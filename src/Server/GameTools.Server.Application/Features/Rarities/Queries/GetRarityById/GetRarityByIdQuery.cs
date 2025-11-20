@@ -3,5 +3,5 @@ using MediatR;
 
 namespace GameTools.Server.Application.Features.Rarities.Queries.GetRarityById
 {
-    public sealed record GetRarityByIdQuery(byte Id) : IRequest<RarityReadModel?>;
+    public sealed record GetRarityByIdQuery(Guid Id) : IRequest<RarityReadModel>;
 }

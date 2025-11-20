@@ -1,37 +1,40 @@
-﻿using GameTools.Server.Application.Abstractions.Works;
-using GameTools.Server.Domain.Entities;
-using MediatR;
+﻿using GameTools.Server.Application.Abstractions.Exceptions;
+using GameTools.Server.Application.Abstractions.Stores.ReadStore;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Features.Items.Models;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
+using GameTools.Server.Domain.Features.Items.Factories;
+using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using MediatR;
 
 namespace GameTools.Server.Application.Features.Items.Commands.CreateItem
 {
-    public sealed class CreateItemHandler(IItemWriteStore itemWriteStore, IRarityWriteStore rarityRepo, IUnitOfWork uow)
-        : IRequestHandler<CreateItemCommand, ItemReadModel>
+    public sealed class CreateItemHandler(
+        IItemWriteStore itemWriteStore, 
+        IRarityReadStore rarityReadStore,
+        IItemFactory itemFactory,
+        IUnitOfWork uow) 
+        : IRequestHandler<CreateItemCommand, CreateItemResult>
     {
-        public async Task<ItemReadModel> Handle(CreateItemCommand request, CancellationToken ct)
+        public async Task<CreateItemResult> Handle(CreateItemCommand command, CancellationToken ct)
         {
-            var rarity = await rarityRepo.GetByIdAsync(request.Payload.RarityId, ct)
-                ?? throw new InvalidOperationException("Rarity not found.");
+            var rarity = await rarityReadStore.GetByIdAsync(command.Spec.RarityId, ct)
+                ?? throw new NotFoundException($"Rarity '{command.Spec.RarityId}' not found.");
 
-            var item = new Item(
-                request.Payload.Name,
-                request.Payload.Price,
-                rarity,
-                request.Payload.Description);
+            var item = await itemFactory.CreateAsync(
+                new ItemName(command.Spec.Name),
+                new ItemPrice(command.Spec.Price),
+                new ItemDescription(command.Spec.Description),
+                RarityId.From(rarity.Id), ct);
 
             await itemWriteStore.AddAsync(item, ct);
             await uow.SaveChangesAsync(ct);
 
-            return new ItemReadModel(
-                item.Id,
-                item.Name,
-                item.Price,
-                item.Description,
-                item.RarityId,
-                item.Rarity.Grade,
-                item.Rarity.ColorCode,
-                item.RowVersion);
+            var rowVersion = itemWriteStore.GetRowVersion(item);
+
+            return new CreateItemResult(
+                item.Id.Value,
+                rowVersion);
         }
     }
 }

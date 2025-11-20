@@ -1,7 +1,6 @@
-﻿using GameTools.Server.Application.Common.Results;
-using GameTools.Server.Application.Features.Items.Models;
-
-namespace GameTools.Server.Application.Features.Items.Commands.UpdateItem
+﻿namespace GameTools.Server.Application.Features.Items.Commands.UpdateItem
 {
-    public sealed record UpdateItemResult(WriteStatusCode WriteStatusCode, ItemReadModel? ItemReadModel);
+    public sealed record UpdateItemResult(
+        Guid Id,
+        byte[] RowVersion);
 }

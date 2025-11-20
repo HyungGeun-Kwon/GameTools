@@ -1,6 +1,6 @@
 ﻿using GameTools.Server.Application.Abstractions.Stores.ReadStore;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Abstractions.Works;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
 using GameTools.Server.Infrastructure.Persistence;
 using GameTools.Server.Infrastructure.Persistence.Seed;
 using GameTools.Server.Infrastructure.Persistence.Stores.ReadStore;

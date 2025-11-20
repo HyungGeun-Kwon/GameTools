@@ -3,8 +3,8 @@ using GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage;
 
 namespace GameTools.Server.Application.Abstractions.Stores.ReadStore
 {
-    public interface IItemAuditReadStore
+    public interface IItemAuditReadStore : IReadStore<ItemAuditReadModel, Guid>
     {
-        Task<PagedResult<ItemAuditReadModel>> GetItemAuditPageAsync(ItemAuditPageSearchCriteria criteria, CancellationToken ct);
+        Task<PagedResult<ItemAuditReadModel>> GetItemAuditPageAsync(ItemAuditPageCriteria criteria, CancellationToken ct);
     }
 }

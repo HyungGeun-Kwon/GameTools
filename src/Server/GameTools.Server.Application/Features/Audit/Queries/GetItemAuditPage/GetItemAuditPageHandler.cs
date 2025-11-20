@@ -7,7 +7,7 @@ namespace GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage
     public sealed class GetItemAuditPageHandler(IItemAuditReadStore store)
         : IRequestHandler<GetItemAuditPageQuery, PagedResult<ItemAuditReadModel>>
     {
-        public Task<PagedResult<ItemAuditReadModel>> Handle(GetItemAuditPageQuery request, CancellationToken ct)
-            => store.GetItemAuditPageAsync(request.Criteria, ct);
+        public Task<PagedResult<ItemAuditReadModel>> Handle(GetItemAuditPageQuery query, CancellationToken ct)
+            => store.GetItemAuditPageAsync(query.Criteria, ct);
     }
 }

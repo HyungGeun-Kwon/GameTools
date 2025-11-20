@@ -1,9 +1,6 @@
-﻿using GameTools.Server.Domain.Entities;
+﻿using GameTools.Server.Domain.Features.Rarities.Entities;
 
 namespace GameTools.Server.Application.Abstractions.Stores.WriteStore
 {
-    public interface IRarityWriteStore : IWriteStore<Rarity, byte>
-    {
-        void SetOriginalRowVersion(Rarity entity, byte[] rowVersion);
-    }
+    public interface IRarityWriteStore : IWriteStore<Rarity, Guid>;
 }

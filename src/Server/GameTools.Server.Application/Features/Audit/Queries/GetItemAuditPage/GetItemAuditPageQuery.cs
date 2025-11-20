@@ -3,6 +3,6 @@ using MediatR;
 
 namespace GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage
 {
-    public sealed record GetItemAuditPageQuery(ItemAuditPageSearchCriteria Criteria) 
+    public sealed record GetItemAuditPageQuery(ItemAuditPageCriteria Criteria) 
         : IRequest<PagedResult<ItemAuditReadModel>>;
 }

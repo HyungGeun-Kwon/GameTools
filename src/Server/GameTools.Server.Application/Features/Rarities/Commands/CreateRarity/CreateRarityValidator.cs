@@ -1,19 +1,13 @@
 ﻿using FluentValidation;
-using GameTools.Server.Domain.Common.Rules;
+using GameTools.Server.Application.Features.Rarities.Commands.Common.Specs;
 
 namespace GameTools.Server.Application.Features.Rarities.Commands.CreateRarity
 {
     public class CreateRarityValidator : AbstractValidator<CreateRarityCommand>
     {
-        public CreateRarityValidator()
+        public CreateRarityValidator(IValidator<CreateRaritySpec> specValidator)
         {
-            RuleFor(x => x.Payload).NotEmpty();
-            RuleFor(x => x.Payload.Grade)
-                .NotEmpty()
-                .MaximumLength(RarityRules.GradeMax);
-            RuleFor(x => x.NormalizedColorCode)
-                .NotEmpty()
-                .Matches(RarityRules.ColorHexRegex);
+            RuleFor(x => x.Spec).NotNull().SetValidator(specValidator);
         }
     }
 }

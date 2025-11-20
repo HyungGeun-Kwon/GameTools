@@ -1,19 +1,31 @@
-﻿using GameTools.Server.Application.Abstractions.Works;
-using GameTools.Server.Domain.Entities;
-using MediatR;
+﻿using MediatR;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Features.Rarities.Models;
+using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Domain.Features.Rarities.Factories;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
 
 namespace GameTools.Server.Application.Features.Rarities.Commands.CreateRarity
 {
-    public sealed class CreateRarityHandler(IRarityWriteStore rarityWriteStore, IUnitOfWork uow) : IRequestHandler<CreateRarityCommand, RarityReadModel>
+    public sealed class CreateRarityHandler(
+        IRarityWriteStore rarityWriteStore,
+        IRarityFactory rarityFactory,
+        IUnitOfWork uow)
+        : IRequestHandler<CreateRarityCommand, CreateRarityResult>
     {
-        public async Task<RarityReadModel> Handle(CreateRarityCommand request, CancellationToken ct)
+        public async Task<CreateRarityResult> Handle(CreateRarityCommand command, CancellationToken ct)
         {
-            var rarity = new Rarity(request.Payload.Grade, request.NormalizedColorCode);
+            var grade = new RarityGrade(command.Spec.Grade);
+            var colorCode = new RarityColorCode(command.Spec.NormalizedColorCode);
+
+            var rarity = await rarityFactory.CreateAsync(grade, colorCode, ct);
+
             await rarityWriteStore.AddAsync(rarity, ct);
+
             await uow.SaveChangesAsync(ct);
-            return new RarityReadModel(rarity.Id, rarity.Grade, rarity.ColorCode, rarity.RowVersion);
+
+            var rowVersion = rarityWriteStore.GetRowVersion(rarity);
+
+            return new CreateRarityResult(rarity.Id.Value, rowVersion);
         }
     }
 }

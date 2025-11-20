@@ -1,7 +1,7 @@
 ﻿namespace GameTools.Server.Application.Abstractions.Stores.ReadStore
 {
-    public interface IReadStore<TEntity, TKey> where TEntity : class
+    public interface IReadStore<TReadModel, TKey> where TReadModel : class
     {
-        Task<TEntity?> GetByIdAsync(TKey id, CancellationToken ct);
+        Task<TReadModel?> GetByIdAsync(TKey id, CancellationToken ct);
     }
 }

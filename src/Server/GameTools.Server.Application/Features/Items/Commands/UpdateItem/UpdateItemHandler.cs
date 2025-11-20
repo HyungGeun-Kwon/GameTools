@@ -1,59 +1,49 @@
-﻿using GameTools.Server.Application.Abstractions.Works;
-using MediatR;
+﻿using GameTools.Server.Application.Abstractions.Exceptions;
+using GameTools.Server.Application.Abstractions.Stores.ReadStore;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Features.Items.Models;
-using GameTools.Server.Application.Common.Results;
-using Microsoft.EntityFrameworkCore;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
+using GameTools.Server.Domain.Features.Items.Policies;
+using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using MediatR;
 
 namespace GameTools.Server.Application.Features.Items.Commands.UpdateItem
 {
-    public sealed class UpdateItemHandler(IItemWriteStore itemWriteStore, IRarityWriteStore rarityRepo, IUnitOfWork uow)
+    public sealed class UpdateItemHandler(
+        IItemWriteStore itemWriteStore,
+        IRarityReadStore rarityReadStore,
+        IItemNameUniquenessPolicy itemNameUniquenessPolicy,
+        IUnitOfWork uow)
         : IRequestHandler<UpdateItemCommand, UpdateItemResult>
     {
-        public async Task<UpdateItemResult> Handle(UpdateItemCommand request, CancellationToken ct)
+        public async Task<UpdateItemResult> Handle(UpdateItemCommand command, CancellationToken ct)
         {
-            var item = await itemWriteStore.GetByIdAsync(request.Payload.Id, ct);
-            if (item == null)
-                return new UpdateItemResult(WriteStatusCode.NotFound, null);
+            var item = await itemWriteStore.LoadForUpdateAsync(command.Spec.Id, ct)
+                ?? throw new NotFoundException($"Item '{command.Spec.Id}' not found.");
+
+            _ = await rarityReadStore.GetByIdAsync(command.Spec.RarityId, ct)
+                ?? throw new NotFoundException($"Rarity '{command.Spec.RarityId}' not found.");
+
+            var newName = new ItemName(command.Spec.Name);
+
+            // 이름은 Unique
+            if (item.Name != newName)
+                await itemNameUniquenessPolicy.EnsureUniqueAsync(newName, ct);
 
             // 감시하고있는  버전 업데이트
-            itemWriteStore.SetOriginalRowVersion(item, request.Payload.RowVersion);
+            itemWriteStore.SetOriginalRowVersion(item, command.Spec.RowVersion);
 
             // 변경
-            item.SetName(request.Payload.Name);
-            item.SetPrice(request.Payload.Price);
-            item.SetDescription(request.Payload.Description);
+            item.Rename(newName);
+            item.ChangePrice(new ItemPrice(command.Spec.Price));
+            item.ChangeDescription(new ItemDescription(command.Spec.Description));
+            item.ChangeRarity(RarityId.From(command.Spec.RarityId));
 
-            if (item.RarityId != request.Payload.RarityId)
-            {
-                var rarity = await rarityRepo.GetByIdAsync(request.Payload.RarityId, ct)
-                    ?? throw new InvalidOperationException("Rarity not found.");
-                item.SetRarity(rarity);
-            }
+            await uow.SaveChangesAsync(ct);
 
-            try
-            {
-                await uow.SaveChangesAsync(ct);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var exists = await itemWriteStore.GetByIdAsync(request.Payload.Id, ct);
-                return exists == null ? new(WriteStatusCode.NotFound, null) : new(WriteStatusCode.VersionMismatch, null);
-            }
+            var rowVersion = itemWriteStore.GetRowVersion(item);
 
-            return new UpdateItemResult
-            (
-                WriteStatusCode.Success,
-                new ItemReadModel(
-                    item.Id,
-                    item.Name,
-                    item.Price,
-                    item.Description,
-                    item.RarityId,
-                    item.Rarity.Grade,
-                    item.Rarity.ColorCode,
-                    item.RowVersion)
-            );
+            return new UpdateItemResult(item.Id.Value, rowVersion);
         }
     }
 }

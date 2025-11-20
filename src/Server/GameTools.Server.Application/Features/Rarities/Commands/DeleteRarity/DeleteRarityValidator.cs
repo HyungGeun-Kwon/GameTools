@@ -1,14 +1,13 @@
 ﻿using FluentValidation;
+using GameTools.Server.Application.Features.Rarities.Commands.Common.Specs;
 
 namespace GameTools.Server.Application.Features.Rarities.Commands.DeleteRarity
 {
     public sealed class DeleteRarityValidator : AbstractValidator<DeleteRarityCommand>
     {
-        public DeleteRarityValidator()
+        public DeleteRarityValidator(IValidator<DeleteRaritySpec> specValidator)
         {
-            RuleFor(x => x.Payload).NotNull();
-            RuleFor(x => x.Payload.RowVersion).NotEmpty();
-            RuleFor(x => x.Payload.Id).GreaterThan((byte)0);
+            RuleFor(x => x.Spec).NotNull().SetValidator(specValidator);
         }
     }
 }

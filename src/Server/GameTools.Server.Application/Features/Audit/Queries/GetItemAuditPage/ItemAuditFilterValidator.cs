@@ -4,13 +4,15 @@ namespace GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage
 {
     public sealed class ItemAuditFilterValidator : AbstractValidator<ItemAuditFilter>
     {
+        private static readonly HashSet<string> AllowedActionColumns = ["INSERT", "UPDATE", "DELETE"];
+
         public ItemAuditFilterValidator()
         {
-            When(x => !string.IsNullOrWhiteSpace(x.Action), () =>
+            When(x => x.Actions != null && x.Actions.Any(), () =>
             {
-                RuleFor(x => x.Action!)
-                    .Must(a => a is "INSERT" or "UPDATE" or "DELETE")
-                    .WithMessage("Action must be one of INSERT/UPDATE/DELETE.");
+                RuleForEach(x => x.Actions)
+                    .Must(a => AllowedActionColumns.Contains(a))
+                    .WithMessage($"Action must be one of: {string.Join(", ", AllowedActionColumns)}");
             });
 
             When(x => x.FromUtc.HasValue && x.ToUtc.HasValue, () =>

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using AppValidationException = GameTools.Server.Application.Abstractions.Exceptions.ValidationException;
 
 namespace GameTools.Server.Application.Behaviors
 {
@@ -14,7 +15,7 @@ namespace GameTools.Server.Application.Behaviors
                 var ctx = new ValidationContext<TRequest>(request);
                 var results = await Task.WhenAll(validators.Select(v => v.ValidateAsync(ctx, ct)));
                 var failures = results.SelectMany(r => r.Errors).Where(f => f is not null).ToList();
-                if (failures.Count != 0) throw new ValidationException(failures);
+                if (failures.Count != 0) throw new AppValidationException(failures);
             }
             return await next(ct);
         }

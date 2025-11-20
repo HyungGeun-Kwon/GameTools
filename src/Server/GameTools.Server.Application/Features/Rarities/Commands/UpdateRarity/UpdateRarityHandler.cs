@@ -1,40 +1,43 @@
-﻿using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Abstractions.Works;
-using GameTools.Server.Application.Common.Results;
-using GameTools.Server.Application.Features.Rarities.Models;
+﻿using GameTools.Server.Application.Abstractions.Exceptions;
+using GameTools.Server.Application.Abstractions.Stores.WriteStore;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
+using GameTools.Server.Domain.Features.Rarities.Policies;
+using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity
 {
-    public sealed class UpdateRarityHandler(IRarityWriteStore rarityWriteStore, IUnitOfWork uow)
+    public sealed class UpdateRarityHandler(
+        IRarityWriteStore rarityWriteStore,
+        IRarityGradeUniquenessPolicy rarityGradeUniquenessPolicy,
+        IRarityColorCodeUniquenessPolicy rarityColorCodeUniquenessPolicy,
+        IUnitOfWork uow)
         : IRequestHandler<UpdateRarityCommand, UpdateRarityResult>
     {
-        public async Task<UpdateRarityResult> Handle(UpdateRarityCommand request, CancellationToken ct)
+        public async Task<UpdateRarityResult> Handle(UpdateRarityCommand command, CancellationToken ct)
         {
-            var rarity = await rarityWriteStore.GetByIdAsync(request.Payload.Id, ct);
-            if (rarity == null)
-                return new UpdateRarityResult(WriteStatusCode.NotFound, null);
+            var rarity = await rarityWriteStore.LoadForUpdateAsync(command.Spec.Id, ct)
+                ?? throw new NotFoundException($"Rarity '{command.Spec.Id}' not found.");
 
-            // 감시하고있는  버전 업데이트
-            rarityWriteStore.SetOriginalRowVersion(rarity, request.Payload.RowVersion);
+            var newGrade = new RarityGrade(command.Spec.Grade);
+            var newColorCode = new RarityColorCode(command.Spec.NormalizedColorCode);
 
-            rarity.SetGrade(request.Payload.Grade);
-            rarity.SetColorCode(request.NormalizedColorCode);
+            if (rarity.Grade != newGrade)
+                await rarityGradeUniquenessPolicy.EnsureUniqueAsync(newGrade, ct);
 
-            try
-            {
-                await uow.SaveChangesAsync(ct);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var exists = await rarityWriteStore.GetByIdAsync(request.Payload.Id, ct);
-                return exists == null ? new(WriteStatusCode.NotFound, null) : new(WriteStatusCode.VersionMismatch, null);
-            }
+            if (rarity.ColorCode != newColorCode)
+                await rarityColorCodeUniquenessPolicy.EnsureUniqueAsync(newColorCode, ct);
 
-            return new UpdateRarityResult(
-                WriteStatusCode.Success, 
-                new RarityReadModel(rarity.Id, rarity.Grade, rarity.ColorCode, rarity.RowVersion));
+            rarityWriteStore.SetOriginalRowVersion(rarity, command.Spec.RowVersion);
+
+            rarity.ChangeGrade(newGrade);
+            rarity.ChangeColor(newColorCode);
+
+            await uow.SaveChangesAsync(ct);
+
+            var rowVersion = rarityWriteStore.GetRowVersion(rarity);
+
+            return new UpdateRarityResult(rarity.Id.Value, rowVersion);
         }
     }
 }

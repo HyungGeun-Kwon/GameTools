@@ -1,36 +1,26 @@
-﻿using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Abstractions.Works;
-using GameTools.Server.Application.Common.Results;
+﻿using GameTools.Server.Application.Abstractions.Exceptions;
+using GameTools.Server.Application.Abstractions.Stores.WriteStore;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Application.Features.Items.Commands.DeleteItem
 {
-    public sealed class DeleteItemHandler(IItemWriteStore itemWriteStore, IUnitOfWork uow)
-        : IRequestHandler<DeleteItemCommand, WriteStatusCode>
+    public sealed class DeleteItemHandler(
+        IItemWriteStore itemWriteStore,
+        IUnitOfWork uow) 
+        : IRequestHandler<DeleteItemCommand, DeleteItemResult>
     {
-        public async Task<WriteStatusCode> Handle(DeleteItemCommand request, CancellationToken ct)
+        public async Task<DeleteItemResult> Handle(DeleteItemCommand command, CancellationToken ct)
         {
-            var item = await itemWriteStore.GetByIdAsync(request.Payload.Id, ct);
+            var item = await itemWriteStore.LoadForUpdateAsync(command.Spec.Id, ct)
+                ?? throw new NotFoundException($"Item '{command.Spec.Id}' not found.");
 
-            if (item == null)
-                return WriteStatusCode.NotFound;
-
-            itemWriteStore.SetOriginalRowVersion(item, request.Payload.RowVersion);
-
+            itemWriteStore.SetOriginalRowVersion(item, command.Spec.RowVersion);
             itemWriteStore.Remove(item);
 
-            try
-            {
-                await uow.SaveChangesAsync(ct);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var exists = await itemWriteStore.GetByIdAsync(request.Payload.Id, ct);
-                return exists == null ? WriteStatusCode.NotFound : WriteStatusCode.VersionMismatch;
-            }
+            await uow.SaveChangesAsync(ct);
 
-            return WriteStatusCode.Success;
+            return new DeleteItemResult();
         }
     }
 }

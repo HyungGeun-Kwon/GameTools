@@ -3,5 +3,5 @@ using MediatR;
 
 namespace GameTools.Server.Application.Features.Items.Queries.GetItemById
 {
-    public sealed record GetItemByIdQuery(int Id) : IRequest<ItemReadModel?>;
+    public sealed record GetItemByIdQuery(Guid Id) : IRequest<ItemReadModel>;
 }

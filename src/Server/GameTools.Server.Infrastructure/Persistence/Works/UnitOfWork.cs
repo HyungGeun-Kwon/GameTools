@@ -1,6 +1,6 @@
 ﻿using System.Data;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
 using GameTools.Server.Application.Abstractions.Users;
-using GameTools.Server.Application.Abstractions.Works;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Infrastructure.Persistence.Works

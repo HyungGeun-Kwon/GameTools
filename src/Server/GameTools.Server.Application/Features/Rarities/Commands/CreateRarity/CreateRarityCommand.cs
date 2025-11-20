@@ -1,10 +1,7 @@
-﻿using GameTools.Server.Application.Features.Rarities.Models;
+﻿using GameTools.Server.Application.Features.Rarities.Commands.Common.Specs;
 using MediatR;
 
 namespace GameTools.Server.Application.Features.Rarities.Commands.CreateRarity
 {
-    public sealed record CreateRarityCommand(CreateRarityPayload Payload) : IRequest<RarityReadModel>
-    {
-        public string NormalizedColorCode => (Payload.ColorCode ?? "").Trim().ToUpperInvariant();
-    }
+    public sealed record CreateRarityCommand(CreateRaritySpec Spec) : IRequest<CreateRarityResult>;
 }

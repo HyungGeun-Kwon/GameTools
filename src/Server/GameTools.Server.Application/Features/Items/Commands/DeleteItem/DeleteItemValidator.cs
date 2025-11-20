@@ -1,14 +1,13 @@
 ﻿using FluentValidation;
+using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 
 namespace GameTools.Server.Application.Features.Items.Commands.DeleteItem
 {
     public sealed class DeleteItemValidator : AbstractValidator<DeleteItemCommand>
     {
-        public DeleteItemValidator()
+        public DeleteItemValidator(IValidator<DeleteItemSpec> specValidator)
         {
-            RuleFor(x => x.Payload).NotNull();
-            RuleFor(x => x.Payload.RowVersion).NotEmpty();
-            RuleFor(x => x.Payload.Id).GreaterThan(0);
+            RuleFor(x => x.Spec).NotNull().SetValidator(specValidator);
         }
     }
 }
