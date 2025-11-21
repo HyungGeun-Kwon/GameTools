@@ -8,12 +8,14 @@ namespace GameTools.Server.Application.Features.Items.Commands.Common.Validation
     {
         public CreateItemSpecValidator()
         {
-            RuleFor(d => d.Name).NotEmpty()
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .Must(x => !string.IsNullOrWhiteSpace(x))
                 .MinimumLength(ItemName.MinLength)
                 .MaximumLength(ItemName.MaxLength);
-            RuleFor(d => d.Price).GreaterThanOrEqualTo(ItemPrice.MinValue);
-            RuleFor(d => d.Description).MaximumLength(ItemDescription.MaxLength);
-            RuleFor(d => d.RarityId).NotEmpty();
+            RuleFor(x => x.Price).GreaterThanOrEqualTo(ItemPrice.MinValue);
+            RuleFor(x => x.Description).MaximumLength(ItemDescription.MaxLength);
+            RuleFor(x => x.RarityId).NotEmpty();
         }
     }
 }

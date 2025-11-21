@@ -10,6 +10,7 @@ namespace GameTools.Server.Application.Features.Rarities.Commands.Common.Validat
         {
             RuleFor(x => x.Grade)
                 .NotEmpty()
+                .Must(x => !string.IsNullOrWhiteSpace(x))
                 .MaximumLength(RarityGrade.MaxLength);
             RuleFor(x => x.NormalizedColorCode)
                 .NotEmpty()

@@ -44,7 +44,7 @@ namespace GameTools.Server.Application.Tests.Common.Paging
         [Fact]
         public void Validate_Should_Fail_When_PageSize_ExceedsMax()
         {
-            var validator = CreateValidator();
+            var validator = CreateValidator(maxPageSize: 100);
             var pagination = new Pagination(PageNumber: 1, PageSize: 101);
 
             var result = validator.Validate(pagination);

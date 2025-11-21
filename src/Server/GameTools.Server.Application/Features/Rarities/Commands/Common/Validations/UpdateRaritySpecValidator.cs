@@ -9,11 +9,12 @@ namespace GameTools.Server.Application.Features.Rarities.Commands.Common.Validat
         public UpdateRaritySpecValidator()
         {
             RuleFor(x => x.Id).NotEmpty();
-            
+
             RuleFor(x => x.RowVersion).NotEmpty();
-            
+
             RuleFor(x => x.Grade)
                 .NotEmpty()
+                .Must(x => !string.IsNullOrWhiteSpace(x))
                 .MinimumLength(RarityGrade.MinLength)
                 .MaximumLength(RarityGrade.MaxLength);
 
