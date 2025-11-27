@@ -5,6 +5,7 @@ using GameTools.Server.Domain.Features.Items.Policies;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using Moq;
+using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.Factories
 {
@@ -32,9 +33,9 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Factories
         [Fact]
         public async Task CreateAsync_Should_Create_Item_When_Name_IsUnique()
         {
-            var name = new ItemName("Sword");
-            var price = new ItemPrice(100);
-            var description = new ItemDescription("description");
+            var name = new ItemName(ValidName());
+            var price = new ItemPrice(ItemPrice.MinValue);
+            var description = new ItemDescription(ValidDescription());
             var rarityId = RarityId.New();
 
             var policyMock = CreateNamePolicyMock(name, false);
@@ -54,15 +55,15 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Factories
         [Fact]
         public async Task CreateAsync_Should_Throw_When_Name_IsNotUnique()
         {
-            var name = new ItemName("Sword");
-            var price = new ItemPrice(100);
-            var description = new ItemDescription("description");
+            var name = new ItemName(ValidName());
+            var price = new ItemPrice(ItemPrice.MinValue);
+            var description = new ItemDescription(ValidDescription());
             var rarityId = RarityId.New();
 
             var policyMock = CreateNamePolicyMock(name, true);
             var factory = new ItemFactory(policyMock.Object);
 
-            Func<Task> act = async () 
+            Func<Task> act = async ()
                 => await factory.CreateAsync(name, price, description, rarityId, CancellationToken.None);
 
             await act.Should().ThrowAsync<ItemNameNotUniqueException>();

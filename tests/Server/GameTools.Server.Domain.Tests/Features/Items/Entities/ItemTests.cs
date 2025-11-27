@@ -2,28 +2,30 @@
 using GameTools.Server.Domain.Features.Items.Entities;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.Entities
 {
     public class ItemTests
     {
         private static Item CreateItem(
-            string name = "Sword",
-            int price = 100,
-            string? description = "description",
+            string? name = null,
+            int? price = null,
+            string? description = null,
             Guid? rarityGuid = null)
             => new(
                 ItemId.New(),
-                new ItemName(name),
-                new ItemPrice(price),
-                new ItemDescription(description),
+                new ItemName(name ?? ValidName()),
+                new ItemPrice(ValidPrice(price)),
+                new ItemDescription(description ?? ValidDescription()),
                 RarityId.From(rarityGuid ?? Guid.NewGuid()));
+
 
         [Fact]
         public void Rename_Should_Change_When_Different()
         {
-            var item = CreateItem(name: "Sword");
-            var newName = new ItemName("New Sword");
+            var item = CreateItem(name: ValidName('a'));
+            var newName = new ItemName(ValidName('b'));
 
             item.Rename(newName);
 
@@ -44,8 +46,8 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangePrice_Should_Change_When_Different()
         {
-            var item = CreateItem(price: 100);
-            var newPrice = new ItemPrice(200);
+            var item = CreateItem(price: ItemPrice.MinValue);
+            var newPrice = new ItemPrice(ItemPrice.MinValue + 1);
 
             item.ChangePrice(newPrice);
 
@@ -66,8 +68,8 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangeDescription_Should_Change_When_Different()
         {
-            var item = CreateItem(description: "Old description");
-            var newDescription = new ItemDescription("New description");
+            var item = CreateItem(description: ValidDescription('a'));
+            var newDescription = new ItemDescription(ValidDescription('b'));
 
             item.ChangeDescription(newDescription);
 
@@ -110,11 +112,16 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void Ctor_Should_Throw_When_Arguments_Are_Null()
         {
-            Action act1 = () => _ = new Item(null!,        new ItemName("Sword"), new ItemPrice(100), new ItemDescription("desc"), RarityId.New());
-            Action act2 = () => _ = new Item(ItemId.New(), null!,                 new ItemPrice(100), new ItemDescription("desc"), RarityId.New());
-            Action act3 = () => _ = new Item(ItemId.New(), new ItemName("Sword"), null!,              new ItemDescription("desc"), RarityId.New());
-            Action act4 = () => _ = new Item(ItemId.New(), new ItemName("Sword"), new ItemPrice(100), null!,                       RarityId.New());
-            Action act5 = () => _ = new Item(ItemId.New(), new ItemName("Sword"), new ItemPrice(100), new ItemDescription("desc"), null!);
+            var validName = new ItemName(ValidName());
+            var validPrice = new ItemPrice(ValidPrice());
+            var validDescription = new ItemDescription(ValidDescription());
+            var validRarity = RarityId.New();
+
+            Action act1 = () => _ = new Item(null!, validName, validPrice, validDescription, validRarity);
+            Action act2 = () => _ = new Item(ItemId.New(), null!, validPrice, validDescription, validRarity);
+            Action act3 = () => _ = new Item(ItemId.New(), validName, null!, validDescription, validRarity);
+            Action act4 = () => _ = new Item(ItemId.New(), validName, validPrice, null!, validRarity);
+            Action act5 = () => _ = new Item(ItemId.New(), validName, validPrice, validDescription, null!);
 
             act1.Should().Throw<ArgumentNullException>();
             act2.Should().Throw<ArgumentNullException>();

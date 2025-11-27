@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Domain.Features.Items.Exceptions;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
+using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
 {
@@ -9,11 +10,12 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void Ctor_Should_TrimValue()
         {
-            var raw = "     description     ";
+            var valid = ValidDescription();
+            var raw = $"       {valid}       ";
 
             var name = new ItemDescription(raw);
 
-            name.Value.Should().Be("description");
+            name.Value.Should().Be(valid);
         }
 
 
@@ -73,8 +75,10 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void Value_Equality_ShouldWork()
         {
-            var d1 = new ItemDescription("description");
-            var d2 = new ItemDescription("description");
+            var text = ValidDescription();
+
+            var d1 = new ItemDescription(text);
+            var d2 = new ItemDescription(text);
 
             d1.Should().Be(d2);
             (d1 == d2).Should().BeTrue();
@@ -93,11 +97,12 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void ToString_Should_Return_Value_ToString()
         {
-            var d = new ItemDescription("description");
+            var text = ValidDescription();
+            var d = new ItemDescription(text);
 
-            var text = d.ToString();
+            var result = d.ToString();
 
-            text.Should().Be("description");
+            result.Should().Be(text);
         }
     }
 }

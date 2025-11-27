@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Domain.Features.Rarities.Exceptions;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
 {
@@ -9,11 +10,12 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void Ctor_Should_TrimValue()
         {
-            var raw = "     Common     ";
+            var core = ValidGrade();
+            var raw = $"     {core}     ";
 
             var name = new RarityGrade(raw);
 
-            name.Value.Should().Be("Common");
+            name.Value.Should().Be(core);
         }
 
         [Fact]
@@ -80,8 +82,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void Value_Equality_Should_Work()
         {
-            var a = new RarityGrade("Common");
-            var b = new RarityGrade("Common");
+            var a = new RarityGrade(ValidGrade());
+            var b = new RarityGrade(ValidGrade());
 
             a.Should().Be(b);
             (a == b).Should().BeTrue();
@@ -90,67 +92,12 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void ToString_Should_Return_Value_ToString()
         {
-            var d = new RarityGrade("Sword");
+            var text = ValidGrade();
+            var d = new RarityGrade(text);
 
-            var text = d.ToString();
+            var result = d.ToString();
 
-            text.Should().Be("Sword");
-        }
-
-        [Fact]
-        public void Parse_Should_Create_Instance()
-        {
-            var text = "Common";
-
-            var grade = RarityGrade.Parse(text);
-
-            grade.Value.Should().Be("Common");
-        }
-
-        [Fact]
-        public void TryParse_Should_ReturnTrue_And_Result_When_Valid()
-        {
-            var text = "   Common   ";
-
-            var success = RarityGrade.TryParse(text, out var result);
-
-            success.Should().BeTrue();
-            result.Should().NotBeNull();
-            result!.Value.Should().Be("Common");
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("   ")]
-        public void TryParse_Should_ReturnFalse_When_TooShort(string raw)
-        {
-            var success = RarityGrade.TryParse(raw, out var result);
-
-            success.Should().BeFalse();
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public void TryParse_Should_ReturnFalse_When_TooLong()
-        {
-            var raw = new string('a', RarityGrade.MaxLength + 10);
-
-            var success = RarityGrade.TryParse(raw, out var result);
-
-            success.Should().BeFalse();
-            result.Should().BeNull();
-        }
-
-        [Fact]
-        public void TryParse_Should_ReturnFalse_When_Value_Is_Null()
-        {
-            string? raw = null;
-
-            var success = RarityGrade.TryParse(raw!, out var result);
-
-            success.Should().BeFalse();
-            result.Should().BeNull();
+            result.Should().Be(text);
         }
     }
 }

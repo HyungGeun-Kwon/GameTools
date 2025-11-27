@@ -4,6 +4,7 @@ using GameTools.Server.Domain.Features.Rarities.Policies;
 using GameTools.Server.Domain.Features.Rarities.Services;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using Moq;
+using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.Policies
 {
@@ -24,7 +25,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Policies
             var checkerMock = CreateGradeCheckerMock(false);
 
             var policy = new RarityGradeUniquenessPolicy(checkerMock.Object);
-            var grade = new RarityGrade("Common");
+            var grade = new RarityGrade(ValidGrade());
 
             Func<Task> act = async () => await policy.EnsureUniqueAsync(grade, CancellationToken.None);
 
@@ -37,7 +38,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Policies
         {
             var checkerMock = CreateGradeCheckerMock(true);
             var policy = new RarityGradeUniquenessPolicy(checkerMock.Object);
-            var grade = new RarityGrade("Common");
+            var grade = new RarityGrade(ValidGrade());
 
             Func<Task> act = async () => await policy.EnsureUniqueAsync(grade, CancellationToken.None);
 

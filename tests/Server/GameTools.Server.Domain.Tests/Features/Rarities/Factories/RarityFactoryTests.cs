@@ -4,6 +4,7 @@ using GameTools.Server.Domain.Features.Rarities.Factories;
 using GameTools.Server.Domain.Features.Rarities.Policies;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using Moq;
+using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.Factories
 {
@@ -52,8 +53,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Factories
         [Fact]
         public async Task CreateAsync_Should_Create_Rarity_When_Grade_And_ColorCode_Are_Unique()
         {
-            var grade = new RarityGrade("Common");
-            var colorCode = new RarityColorCode("#FFFFFF");
+            var grade = new RarityGrade(ValidGrade());
+            var colorCode = new RarityColorCode(ValidColorCode());
 
             var gradePolicyMock = CreateGradePolicyMock(grade, false);
             var colorCodePolicyMock = CreateColorCodePolicyMock(colorCode, false);
@@ -72,8 +73,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Factories
         [Fact]
         public async Task CreateAsync_Should_Create_Rarity_When_Grade_IsNotUnique()
         {
-            var grade = new RarityGrade("Common");
-            var colorCode = new RarityColorCode("#FFFFFF");
+            var grade = new RarityGrade(ValidGrade());
+            var colorCode = new RarityColorCode(ValidColorCode());
 
             var gradePolicyMock = CreateGradePolicyMock(grade, true);
             var colorCodePolicyMock = CreateColorCodePolicyMock(colorCode, false);
@@ -90,8 +91,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Factories
         [Fact]
         public async Task CreateAsync_Should_Create_Rarity_When_ColorCode_IsNotUnique()
         {
-            var grade = new RarityGrade("Common");
-            var colorCode = new RarityColorCode("#FFFFFF");
+            var grade = new RarityGrade(ValidGrade());
+            var colorCode = new RarityColorCode(ValidColorCode());
 
             var gradePolicyMock = CreateGradePolicyMock(grade, false);
             var colorCodePolicyMock = CreateColorCodePolicyMock(colorCode, true);

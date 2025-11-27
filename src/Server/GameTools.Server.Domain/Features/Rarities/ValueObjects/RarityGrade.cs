@@ -18,21 +18,6 @@ namespace GameTools.Server.Domain.Features.Rarities.ValueObjects
             Value = s;
         }
 
-        public static RarityGrade Parse(string s) => new(s);
-
-        public static bool TryParse(string s, out RarityGrade? result)
-        {
-            result = null;
-            try
-            {
-                result = new(s);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
         public override string ToString() => Value;
     }
 }

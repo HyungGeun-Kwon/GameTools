@@ -28,7 +28,6 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         {
             var guid = Guid.NewGuid();
 
-
             var id = ItemId.From(guid);
 
             id.Value.Should().Be(guid);

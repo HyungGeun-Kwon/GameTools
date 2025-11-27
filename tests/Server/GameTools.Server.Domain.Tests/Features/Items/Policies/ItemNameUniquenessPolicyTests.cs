@@ -4,6 +4,7 @@ using GameTools.Server.Domain.Features.Items.Policies;
 using GameTools.Server.Domain.Features.Items.Services;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using Moq;
+using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.Policies
 {
@@ -25,10 +26,10 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Policies
             var checkerMock = CreateNameCheckerMock(false);
 
             var policy = new ItemNameUniquenessPolicy(checkerMock.Object);
-            var name = new ItemName("Sword");
-            
+            var name = new ItemName(ValidName());
+
             Func<Task> act = async () => await policy.EnsureUniqueAsync(name, CancellationToken.None);
-            
+
             await act.Should().NotThrowAsync();
             checkerMock.Verify(x => x.ExistsAsync(name, It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -39,10 +40,10 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Policies
             var checkerMock = CreateNameCheckerMock(true);
 
             var policy = new ItemNameUniquenessPolicy(checkerMock.Object);
-            var name = new ItemName("Sword");
-            
+            var name = new ItemName(ValidName());
+
             Func<Task> act = async () => await policy.EnsureUniqueAsync(name, CancellationToken.None);
-            
+
             await act.Should().ThrowAsync<ItemNameNotUniqueException>();
             checkerMock.Verify(x => x.ExistsAsync(name, It.IsAny<CancellationToken>()), Times.Once);
         }

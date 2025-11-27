@@ -17,9 +17,10 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void Ctor_Should_Allow_PositiveValue()
         {
-            var price = new ItemPrice(100);
+            var value = ItemPrice.MinValue + 1;
+            var price = new ItemPrice(value);
 
-            price.Value.Should().Be(100);
+            price.Value.Should().Be(value);
         }
 
         [Fact]
@@ -35,8 +36,10 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void Value_Equality_Should_Work()
         {
-            var a = new ItemPrice(100);
-            var b = new ItemPrice(100);
+            var value = ItemPrice.MinValue + 1;
+
+            var a = new ItemPrice(value);
+            var b = new ItemPrice(value);
 
             a.Should().Be(b);
             (a == b).Should().BeTrue();
@@ -45,11 +48,12 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void ToString_Should_Return_Value_ToString()
         {
-            var p = new ItemPrice(1234);
+            var value = ItemPrice.MinValue + 123;
+            var p = new ItemPrice(value);
 
             var text = p.ToString();
 
-            text.Should().Be("1234");
+            text.Should().Be(value.ToString());
         }
     }
 }

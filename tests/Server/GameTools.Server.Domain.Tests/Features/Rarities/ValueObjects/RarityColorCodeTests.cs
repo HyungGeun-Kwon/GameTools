@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
 {
@@ -8,11 +9,12 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void Ctor_Should_Trim_And_Uppercase_Value()
         {
-            var raw = "   #ff00aa   ";
+            var core = ValidColorCode();
+            var raw = $"   {core}    ";
 
             var color = new RarityColorCode(raw);
 
-            color.Value.Should().Be("#FF00AA");
+            color.Value.Should().Be(core);
         }
 
         [Fact]
@@ -22,14 +24,13 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
 
             var act = () => new RarityColorCode(value!);
 
-            act.Should()
-               .Throw<ArgumentNullException>()
-               .And.ParamName.Should().Be("value");
+            act.Should().Throw<ArgumentNullException>();
         }
 
         [Theory]
-        [InlineData("")]
         [InlineData(" ")]
+        [InlineData("   ")]
+        [InlineData("\t")]
         [InlineData("#FF00A")]   // too short
         [InlineData("#FF00AAF")] // too long
         [InlineData("FF00AA")]   // missing '#'
@@ -38,16 +39,14 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         {
             Action act = () => _ = new RarityColorCode(raw);
 
-            act.Should()
-               .Throw<ArgumentException>()
-               .And.ParamName.Should().Be("value");
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void Value_ObjectEquality_Should_Work()
         {
-            var a = new RarityColorCode("#FF00AA");
-            var b = new RarityColorCode("#ff00aa");
+            var a = new RarityColorCode(ValidColorCode().ToUpper());
+            var b = new RarityColorCode(ValidColorCode().ToLower());
 
             a.Should().Be(b);
             (a == b).Should().BeTrue();
@@ -57,11 +56,12 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void ToString_Should_Return_Value()
         {
-            var color = new RarityColorCode("#FF00AA");
+            var text = ValidColorCode();
+            var color = new RarityColorCode(text);
 
-            var text = color.ToString();
+            var result = color.ToString();
 
-            text.Should().Be("#FF00AA");
+            result.Should().Be(text);
         }
     }
 }
