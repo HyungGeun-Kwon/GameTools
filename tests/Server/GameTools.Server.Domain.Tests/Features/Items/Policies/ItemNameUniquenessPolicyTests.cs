@@ -4,7 +4,7 @@ using GameTools.Server.Domain.Features.Items.Policies;
 using GameTools.Server.Domain.Features.Items.Services;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using Moq;
-using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.Policies
 {
@@ -26,7 +26,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Policies
             var checkerMock = CreateNameCheckerMock(false);
 
             var policy = new ItemNameUniquenessPolicy(checkerMock.Object);
-            var name = new ItemName(ValidName());
+            var name = ValidItemName();
 
             Func<Task> act = async () => await policy.EnsureUniqueAsync(name, CancellationToken.None);
 
@@ -40,7 +40,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Policies
             var checkerMock = CreateNameCheckerMock(true);
 
             var policy = new ItemNameUniquenessPolicy(checkerMock.Object);
-            var name = new ItemName(ValidName());
+            var name = ValidItemName();
 
             Func<Task> act = async () => await policy.EnsureUniqueAsync(name, CancellationToken.None);
 

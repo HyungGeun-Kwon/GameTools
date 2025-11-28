@@ -5,7 +5,7 @@ using GameTools.Server.Domain.Features.Items.Policies;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using Moq;
-using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.Factories
 {
@@ -33,10 +33,10 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Factories
         [Fact]
         public async Task CreateAsync_Should_Create_Item_When_Name_IsUnique()
         {
-            var name = new ItemName(ValidName());
-            var price = new ItemPrice(ItemPrice.MinValue);
-            var description = new ItemDescription(ValidDescription());
-            var rarityId = RarityId.New();
+            var name = ValidItemName();
+            var price = ValidItemPrice();
+            var description = ValidItemDescription();
+            var rarityId = ValidRarityId();
 
             var policyMock = CreateNamePolicyMock(name, false);
             var factory = new ItemFactory(policyMock.Object);
@@ -55,10 +55,10 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Factories
         [Fact]
         public async Task CreateAsync_Should_Throw_When_Name_IsNotUnique()
         {
-            var name = new ItemName(ValidName());
-            var price = new ItemPrice(ItemPrice.MinValue);
-            var description = new ItemDescription(ValidDescription());
-            var rarityId = RarityId.New();
+            var name = ValidItemName();
+            var price = ValidItemPrice();
+            var description = ValidItemDescription();
+            var rarityId = ValidRarityId();
 
             var policyMock = CreateNamePolicyMock(name, true);
             var factory = new ItemFactory(policyMock.Object);

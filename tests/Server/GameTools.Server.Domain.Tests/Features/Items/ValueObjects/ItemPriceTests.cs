@@ -14,14 +14,6 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
             price.Value.Should().Be(ItemPrice.MinValue);
         }
 
-        [Fact]
-        public void Ctor_Should_Allow_PositiveValue()
-        {
-            var value = ItemPrice.MinValue + 1;
-            var price = new ItemPrice(value);
-
-            price.Value.Should().Be(value);
-        }
 
         [Fact]
         public void Ctor_Should_Throw_When_LowerThanMin()

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Domain.Features.Rarities.Exceptions;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
-using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
 {
@@ -10,7 +10,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void Ctor_Should_TrimValue()
         {
-            var core = ValidGrade();
+            var core = ValidRarityGradeValue();
             var raw = $"     {core}     ";
 
             var name = new RarityGrade(raw);
@@ -82,8 +82,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void Value_Equality_Should_Work()
         {
-            var a = new RarityGrade(ValidGrade());
-            var b = new RarityGrade(ValidGrade());
+            var a = ValidRarityGrade();
+            var b = ValidRarityGrade();
 
             a.Should().Be(b);
             (a == b).Should().BeTrue();
@@ -92,7 +92,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void ToString_Should_Return_Value_ToString()
         {
-            var text = ValidGrade();
+            var text = ValidRarityGradeValue();
             var d = new RarityGrade(text);
 
             var result = d.ToString();

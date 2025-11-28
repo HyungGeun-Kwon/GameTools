@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
+	<ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
   </ItemGroup>
-
 </Project>

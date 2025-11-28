@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="GameTools.Server.Domain.Tests" />
-	  <InternalsVisibleTo Include="GameTools.Server.TestUtilities" />
-	  <InternalsVisibleTo Include="GameTools.Server.Application.Tests" />
+    <ProjectReference Include="..\src\Server\GameTools.Server.Application\GameTools.Server.Application.csproj" />
+    <ProjectReference Include="..\src\Server\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
   </ItemGroup>
+
 </Project>

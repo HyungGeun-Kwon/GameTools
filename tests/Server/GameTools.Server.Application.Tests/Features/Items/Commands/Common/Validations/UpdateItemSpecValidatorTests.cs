@@ -30,6 +30,23 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
             RowVersion: rowVersion ?? ValidRowVersion()
         );
 
+        private static UpdateItemSpec BuildSpec(
+            Guid id,
+            string? name,
+            int price,
+            string? description,
+            Guid rarityId,
+            byte[]? rowVersion)
+            => new
+            (
+                Id: id,
+                Name: name!,
+                Price: price,
+                Description: description!,
+                RarityId: rarityId,
+                RowVersion: rowVersion!
+            );
+
         public static TheoryData<string> ValidNameSpecs() =>
         [
             new string('a', ItemName.MinLength),
@@ -129,7 +146,13 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_RowVersion_Is_Null_Or_Empty(byte[] invalidRowVersion)
         {
             var validator = new UpdateItemSpecValidator();
-            var invalidSpec = BuildValidSpec(rowVersion: invalidRowVersion);
+            var invalidSpec = BuildSpec(
+                id: Guid.NewGuid(),
+                name: ValidName(),
+                price: ItemPrice.MinValue,
+                description: ValidDescription(),
+                rarityId: Guid.NewGuid(),
+                rowVersion: invalidRowVersion);
 
             var result = validator.Validate(invalidSpec);
 

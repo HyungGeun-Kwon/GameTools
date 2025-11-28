@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
-using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
 {
@@ -9,7 +9,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void Ctor_Should_Trim_And_Uppercase_Value()
         {
-            var core = ValidColorCode();
+            var core = ValidRarityColorCodeValue();
             var raw = $"   {core}    ";
 
             var color = new RarityColorCode(raw);
@@ -45,8 +45,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void Value_ObjectEquality_Should_Work()
         {
-            var a = new RarityColorCode(ValidColorCode().ToUpper());
-            var b = new RarityColorCode(ValidColorCode().ToLower());
+            var a = new RarityColorCode(ValidRarityColorCodeValue().ToUpper());
+            var b = new RarityColorCode(ValidRarityColorCodeValue().ToLower());
 
             a.Should().Be(b);
             (a == b).Should().BeTrue();
@@ -56,7 +56,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
         [Fact]
         public void ToString_Should_Return_Value()
         {
-            var text = ValidColorCode();
+            var text = ValidRarityColorCodeValue();
             var color = new RarityColorCode(text);
 
             var result = color.ToString();

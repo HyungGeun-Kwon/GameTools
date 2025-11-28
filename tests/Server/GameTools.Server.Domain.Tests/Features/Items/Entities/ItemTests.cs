@@ -2,30 +2,17 @@
 using GameTools.Server.Domain.Features.Items.Entities;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
-using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.Entities
 {
     public class ItemTests
     {
-        private static Item CreateItem(
-            string? name = null,
-            int? price = null,
-            string? description = null,
-            Guid? rarityGuid = null)
-            => new(
-                ItemId.New(),
-                new ItemName(name ?? ValidName()),
-                new ItemPrice(ValidPrice(price)),
-                new ItemDescription(description ?? ValidDescription()),
-                RarityId.From(rarityGuid ?? Guid.NewGuid()));
-
-
         [Fact]
         public void Rename_Should_Change_When_Different()
         {
-            var item = CreateItem(name: ValidName('a'));
-            var newName = new ItemName(ValidName('b'));
+            var item = BuildItem(name: ValidItemName('a'));
+            var newName = ValidItemName('b');
 
             item.Rename(newName);
 
@@ -35,7 +22,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void Rename_Should_Throw_When_Null()
         {
-            var item = CreateItem();
+            var item = BuildItem();
             ItemName? newName = null;
 
             var act = () => item.Rename(newName!);
@@ -46,7 +33,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangePrice_Should_Change_When_Different()
         {
-            var item = CreateItem(price: ItemPrice.MinValue);
+            var item = BuildItem(price: ValidItemPrice(ItemPrice.MinValue));
             var newPrice = new ItemPrice(ItemPrice.MinValue + 1);
 
             item.ChangePrice(newPrice);
@@ -57,7 +44,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangePrice_Should_Throw_When_Null()
         {
-            var item = CreateItem();
+            var item = BuildItem();
             ItemPrice? newPrice = null;
 
             var act = () => item.ChangePrice(newPrice!);
@@ -68,8 +55,8 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangeDescription_Should_Change_When_Different()
         {
-            var item = CreateItem(description: ValidDescription('a'));
-            var newDescription = new ItemDescription(ValidDescription('b'));
+            var item = BuildItem(description: ValidItemDescription('a'));
+            var newDescription = ValidItemDescription('b');
 
             item.ChangeDescription(newDescription);
 
@@ -79,7 +66,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangeDescription_Should_Throw_When_Null()
         {
-            var item = CreateItem();
+            var item = BuildItem();
             ItemDescription? newDescription = null;
 
             var act = () => item.ChangeDescription(newDescription!);
@@ -90,7 +77,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangeRarity_Should_Change_When_Different()
         {
-            var item = CreateItem(rarityGuid: Guid.NewGuid());
+            var item = BuildItem(rarityId: RarityId.New());
             var newRarityId = RarityId.New();
 
             item.ChangeRarity(newRarityId);
@@ -101,7 +88,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void ChangeRarity_Should_Throw_When_Null()
         {
-            var item = CreateItem();
+            var item = BuildItem();
             RarityId? newRarityId = null;
 
             var act = () => item.ChangeRarity(newRarityId!);
@@ -112,9 +99,9 @@ namespace GameTools.Server.Domain.Tests.Features.Items.Entities
         [Fact]
         public void Ctor_Should_Throw_When_Arguments_Are_Null()
         {
-            var validName = new ItemName(ValidName());
-            var validPrice = new ItemPrice(ValidPrice());
-            var validDescription = new ItemDescription(ValidDescription());
+            var validName = ValidItemName();
+            var validPrice = ValidItemPrice();
+            var validDescription = ValidItemDescription();
             var validRarity = RarityId.New();
 
             Action act1 = () => _ = new Item(null!, validName, validPrice, validDescription, validRarity);

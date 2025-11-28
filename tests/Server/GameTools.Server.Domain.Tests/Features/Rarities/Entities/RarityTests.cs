@@ -1,25 +1,18 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Domain.Features.Rarities.Entities;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
-using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
+using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.Entities
 {
     public class RarityTests
     {
-        private static Rarity CreateRarity(
-            string? grade = null,
-            string? colorCode = null)
-            => new(
-                RarityId.New(),
-                new RarityGrade(grade ?? ValidGrade()),
-                new RarityColorCode(colorCode ?? ValidColorCode()));
-
         [Fact]
         public void ChangeGrade_Should_Change_When_Different()
         {
-            var rarity = CreateRarity(ValidGrade('a'));
-            var newGrade = new RarityGrade(ValidGrade('b'));
+            var rarity = BuildRarity(grade: ValidRarityGrade('a'));
+            var newGrade = ValidRarityGrade('b');
 
             rarity.ChangeGrade(newGrade);
 
@@ -29,7 +22,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Entities
         [Fact]
         public void ChangeGrade_Should_Throw_When_Null()
         {
-            var rarity = CreateRarity();
+            var rarity = BuildRarity();
             RarityGrade? newGrade = null;
 
             var act = () => rarity.ChangeGrade(newGrade!);
@@ -40,8 +33,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Entities
         [Fact]
         public void ChangeColor_Should_Change_When_Different()
         {
-            var rarity = CreateRarity(ValidColorCode("#AAAAAA"));
-            var newColor = new RarityColorCode("#FFFFFF");
+            var rarity = BuildRarity(colorCode: ValidRarityColorCode("#AAAAAA"));
+            var newColor = ValidRarityColorCode("#FFFFFF");
 
             rarity.ChangeColor(newColor);
 
@@ -52,7 +45,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Entities
         [Fact]
         public void ChangeColor_Should_Throw_When_Null()
         {
-            var rarity = CreateRarity();
+            var rarity = BuildRarity();
 
             Action act = () => rarity.ChangeColor(null!);
 
@@ -62,8 +55,8 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Entities
         [Fact]
         public void Ctor_Should_Throw_When_Arguments_Are_Null()
         {
-            var validGrade = new RarityGrade(ValidGrade());
-            var validColorCode = new RarityColorCode(ValidColorCode());
+            var validGrade = ValidRarityGrade();
+            var validColorCode = ValidRarityColorCode();
 
             Action act1 = () => _ = new Rarity(null!, validGrade, validColorCode);
             Action act2 = () => _ = new Rarity(RarityId.New(), null!, validColorCode);

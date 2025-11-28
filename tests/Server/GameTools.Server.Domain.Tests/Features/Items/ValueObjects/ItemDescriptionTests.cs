@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Domain.Features.Items.Exceptions;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
-using static GameTools.Server.Domain.Tests.TestDatas.Items.ItemDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
 {
@@ -10,7 +10,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void Ctor_Should_TrimValue()
         {
-            var valid = ValidDescription();
+            var valid = ValidItemDescriptionValue();
             var raw = $"       {valid}       ";
 
             var name = new ItemDescription(raw);
@@ -75,7 +75,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void Value_Equality_ShouldWork()
         {
-            var text = ValidDescription();
+            var text = ValidItemDescriptionValue();
 
             var d1 = new ItemDescription(text);
             var d2 = new ItemDescription(text);
@@ -97,7 +97,7 @@ namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
         [Fact]
         public void ToString_Should_Return_Value_ToString()
         {
-            var text = ValidDescription();
+            var text = ValidItemDescriptionValue();
             var d = new ItemDescription(text);
 
             var result = d.ToString();

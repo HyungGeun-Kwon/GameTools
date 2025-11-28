@@ -4,7 +4,7 @@ using GameTools.Server.Domain.Features.Rarities.Policies;
 using GameTools.Server.Domain.Features.Rarities.Services;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using Moq;
-using static GameTools.Server.Domain.Tests.TestDatas.Rarities.RarityDomainTestData;
+using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
 namespace GameTools.Server.Domain.Tests.Features.Rarities.Policies
 {
@@ -25,7 +25,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Policies
             var checkerMock = CreateColorCheckerMock(false);
 
             var policy = new RarityColorCodeUniquenessPolicy(checkerMock.Object);
-            var color = new RarityColorCode(ValidColorCode());
+            var color = ValidRarityColorCode();
 
             Func<Task> act = async () => await policy.EnsureUniqueAsync(color, CancellationToken.None);
 
@@ -41,7 +41,7 @@ namespace GameTools.Server.Domain.Tests.Features.Rarities.Policies
             var checkerMock = CreateColorCheckerMock(exists: true);
 
             var policy = new RarityColorCodeUniquenessPolicy(checkerMock.Object);
-            var color = new RarityColorCode(ValidColorCode());
+            var color = ValidRarityColorCode();
 
             Func<Task> act = async () =>
                 await policy.EnsureUniqueAsync(color, CancellationToken.None);

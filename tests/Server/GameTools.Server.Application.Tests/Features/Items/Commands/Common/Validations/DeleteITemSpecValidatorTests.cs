@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 using GameTools.Server.Application.Features.Items.Commands.Common.Validations;
 
@@ -17,6 +16,15 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
             (
                 Id: id ?? Guid.NewGuid(),
                 RowVersion: rowVersion ?? ValidRowVersion()
+            );
+
+        private static DeleteItemSpec BuildSpec(
+            Guid id,
+            byte[]? rowVersion)
+            => new
+            (
+                Id: id,
+                RowVersion: rowVersion!
             );
 
         [Fact]
@@ -49,7 +57,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_RowVersion_Is_Null_Or_Empty(byte[] invalidRowVersion)
         {
             var validator = new DeleteItemSpecValidator();
-            var invalidSpec = BuildValidSpec(rowVersion: invalidRowVersion);
+            var invalidSpec = BuildSpec(Guid.NewGuid(), invalidRowVersion);
 
             var result = validator.Validate(invalidSpec);
 
