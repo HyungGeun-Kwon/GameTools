@@ -1,31 +1,13 @@
 ﻿using FluentAssertions;
 using FluentValidation.Results;
-using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 using GameTools.Server.Application.Features.Items.Commands.Common.Validations;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
+using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 
 namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
 {
     public class CreateItemValidatorTests
     {
-        private static string ValidName() => new('a', ItemName.MinLength);
-        private static string ValidDescription()
-            => new('a', ItemDescription.MaxLength);
-
-        private static CreateItemSpec BuildValidSpec(
-            string? name = null,
-            int? price = null,
-            string? description = null,
-            Guid? rarityId = null)
-            => new
-            (
-                Name: name ?? ValidName(),
-                Price: price ?? ItemPrice.MinValue,
-                Description: description ?? ValidDescription(),
-                RarityId: rarityId ?? Guid.NewGuid()
-            );
-
         private static CreateItemValidator CreateValidator()
             => new(new CreateItemSpecValidator());
 
@@ -45,7 +27,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
         public void Validate_Should_Pass_When_Spec_Is_Valid()
         {
             var validator = CreateValidator();
-            var spec = BuildValidSpec();
+            var spec = BuildDefaultCreateItemSpec();
             var command = new CreateItemCommand(spec);
 
             var result = validator.Validate(command);
@@ -58,8 +40,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
         {
             var validator = CreateValidator();
 
-            // Name invalid (empty)
-            var spec = BuildValidSpec(name: string.Empty);
+            var spec = BuildDefaultCreateItemSpec(name: string.Empty);
             var command = new CreateItemCommand(spec);
 
             var result = validator.Validate(command);

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Exceptions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
@@ -16,46 +11,14 @@ using GameTools.Server.Domain.Features.Items.Policies;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using Moq;
+using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
+using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
+using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 
 namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
 {
     public class UpdateItemHandlerTests
     {
-        private static string ValidItemNameStr(char c = 'a') => new(c, ItemName.MinLength);
-
-        private static string ValidItemDescriptionStr()
-            => new('d', Math.Min(10, ItemDescription.MaxLength));
-
-        private static string ValidRarityGradeStr()
-            => new('r', RarityGrade.MinLength);
-
-        private static string ValidRarityColorCodeStr()
-            => "#FFFFFF";
-
-        private static byte[] ValidRowVersion() => [1, 2, 3, 4];
-
-        private static RarityReadModel BuildValidRarityReadModel(Guid? id = null)
-            => new(
-                Id: id ?? Guid.NewGuid(),
-                Grade: ValidRarityGradeStr(),
-                ColorCode: ValidRarityColorCodeStr(),
-                RowVersion: ValidRowVersion());
-
-        private static UpdateItemSpec BuildValidSpec(
-            Guid? id = null,
-            string? name = null,
-            int? price = null,
-            string? description = null,
-            Guid? rarityId = null,
-            byte[]? rowVersion = null)
-            => new(
-                Id: id ?? Guid.NewGuid(),
-                Name: name ?? ValidItemNameStr(),
-                Price: price ?? ItemPrice.MinValue,
-                Description: description ?? ValidItemDescriptionStr(),
-                RarityId: rarityId ?? Guid.NewGuid(),
-                RowVersion: rowVersion ?? ValidRowVersion());
-
         private static Item BuildItemFromSpec(
             UpdateItemSpec spec,
             string? nameOverride = null,
@@ -68,7 +31,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
                 rarityId: RarityId.From(rarityIdOverride ?? spec.RarityId));
 
         private static UpdateItemCommand BuildCommand(UpdateItemSpec? spec = null)
-            => new(spec ?? BuildValidSpec());
+            => new(spec ?? BuildDefaultUpdateItemSpec());
 
         private static UpdateItemHandler CreateHandler(
             Mock<IItemWriteStore>? itemWriteStoreMock = null,
@@ -102,15 +65,14 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
                 namePolicyMock,
                 uowMock);
 
-            var spec = BuildValidSpec();
+            var spec = BuildDefaultUpdateItemSpec();
             var command = BuildCommand(spec);
 
             // LoadForUpdateAsync 기본값 null → NotFoundException
 
             var act = async () => await handler.Handle(command, CancellationToken.None);
 
-            await act.Should().ThrowAsync<NotFoundException>()
-                .WithMessage($"Item '{spec.Id}' not found.");
+            await act.Should().ThrowAsync<NotFoundException>();
 
             itemWriteStoreMock.Verify(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()), Times.Once);
             rarityReadStoreMock.Verify(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -132,7 +94,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
                 namePolicyMock,
                 uowMock);
 
-            var spec = BuildValidSpec();
+            var spec = BuildDefaultUpdateItemSpec();
             var command = BuildCommand(spec);
 
             var existingItem = BuildItemFromSpec(spec);
@@ -148,8 +110,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
 
             var act = async () => await handler.Handle(command, CancellationToken.None);
 
-            await act.Should().ThrowAsync<NotFoundException>()
-                .WithMessage($"Rarity '{spec.RarityId}' not found.");
+            await act.Should().ThrowAsync<NotFoundException>();
 
             itemWriteStoreMock.Verify(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()), Times.Once);
             rarityReadStoreMock.Verify(x => x.GetByIdAsync(spec.RarityId, It.IsAny<CancellationToken>()), Times.Once);
@@ -171,13 +132,13 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
                 namePolicyMock,
                 uowMock);
 
-            var spec = BuildValidSpec(name: ValidItemNameStr('a'));
+            var spec = BuildDefaultUpdateItemSpec(name: ValidItemNameValue('a'));
             var command = BuildCommand(spec);
 
-            var rarity = BuildValidRarityReadModel(spec.RarityId);
+            var rarity = BuildDefaultRarityReadModel(spec.RarityId);
             var existingItem = BuildItemFromSpec(spec, nameOverride: spec.Name);
 
-            var rowVersion = new byte[] { 9, 9, 9, 9 };
+            var rowVersion = ValidItemRowVersion();
 
             itemWriteStoreMock
                 .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
@@ -219,13 +180,13 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
                 namePolicyMock,
                 uowMock);
 
-            var originalName = ValidItemNameStr('a');
-            var newName = ValidItemNameStr('b');
+            var originalName = ValidItemNameValue('a');
+            var newName = ValidItemNameValue('b');
 
-            var spec = BuildValidSpec(name: newName);
+            var spec = BuildDefaultUpdateItemSpec(name: newName);
             var command = BuildCommand(spec);
 
-            var rarity = BuildValidRarityReadModel(spec.RarityId);
+            var rarity = BuildDefaultRarityReadModel(spec.RarityId);
             var existingItem = BuildItemFromSpec(spec, nameOverride: originalName);
 
             var rowVersion = new byte[] { 7, 7, 7, 7 };

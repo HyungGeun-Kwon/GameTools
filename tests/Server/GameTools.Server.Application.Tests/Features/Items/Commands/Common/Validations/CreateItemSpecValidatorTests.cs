@@ -2,27 +2,12 @@
 using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 using GameTools.Server.Application.Features.Items.Commands.Common.Validations;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
+using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 
 namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Validations
 {
     public class CreateItemSpecValidatorTests
     {
-        private static string ValidName() => new ('a', ItemName.MinLength);
-        private static string ValidDescription()
-            => new ('a', ItemDescription.MaxLength);
-        private static CreateItemSpec BuildValidSpec(
-            string? name = null,
-            int? price = null,
-            string? description = null,
-            Guid? rarityId = null)
-            => new
-            (
-                Name: name ?? ValidName(),
-                Price: price ?? ItemPrice.MinValue,
-                Description: description ?? ValidDescription(),
-                RarityId: rarityId ?? Guid.NewGuid()
-            );
-
         public static TheoryData<string> ValidNameSpecs() =>
         [
             new string('a', ItemName.MinLength),
@@ -30,10 +15,10 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         ];
         [Theory]
         [MemberData(nameof(ValidNameSpecs))]
-        public void Validate_Should_Pass_When_Spec_Is_Valid(string validName)
+        public void Validate_Should_Pass_When_Spec_NameMinMaxValue(string validName)
         {
             var validator = new CreateItemSpecValidator();
-            var spec = BuildValidSpec(name: validName);
+            var spec = BuildDefaultCreateItemSpec(name: validName);
 
             var result = validator.Validate(spec);
 
@@ -53,7 +38,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_Name_Is_Invalid(string invalidName)
         {
             var validator = new CreateItemSpecValidator();
-            var invalidSpec = BuildValidSpec(name: invalidName);
+            var invalidSpec = BuildDefaultCreateItemSpec(name: invalidName);
 
             var result = validator.Validate(invalidSpec);
 
@@ -66,7 +51,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_Price_Is_Invalid()
         {
             var validator = new CreateItemSpecValidator();
-            var invalidSpec = BuildValidSpec(price: ItemPrice.MinValue - 1);
+            var invalidSpec = BuildDefaultCreateItemSpec(price: ItemPrice.MinValue - 1);
 
             var result = validator.Validate(invalidSpec);
 
@@ -79,7 +64,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_Description_Is_Too_Long()
         {
             var validator = new CreateItemSpecValidator();
-            var invalidSpec = BuildValidSpec(description: new string('a', ItemDescription.MaxLength + 1));
+            var invalidSpec = BuildDefaultCreateItemSpec(description: new string('a', ItemDescription.MaxLength + 1));
 
             var result = validator.Validate(invalidSpec);
 
@@ -92,7 +77,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_RarityId_Is_Empty()
         {
             var validator = new CreateItemSpecValidator();
-            var invalidSpec = BuildValidSpec(rarityId: Guid.Empty);
+            var invalidSpec = BuildDefaultCreateItemSpec(rarityId: Guid.Empty);
 
             var result = validator.Validate(invalidSpec);
 

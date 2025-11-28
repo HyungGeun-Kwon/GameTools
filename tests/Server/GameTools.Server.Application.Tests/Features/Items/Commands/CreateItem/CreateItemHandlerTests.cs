@@ -5,47 +5,18 @@ using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.UnitOfWorks;
 using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 using GameTools.Server.Application.Features.Items.Commands.CreateItem;
-using GameTools.Server.Application.Features.Rarities.Models;
 using GameTools.Server.Domain.Features.Items.Entities;
 using GameTools.Server.Domain.Features.Items.Factories;
 using GameTools.Server.Domain.Features.Items.ValueObjects;
 using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using Moq;
+using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
+using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 
 namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
 {
     public class CreateItemHandlerTests
     {
-        private static string ValidName() => new('a', ItemName.MinLength);
-
-        private static string ValidDescription()
-            => new('d', Math.Min(10, ItemDescription.MaxLength));
-
-        private static string ValidGrade()
-            => new('r', RarityGrade.MinLength);
-
-        private static string ValidColorCode()
-            => "#FFFFFF";
-
-        private static RarityReadModel BuildValidRarityReadModel(Guid? id = null)
-            => new(
-                Id: id ?? Guid.NewGuid(),
-                Grade: ValidGrade(),
-                ColorCode: ValidColorCode(),
-                RowVersion: [1, 2, 3, 4]);
-
-        private static CreateItemSpec BuildValidSpec(
-            string? name = null,
-            int? price = null,
-            string? description = null,
-            Guid? rarityId = null)
-            => new(
-                Name: name ?? ValidName(),
-                Price: price ?? ItemPrice.MinValue,
-                Description: description ?? ValidDescription(),
-                RarityId: rarityId ?? Guid.NewGuid()
-            );
-
         private static Item BuildItemFromSpec(CreateItemSpec spec, ItemId? id = null)
             => new (
                 id: id ?? ItemId.New(),
@@ -55,7 +26,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
                 rarityId: RarityId.From(spec.RarityId));
 
         private static CreateItemCommand BuildCommand(CreateItemSpec? spec = null)
-            => new(spec ?? BuildValidSpec());
+            => new(spec ?? BuildDefaultCreateItemSpec());
 
         private static CreateItemHandler CreateHandler(
             Mock<IItemWriteStore>? itemWriteStoreMock = null,
@@ -123,11 +94,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
                 itemFactoryMock,
                 uowMock);
 
-            var spec = BuildValidSpec();
+            var spec = BuildDefaultCreateItemSpec();
             var command = BuildCommand(spec);
 
-            var rarity = BuildValidRarityReadModel(spec.RarityId);
-
+            var rarity = BuildDefaultRarityReadModel(id: spec.RarityId);
+            
             var item = BuildItemFromSpec(spec);
             var itemRowVersion = new byte[] { 5, 6, 7, 8 };
 

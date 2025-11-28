@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GameTools.Server.TestUtilities\GameTools.Server.TestUtilities.csproj" />
     <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Application\GameTools.Server.Application.csproj" />
   </ItemGroup>
 

@@ -1,37 +1,17 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 using GameTools.Server.Application.Features.Items.Commands.Common.Validations;
+using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 
 namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Validations
 {
     public class DeleteItemSpecValidatorTests
     {
-        private static byte[] ValidRowVersion()
-            => Convert.FromBase64String("AAAAAAAAAAA=");
-
-        private static DeleteItemSpec BuildValidSpec(
-            Guid? id = null,
-            byte[]? rowVersion = null)
-            => new
-            (
-                Id: id ?? Guid.NewGuid(),
-                RowVersion: rowVersion ?? ValidRowVersion()
-            );
-
-        private static DeleteItemSpec BuildSpec(
-            Guid id,
-            byte[]? rowVersion)
-            => new
-            (
-                Id: id,
-                RowVersion: rowVersion!
-            );
-
         [Fact]
         public void Validate_Should_Pass_When_Spec_Is_Valid()
         {
             var validator = new DeleteItemSpecValidator();
-            var validSpec = BuildValidSpec();
+            var validSpec = BuildDefaultDeleteItemSpec();
 
             var result = validator.Validate(validSpec);
 
@@ -42,7 +22,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_Id_Is_Empty()
         {
             var validator = new DeleteItemSpecValidator();
-            var invalidSpec = BuildValidSpec(id: Guid.Empty);
+            var invalidSpec = BuildDefaultDeleteItemSpec(id: Guid.Empty);
 
             var result = validator.Validate(invalidSpec);
 
@@ -57,7 +37,9 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Vali
         public void Validate_Should_Fail_When_RowVersion_Is_Null_Or_Empty(byte[] invalidRowVersion)
         {
             var validator = new DeleteItemSpecValidator();
-            var invalidSpec = BuildSpec(Guid.NewGuid(), invalidRowVersion);
+            var invalidSpec = new DeleteItemSpec(
+                Id: Guid.NewGuid(),
+                RowVersion: invalidRowVersion);
 
             var result = validator.Validate(invalidSpec);
 
