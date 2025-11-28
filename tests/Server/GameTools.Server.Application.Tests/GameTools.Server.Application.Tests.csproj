@@ -18,18 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GameTools.Server.TestUtilities\GameTools.Server.TestUtilities.csproj" />
     <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Application\GameTools.Server.Application.csproj" />
+    <ProjectReference Include="..\GameTools.Server.TestUtilities\GameTools.Server.TestUtilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Items\Commands\BulkUpdateItems\" />
-    <Folder Include="Features\Items\Commands\BulkInsertItems\" />
-    <Folder Include="Features\Items\Commands\BulkDeleteItems\" />
   </ItemGroup>
 
 </Project>

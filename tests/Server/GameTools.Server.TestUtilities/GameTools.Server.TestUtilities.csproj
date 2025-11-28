@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Server\GameTools.Server.Application\GameTools.Server.Application.csproj" />
-    <ProjectReference Include="..\src\Server\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Application\GameTools.Server.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
   </ItemGroup>
 
 </Project>
