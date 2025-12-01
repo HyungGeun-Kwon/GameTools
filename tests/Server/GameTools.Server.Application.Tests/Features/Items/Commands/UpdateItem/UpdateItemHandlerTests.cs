@@ -34,15 +34,15 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
             => new(spec ?? BuildDefaultUpdateItemSpec());
 
         private static UpdateItemHandler CreateHandler(
-            Mock<IItemWriteStore>? itemWriteStoreMock = null,
-            Mock<IRarityReadStore>? rarityReadStoreMock = null,
-            Mock<IItemNameUniquenessPolicy>? namePolicyMock = null,
-            Mock<IUnitOfWork>? uowMock = null)
+            out Mock<IItemWriteStore> itemWriteStoreMock,
+            out Mock<IRarityReadStore> rarityReadStoreMock,
+            out Mock<IItemNameUniquenessPolicy> namePolicyMock,
+            out Mock<IUnitOfWork> uowMock)
         {
-            itemWriteStoreMock ??= new Mock<IItemWriteStore>();
-            rarityReadStoreMock ??= new Mock<IRarityReadStore>();
-            namePolicyMock ??= new Mock<IItemNameUniquenessPolicy>();
-            uowMock ??= new Mock<IUnitOfWork>();
+            itemWriteStoreMock = new Mock<IItemWriteStore>();
+            rarityReadStoreMock = new Mock<IRarityReadStore>();
+            namePolicyMock = new Mock<IItemNameUniquenessPolicy>();
+            uowMock = new Mock<IUnitOfWork>();
 
             return new UpdateItemHandler(
                 itemWriteStoreMock.Object,
@@ -54,16 +54,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
         [Fact]
         public async Task Handle_Should_Throw_NotFoundException_When_Item_Does_Not_Exist()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var rarityReadStoreMock = new Mock<IRarityReadStore>();
-            var namePolicyMock = new Mock<IItemNameUniquenessPolicy>();
-            var uowMock = new Mock<IUnitOfWork>();
-
             var handler = CreateHandler(
-                itemWriteStoreMock,
-                rarityReadStoreMock,
-                namePolicyMock,
-                uowMock);
+                out var itemWriteStoreMock,
+                out var rarityReadStoreMock,
+                out var namePolicyMock,
+                out var uowMock);
 
             var spec = BuildDefaultUpdateItemSpec();
             var command = BuildCommand(spec);
@@ -83,16 +78,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
         [Fact]
         public async Task Handle_Should_Throw_NotFoundException_When_Rarity_Does_Not_Exist()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var rarityReadStoreMock = new Mock<IRarityReadStore>();
-            var namePolicyMock = new Mock<IItemNameUniquenessPolicy>();
-            var uowMock = new Mock<IUnitOfWork>();
-
             var handler = CreateHandler(
-                itemWriteStoreMock,
-                rarityReadStoreMock,
-                namePolicyMock,
-                uowMock);
+                out var itemWriteStoreMock,
+                out var rarityReadStoreMock,
+                out var namePolicyMock,
+                out var uowMock);
 
             var spec = BuildDefaultUpdateItemSpec();
             var command = BuildCommand(spec);
@@ -121,16 +111,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
         [Fact]
         public async Task Handle_Should_Not_Call_NamePolicy_When_Name_Not_Changed()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var rarityReadStoreMock = new Mock<IRarityReadStore>();
-            var namePolicyMock = new Mock<IItemNameUniquenessPolicy>();
-            var uowMock = new Mock<IUnitOfWork>();
-
             var handler = CreateHandler(
-                itemWriteStoreMock,
-                rarityReadStoreMock,
-                namePolicyMock,
-                uowMock);
+                out var itemWriteStoreMock,
+                out var rarityReadStoreMock,
+                out var namePolicyMock,
+                out var uowMock);
 
             var spec = BuildDefaultUpdateItemSpec(name: ValidItemNameValue('a'));
             var command = BuildCommand(spec);
@@ -169,16 +154,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
         [Fact]
         public async Task Handle_Should_Call_NamePolicy_When_Name_Changed()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var rarityReadStoreMock = new Mock<IRarityReadStore>();
-            var namePolicyMock = new Mock<IItemNameUniquenessPolicy>();
-            var uowMock = new Mock<IUnitOfWork>();
-
             var handler = CreateHandler(
-                itemWriteStoreMock,
-                rarityReadStoreMock,
-                namePolicyMock,
-                uowMock);
+                out var itemWriteStoreMock,
+                out var rarityReadStoreMock,
+                out var namePolicyMock,
+                out var uowMock);
 
             var originalName = ValidItemNameValue('a');
             var newName = ValidItemNameValue('b');

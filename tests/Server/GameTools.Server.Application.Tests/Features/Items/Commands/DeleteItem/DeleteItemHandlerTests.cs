@@ -17,11 +17,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
             => new(spec ?? BuildDefaultDeleteItemSpec());
 
         private static DeleteItemHandler CreateHandler(
-            Mock<IItemWriteStore>? itemWriteStoreMock = null,
-            Mock<IUnitOfWork>? uowMock = null)
+            out Mock<IItemWriteStore> itemWriteStoreMock,
+            out Mock<IUnitOfWork> uowMock)
         {
-            itemWriteStoreMock ??= new Mock<IItemWriteStore>();
-            uowMock ??= new Mock<IUnitOfWork>();
+            itemWriteStoreMock = new Mock<IItemWriteStore>();
+            uowMock = new Mock<IUnitOfWork>();
 
             return new DeleteItemHandler(
                 itemWriteStoreMock.Object,
@@ -31,10 +31,9 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
         [Fact]
         public async Task Handle_Should_Throw_NotFoundException_When_Item_Does_Not_Exist()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var uowMock = new Mock<IUnitOfWork>();
-
-            var handler = CreateHandler(itemWriteStoreMock, uowMock);
+            var handler = CreateHandler(
+                out var itemWriteStoreMock,
+                out var uowMock);
 
             var spec = BuildDefaultDeleteItemSpec();
             var command = BuildCommand(spec);
@@ -63,10 +62,9 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
         [Fact]
         public async Task Handle_Should_Remove_Item_When_Exists()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var uowMock = new Mock<IUnitOfWork>();
-
-            var handler = CreateHandler(itemWriteStoreMock, uowMock);
+            var handler = CreateHandler(
+                out var itemWriteStoreMock, 
+                out var uowMock);
 
             var spec = BuildDefaultDeleteItemSpec();
             var command = BuildCommand(spec);

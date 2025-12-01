@@ -29,15 +29,15 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
             => new(spec ?? BuildDefaultCreateItemSpec());
 
         private static CreateItemHandler CreateHandler(
-            Mock<IItemWriteStore>? itemWriteStoreMock = null,
-            Mock<IRarityReadStore>? rarityReadStoreMock = null,
-            Mock<IItemFactory>? itemFactoryMock = null,
-            Mock<IUnitOfWork>? uowMock = null)
+            out Mock<IItemWriteStore> itemWriteStoreMock,
+            out Mock<IRarityReadStore> rarityReadStoreMock,
+            out Mock<IItemFactory> itemFactoryMock,
+            out Mock<IUnitOfWork> uowMock)
         {
-            itemWriteStoreMock ??= new Mock<IItemWriteStore>();
-            rarityReadStoreMock ??= new Mock<IRarityReadStore>();
-            itemFactoryMock ??= new Mock<IItemFactory>();
-            uowMock ??= new Mock<IUnitOfWork>();
+            itemWriteStoreMock = new Mock<IItemWriteStore>();
+            rarityReadStoreMock = new Mock<IRarityReadStore>();
+            itemFactoryMock = new Mock<IItemFactory>();
+            uowMock = new Mock<IUnitOfWork>();
 
             return new CreateItemHandler(
                 itemWriteStoreMock.Object,
@@ -49,16 +49,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
         [Fact]
         public async Task Handle_Should_Throw_NotFoundException_When_Rarity_Does_Not_Exist()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var rarityReadStoreMock = new Mock<IRarityReadStore>();
-            var itemFactoryMock = new Mock<IItemFactory>();
-            var uowMock = new Mock<IUnitOfWork>();
-
             var handler = CreateHandler(
-                itemWriteStoreMock,
-                rarityReadStoreMock,
-                itemFactoryMock,
-                uowMock);
+                out var itemWriteStoreMock,
+                out var rarityReadStoreMock,
+                out var itemFactoryMock,
+                out var uowMock);
 
             var command = BuildCommand();
 
@@ -83,16 +78,11 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
         [Fact]
         public async Task Handle_Should_Create_And_Return_When_Rarity_Exists()
         {
-            var itemWriteStoreMock = new Mock<IItemWriteStore>();
-            var rarityReadStoreMock = new Mock<IRarityReadStore>();
-            var itemFactoryMock = new Mock<IItemFactory>();
-            var uowMock = new Mock<IUnitOfWork>();
-
             var handler = CreateHandler(
-                itemWriteStoreMock,
-                rarityReadStoreMock,
-                itemFactoryMock,
-                uowMock);
+                out var itemWriteStoreMock,
+                out var rarityReadStoreMock,
+                out var itemFactoryMock,
+                out var uowMock);
 
             var spec = BuildDefaultCreateItemSpec();
             var command = BuildCommand(spec);
