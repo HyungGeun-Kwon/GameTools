@@ -5,7 +5,7 @@ using GameTools.Server.Domain.Features.Rarities.ValueObjects;
 using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.Common
+namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.Common.Validations
 {
     public class CreateRaritySpecValidatorTests
     {
