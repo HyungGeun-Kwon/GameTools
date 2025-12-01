@@ -12,9 +12,13 @@ namespace GameTools.Server.Application.Features.Restores.Commands.RestoreItems
                 .LessThanOrEqualTo(_ => DateTime.UtcNow.AddMinutes(1))
                 .WithMessage("AsOfUtc must be in the past (UTC).");
 
-            When(x => x.ItemId.HasValue, () =>
+            When(x => x.ItemIds is not null, () =>
             {
-                RuleFor(x => x.ItemId).GreaterThan(0).WithMessage("ItemId must be > 0 when provided.");
+                RuleFor(x => x.ItemIds!)
+                    .Must(ids => ids.Count > 0)
+                    .WithMessage("ItemIds cannot be empty when provided.");
+
+                RuleForEach(x => x.ItemIds).NotEmpty();
             });
         }
     }
