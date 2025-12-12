@@ -4,5 +4,6 @@
         Guid RestoreId,
         int Deleted,
         int Inserted,
-        int Updated);
+        int Updated,
+        bool IsChanged);
 }

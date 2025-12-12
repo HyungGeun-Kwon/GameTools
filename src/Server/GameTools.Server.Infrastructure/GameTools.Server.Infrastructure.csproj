@@ -30,8 +30,4 @@
     <ProjectReference Include="..\GameTools.Server.Domain\GameTools.Server.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

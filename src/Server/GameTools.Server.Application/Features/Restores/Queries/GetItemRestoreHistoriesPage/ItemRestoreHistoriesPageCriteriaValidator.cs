@@ -9,7 +9,7 @@ namespace GameTools.Server.Application.Features.Restores.Queries.GetItemRestoreH
         [
             nameof(ItemRestoreHistoriesReadModel.Id),
             nameof(ItemRestoreHistoriesReadModel.AsOfUtc),
-            nameof(ItemRestoreHistoriesReadModel.Actor),
+            nameof(ItemRestoreHistoriesReadModel.CurrentUser),
             nameof(ItemRestoreHistoriesReadModel.StartedAtUtc),
             nameof(ItemRestoreHistoriesReadModel.EndedAtUtc),
             nameof(ItemRestoreHistoriesReadModel.AffectedCounts)

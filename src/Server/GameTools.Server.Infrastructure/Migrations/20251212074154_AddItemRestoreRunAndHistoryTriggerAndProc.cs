@@ -9,7 +9,7 @@ namespace GameTools.Server.Infrastructure.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // 1) RestoreRun 테이블 (내부 실행 로그용)
+            // 1) RestoreRun 테이블 (RestoreHistory와 거의 동일, 내부 실행 로그용)
             migrationBuilder.Sql(
             """
             IF OBJECT_ID(N'dbo.RestoreRun', N'U') IS NULL
@@ -34,52 +34,110 @@ namespace GameTools.Server.Infrastructure.Migrations
             """);
 
             // 2) RestoreRun -> RestoreHistory 동기화 트리거
-            //    RestoreHistory는 Init에서 이미 생성되어 있다고 가정 (Actor 컬럼)
+            //    - Insert: RestoreHistory에 Insert (없으면)
+            //    - Update: RestoreHistory에 Update (EndedAtUtc, AffectedCounts 등 반영)
             migrationBuilder.Sql(
             """
-            IF OBJECT_ID(N'dbo.RestoreHistory', N'U') IS NOT NULL
+            CREATE OR ALTER TRIGGER dbo.trg_RestoreRun_ToHistory
+            ON dbo.RestoreRun
+            AFTER INSERT, UPDATE
+            AS
             BEGIN
-                CREATE OR ALTER TRIGGER dbo.trg_RestoreRun_ToHistory
-                ON dbo.RestoreRun
-                AFTER INSERT, UPDATE
-                AS
-                BEGIN
-                    SET NOCOUNT ON;
+                SET NOCOUNT ON;
 
-                    -- INSERT 된 행들: RestoreHistory에 없으면 생성
-                    INSERT INTO dbo.RestoreHistory
-                    (
-                        RestoreId, AsOfUtc, Actor, DryRun, StartedAtUtc, EndedAtUtc,
-                        AffectedCounts, Notes, FiltersJson
-                    )
-                    SELECT
-                        i.RestoreId, i.AsOfUtc, i.Actor, i.DryRun, i.StartedAtUtc, i.EndedAtUtc,
-                        i.AffectedCounts, i.Notes, i.FiltersJson
-                    FROM inserted i
-                    WHERE NOT EXISTS (
-                        SELECT 1 FROM dbo.RestoreHistory h WHERE h.RestoreId = i.RestoreId
-                    );
+                -- INSERT 된 행들: RestoreHistory에 없으면 생성
+                INSERT INTO dbo.RestoreHistory
+                (
+                    RestoreId, AsOfUtc, Actor, DryRun, StartedAtUtc, EndedAtUtc,
+                    AffectedCounts, Notes, FiltersJson
+                )
+                SELECT
+                    i.RestoreId, i.AsOfUtc, i.Actor, i.DryRun, i.StartedAtUtc, i.EndedAtUtc,
+                    i.AffectedCounts, i.Notes, i.FiltersJson
+                FROM inserted i
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM dbo.RestoreHistory h WHERE h.RestoreId = i.RestoreId
+                );
 
-                    -- UPDATE 된 행들: RestoreHistory에 반영
-                    UPDATE h
-                    SET
-                        h.AsOfUtc        = i.AsOfUtc,
-                        h.Actor          = i.Actor,
-                        h.DryRun         = i.DryRun,
-                        h.StartedAtUtc   = i.StartedAtUtc,
-                        h.EndedAtUtc     = i.EndedAtUtc,
-                        h.AffectedCounts = i.AffectedCounts,
-                        h.Notes          = i.Notes,
-                        h.FiltersJson    = i.FiltersJson
-                    FROM dbo.RestoreHistory h
-                    JOIN inserted i ON i.RestoreId = h.RestoreId;
-                END
+                -- UPDATE 된 행들: RestoreHistory에 반영
+                UPDATE h
+                SET
+                    h.AsOfUtc        = i.AsOfUtc,
+                    h.Actor          = i.Actor,
+                    h.DryRun         = i.DryRun,
+                    h.StartedAtUtc   = i.StartedAtUtc,
+                    h.EndedAtUtc     = i.EndedAtUtc,
+                    h.AffectedCounts = i.AffectedCounts,
+                    h.Notes          = i.Notes,
+                    h.FiltersJson    = i.FiltersJson
+                FROM dbo.RestoreHistory h
+                JOIN inserted i ON i.RestoreId = h.RestoreId;
             END
             """);
 
-            // 3) Item Restore AsOf 프로시저
-            //    - 세션 컨텍스트에서 CurrentUser 키를 읽고 -> RestoreRun.Actor에 저장
-            //    - audit_skip=1 세팅 (※ 감사 트리거가 audit_skip 가드를 가져야 효과 있음!)
+            migrationBuilder.Sql(
+            """
+            IF OBJECT_ID(N'dbo.trg_Item_Audit', 'TR') IS NOT NULL
+            BEGIN
+                EXEC(N'
+                CREATE OR ALTER TRIGGER dbo.trg_Item_Audit
+                ON dbo.Item
+                AFTER INSERT, UPDATE, DELETE
+                AS
+                BEGIN
+                  SET NOCOUNT ON;
+                  IF TRY_CAST(SESSION_CONTEXT(N''audit_skip'') AS bit) = 1 RETURN;
+
+                  INSERT INTO dbo.ItemAudit (ItemId, Action, BeforeJson, AfterJson, ChangedAtUtc, ChangedBy)
+                  SELECT
+                    COALESCE(d.Id, i.Id),
+                    CASE WHEN d.Id IS NULL THEN ''INSERT''
+                         WHEN i.Id IS NULL THEN ''DELETE'' ELSE ''UPDATE'' END,
+                    CASE WHEN d.Id IS NOT NULL
+                         THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+                    CASE WHEN i.Id IS NOT NULL
+                         THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+                    SYSUTCDATETIME(),
+                    COALESCE(TRY_CAST(SESSION_CONTEXT(N''CurrentUser'') AS nvarchar(64)), SYSTEM_USER)
+                  FROM inserted i
+                  FULL OUTER JOIN deleted d ON d.Id = i.Id;
+                END;
+                ');
+            END
+
+            -- Rarity 감사 트리거: ChangedBy를 Actor로
+            IF OBJECT_ID(N'dbo.trg_Rarity_Audit', 'TR') IS NOT NULL
+            BEGIN
+                EXEC(N'
+                CREATE OR ALTER TRIGGER dbo.trg_Rarity_Audit
+                ON dbo.Rarity
+                AFTER INSERT, UPDATE, DELETE
+                AS
+                BEGIN
+                  SET NOCOUNT ON;
+                  IF TRY_CAST(SESSION_CONTEXT(N''audit_skip'') AS bit) = 1 RETURN;
+
+                  INSERT INTO dbo.RarityAudit (RarityId, Action, BeforeJson, AfterJson, ChangedAtUtc, ChangedBy)
+                  SELECT
+                    COALESCE(d.Id, i.Id),
+                    CASE WHEN d.Id IS NULL THEN ''INSERT''
+                         WHEN i.Id IS NULL THEN ''DELETE'' ELSE ''UPDATE'' END,
+                    CASE WHEN d.Id IS NOT NULL
+                         THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+                    CASE WHEN i.Id IS NOT NULL
+                         THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+                    SYSUTCDATETIME(),
+                    COALESCE(TRY_CAST(SESSION_CONTEXT(N''Actor'') AS nvarchar(64)), SYSTEM_USER)
+                  FROM inserted i
+                  FULL OUTER JOIN deleted d ON d.Id = i.Id;
+                END;
+                ');
+            END
+            """);
+
+            // 4) Item Restore AsOf 프로시저 (Guid 기반, ItemAudit 스키마에 맞춤)
+            //    - RestoreRun에 기록 -> 트리거가 RestoreHistory 반영
+            //    - audit_skip=1로 감사 억제
             //    - applock으로 동시 실행 방지
             migrationBuilder.Sql(
             """
@@ -94,9 +152,7 @@ namespace GameTools.Server.Infrastructure.Migrations
                 SET XACT_ABORT ON;
 
                 DECLARE @RestoreId uniqueidentifier = NEWSEQUENTIALID();
-
-                -- 세션에서 사용자 읽기 (키는 CurrentUser로 통일)
-                DECLARE @actorName nvarchar(128) =
+                DECLARE @currentUserName nvarchar(128) =
                     COALESCE(TRY_CAST(SESSION_CONTEXT(N'CurrentUser') AS nvarchar(128)), SUSER_SNAME());
 
                 DECLARE @filters nvarchar(max) =
@@ -105,9 +161,9 @@ namespace GameTools.Server.Infrastructure.Migrations
                         ELSE (SELECT @ItemIdsJson AS ItemIds FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
                     END;
 
-                -- 실행 헤더: RestoreRun에 기록 (History는 트리거가 동기화)
-                INSERT dbo.RestoreRun (RestoreId, AsOfUtc, Actor, DryRun, Notes, FiltersJson)
-                VALUES (@RestoreId, @AsOfUtc, @actorName, @DryRun, @Notes, @filters);
+                -- 실행 헤더: RestoreRun에만 기록 (History는 트리거가 동기화)
+                INSERT dbo.RestoreRun (RestoreId, AsOfUtc, CurrentUser, DryRun, Notes, FiltersJson)
+                VALUES (@RestoreId, @AsOfUtc, @currentUserName, @DryRun, @Notes, @filters);
 
                 BEGIN TRAN;
 
@@ -137,7 +193,7 @@ namespace GameTools.Server.Infrastructure.Migrations
                     WHERE TRY_CAST([value] AS uniqueidentifier) IS NOT NULL;
                 END
 
-                -- AsOf 이후 변경 로그 스냅샷 (ItemAudit: AuditId uniqueidentifier 가정)
+                -- AsOf 이후 변경 로그 스냅샷
                 CREATE TABLE #Logs
                 (
                     AuditId      uniqueidentifier NOT NULL,
@@ -171,7 +227,7 @@ namespace GameTools.Server.Infrastructure.Migrations
                     RETURN;
                 END
 
-                -- 감사 억제 (트리거에 audit_skip 가드가 있어야 실제 억제됨)
+                -- 감사 억제 + restore context
                 EXEC sys.sp_set_session_context @key=N'audit_skip', @value=1;
 
                 DECLARE @DelApplied TABLE(Id uniqueidentifier PRIMARY KEY);
@@ -201,7 +257,6 @@ namespace GameTools.Server.Infrastructure.Migrations
                         IF @act = N'INSERT'
                         BEGIN
                             DELETE FROM dbo.Item WHERE Id = @id;
-
                             IF @@ROWCOUNT > 0 AND NOT EXISTS (SELECT 1 FROM @DelApplied WHERE Id=@id)
                                 INSERT INTO @DelApplied(Id) VALUES(@id);
                         END
@@ -212,18 +267,18 @@ namespace GameTools.Server.Infrastructure.Migrations
                                 DECLARE @Name nvarchar(100), @Desc nvarchar(1000), @Price int, @RarityId uniqueidentifier, @JsonId uniqueidentifier;
 
                                 SELECT
-                                    @JsonId  = Id,
-                                    @Name    = Name,
-                                    @Price   = Price,
-                                    @Desc    = Description,
+                                    @JsonId = Id,
+                                    @Name = Name,
+                                    @Price = Price,
+                                    @Desc = Description,
                                     @RarityId = RarityId
                                 FROM OPENJSON(@bj)
                                 WITH (
-                                    Id          uniqueidentifier  '$.Id',
-                                    Name        nvarchar(100)     '$.Name',
-                                    Price       int               '$.Price',
-                                    Description nvarchar(1000)    '$.Description',
-                                    RarityId    uniqueidentifier  '$.RarityId'
+                                    Id          uniqueidentifier '$.Id',
+                                    Name        nvarchar(100)   '$.Name',
+                                    Price       int             '$.Price',
+                                    Description nvarchar(1000)  '$.Description',
+                                    RarityId    uniqueidentifier '$.RarityId'
                                 );
 
                                 IF @JsonId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM dbo.Item WHERE Id=@JsonId)
@@ -243,18 +298,18 @@ namespace GameTools.Server.Infrastructure.Migrations
                                 DECLARE @UName nvarchar(100), @UDesc nvarchar(1000), @UPrice int, @URarityId uniqueidentifier, @UId uniqueidentifier;
 
                                 SELECT
-                                    @UId     = Id,
-                                    @UName   = Name,
-                                    @UPrice  = Price,
-                                    @UDesc   = Description,
+                                    @UId = Id,
+                                    @UName = Name,
+                                    @UPrice = Price,
+                                    @UDesc = Description,
                                     @URarityId = RarityId
                                 FROM OPENJSON(@bj)
                                 WITH (
-                                    Id          uniqueidentifier  '$.Id',
-                                    Name        nvarchar(100)     '$.Name',
-                                    Price       int               '$.Price',
-                                    Description nvarchar(1000)    '$.Description',
-                                    RarityId    uniqueidentifier  '$.RarityId'
+                                    Id          uniqueidentifier '$.Id',
+                                    Name        nvarchar(100)   '$.Name',
+                                    Price       int             '$.Price',
+                                    Description nvarchar(1000)  '$.Description',
+                                    RarityId    uniqueidentifier '$.RarityId'
                                 );
 
                                 IF @UId IS NOT NULL
@@ -283,7 +338,6 @@ namespace GameTools.Server.Infrastructure.Migrations
                     BEGIN TRY CLOSE cur; END TRY BEGIN CATCH END CATCH;
                     BEGIN TRY DEALLOCATE cur; END TRY BEGIN CATCH END CATCH;
 
-                    -- audit_skip 정리
                     BEGIN TRY EXEC sys.sp_set_session_context @key=N'audit_skip', @value=NULL; END TRY BEGIN CATCH END CATCH;
 
                     IF XACT_STATE() <> 0 ROLLBACK;
@@ -299,7 +353,6 @@ namespace GameTools.Server.Infrastructure.Migrations
                 ELSE
                     COMMIT;
 
-                -- audit_skip 정리
                 BEGIN TRY EXEC sys.sp_set_session_context @key=N'audit_skip', @value=NULL; END TRY BEGIN CATCH END CATCH;
 
                 UPDATE dbo.RestoreRun
