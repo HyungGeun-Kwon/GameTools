@@ -7,6 +7,6 @@
         Concurrency = 2,
         ValidationFailed = 3, // InvalidPrice, InvalidRarity 등 묶음
         Conflict = 4, // DuplicateName 등 유니크 충돌
-        Failed = 5 // 기타 미분류 오류
+        UnknownError = 5 // 기타 미분류 오류
     }
 }
