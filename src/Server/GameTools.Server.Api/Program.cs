@@ -1,11 +1,12 @@
 using GameTools.Server.Api.Middlewares;
 using GameTools.Server.Application.Abstractions.Users;
 using GameTools.Server.Application.Extensions;
-using GameTools.Server.Infrastructure.Extensions;
 using GameTools.Server.Infrastructure.Persistence;
-using GameTools.Server.Infrastructure.Persistence.Seed;
+using GameTools.Server.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using GameTools.Server.Infrastructure.Persistence.Catalog.Seed;
+using GameTools.Server.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,8 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ApiCurrentUser>();
-builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<ApiCurrentUser>());
+builder.Services.AddScoped<ApiUser>();
+builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<ApiUser>());
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -32,11 +33,16 @@ using (var scope = app.Services.CreateScope())
     // 마이그레이션
     var sp = scope.ServiceProvider;
     var db = sp.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    var user = sp.GetRequiredService<ICurrentUser>();
+    user.Set("api_Seed");
 
-    // 시드데이터
-    foreach (var seeder in sp.GetServices<ISeeder>())
-        await seeder.SeedAsync(db, CancellationToken.None);
+    if (app.Environment.IsDevelopment())
+    {
+        await db.Database.MigrateAsync();
+
+        foreach (var seeder in sp.GetServices<ISeeder>())
+            await seeder.SeedAsync(CancellationToken.None);
+    }
 }
 
 app.UseSerilogRequestLogging();

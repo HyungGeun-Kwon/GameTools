@@ -18,7 +18,7 @@ namespace GameTools.Server.Application.Features.Items.Commands.UpdateItem
     {
         public async Task<UpdateItemResult> Handle(UpdateItemCommand command, CancellationToken ct)
         {
-            var item = await itemWriteStore.LoadForUpdateAsync(command.Spec.Id, ct)
+            var item = await itemWriteStore.LoadForUpdateAsync(ItemId.From(command.Spec.Id), ct)
                 ?? throw new NotFoundException($"Item '{command.Spec.Id}' not found.");
 
             _ = await rarityReadStore.GetByIdAsync(command.Spec.RarityId, ct)

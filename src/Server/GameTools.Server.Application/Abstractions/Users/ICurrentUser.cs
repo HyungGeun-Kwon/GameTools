@@ -3,5 +3,6 @@
     public interface ICurrentUser
     {
         string UserIdOrName { get; }
+        public void Set(string user);
     }
 }

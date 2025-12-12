@@ -22,117 +22,14 @@ namespace GameTools.Server.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GameTools.Server.Domain.Auditing.ItemAudit", b =>
+            modelBuilder.Entity("GameTools.Server.Domain.Features.Items.Entities.Item", b =>
                 {
-                    b.Property<long>("AuditId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("AuditId"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("AfterJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BeforeJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ChangedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<string>("ChangedBy")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasDefaultValue("system");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AuditId");
-
-                    b.HasIndex("ChangedAtUtc");
-
-                    b.HasIndex("ItemId", "ChangedAtUtc");
-
-                    b.ToTable("ItemAudit", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_ItemAudit_Action", "UPPER([Action]) IN ('INSERT','UPDATE','DELETE')");
-
-                            t.HasCheckConstraint("CK_ItemAudit_After_IsJson", "([AfterJson]  IS NULL OR ISJSON([AfterJson])  = 1)");
-
-                            t.HasCheckConstraint("CK_ItemAudit_Before_IsJson", "([BeforeJson] IS NULL OR ISJSON([BeforeJson]) = 1)");
-                        });
-                });
-
-            modelBuilder.Entity("GameTools.Server.Domain.Auditing.RarityAudit", b =>
-                {
-                    b.Property<long>("AuditId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("AuditId"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("AfterJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BeforeJson")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ChangedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("SYSUTCDATETIME()");
-
-                    b.Property<string>("ChangedBy")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasDefaultValue("system");
-
-                    b.Property<byte>("RarityId")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("AuditId");
-
-                    b.HasIndex("ChangedAtUtc");
-
-                    b.HasIndex("RarityId", "ChangedAtUtc");
-
-                    b.ToTable("RarityAudit", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_RarityAudit_Action", "UPPER([Action]) IN ('INSERT','UPDATE','DELETE')");
-
-                            t.HasCheckConstraint("CK_RarityAudit_After_IsJson", "([AfterJson]  IS NULL OR ISJSON([AfterJson])  = 1)");
-
-                            t.HasCheckConstraint("CK_RarityAudit_Before_IsJson", "([BeforeJson] IS NULL OR ISJSON([BeforeJson]) = 1)");
-                        });
-                });
-
-            modelBuilder.Entity("GameTools.Server.Domain.Entities.Item", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -142,8 +39,8 @@ namespace GameTools.Server.Infrastructure.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<byte>("RarityId")
-                        .HasColumnType("tinyint");
+                    b.Property<Guid>("RarityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -168,19 +65,15 @@ namespace GameTools.Server.Infrastructure.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("GameTools.Server.Domain.Entities.Rarity", b =>
+            modelBuilder.Entity("GameTools.Server.Domain.Features.Rarities.Entities.Rarity", b =>
                 {
-                    b.Property<byte>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<byte>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ColorCode")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(7)")
-                        .HasDefaultValue("#A0A0A0");
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
 
                     b.Property<string>("Grade")
                         .IsRequired()
@@ -189,14 +82,10 @@ namespace GameTools.Server.Infrastructure.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ColorCode")
-                        .IsUnique();
 
                     b.HasIndex("Grade")
                         .IsUnique();
@@ -206,12 +95,114 @@ namespace GameTools.Server.Infrastructure.Migrations
                             t.HasTrigger("trg_Rarity_Audit");
 
                             t.HasCheckConstraint("CK_Rarity_ColorCode_Format", "LEN([ColorCode]) = 7 AND LEFT([ColorCode],1) = '#' AND [ColorCode] = UPPER([ColorCode]) AND [ColorCode] LIKE '#[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]'");
+
+                            t.HasCheckConstraint("CK_Rarity_ColorCode_NoSpaces", "RTRIM(LTRIM([ColorCode])) = [ColorCode]");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("GameTools.Server.Infrastructure.Persistence.Models.RestoreRunRow", b =>
+            modelBuilder.Entity("GameTools.Server.Infrastructure.Persistence.Auditing.Models.ItemAudit", b =>
+                {
+                    b.Property<Guid>("AuditId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("AfterJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BeforeJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ChangedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(7)
+                        .HasColumnType("datetime2(7)")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasDefaultValue("unknown");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AuditId");
+
+                    b.HasIndex("ChangedAtUtc");
+
+                    b.HasIndex("ItemId", "ChangedAtUtc");
+
+                    b.ToTable("ItemAudit", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ItemAudit_Action", "UPPER([Action]) IN ('INSERT','UPDATE','DELETE')");
+
+                            t.HasCheckConstraint("CK_ItemAudit_After_IsJson", "([AfterJson]  IS NULL OR ISJSON([AfterJson])  = 1)");
+
+                            t.HasCheckConstraint("CK_ItemAudit_Before_IsJson", "([BeforeJson] IS NULL OR ISJSON([BeforeJson]) = 1)");
+                        });
+                });
+
+            modelBuilder.Entity("GameTools.Server.Infrastructure.Persistence.Auditing.Models.RarityAudit", b =>
+                {
+                    b.Property<Guid>("AuditId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("AfterJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BeforeJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ChangedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(7)
+                        .HasColumnType("datetime2(7)")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)")
+                        .HasDefaultValue("unknown");
+
+                    b.Property<Guid>("RarityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AuditId");
+
+                    b.HasIndex("ChangedAtUtc");
+
+                    b.HasIndex("RarityId", "ChangedAtUtc");
+
+                    b.ToTable("RarityAudit", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_RarityAudit_Action", "UPPER([Action]) IN ('INSERT','UPDATE','DELETE')");
+
+                            t.HasCheckConstraint("CK_RarityAudit_After_IsJson", "([AfterJson]  IS NULL OR ISJSON([AfterJson])  = 1)");
+
+                            t.HasCheckConstraint("CK_RarityAudit_Before_IsJson", "([BeforeJson] IS NULL OR ISJSON([BeforeJson]) = 1)");
+                        });
+                });
+
+            modelBuilder.Entity("GameTools.Server.Infrastructure.Persistence.Operations.Restores.Models.RestoreHistory", b =>
                 {
                     b.Property<Guid>("RestoreId")
                         .ValueGeneratedOnAdd()
@@ -219,20 +210,24 @@ namespace GameTools.Server.Infrastructure.Migrations
 
                     b.Property<string>("Actor")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasDefaultValue("unknown");
 
                     b.Property<string>("AffectedCounts")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("AsOfUtc")
-                        .HasColumnType("datetime2");
+                        .HasPrecision(7)
+                        .HasColumnType("datetime2(7)");
 
                     b.Property<bool>("DryRun")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("EndedAtUtc")
-                        .HasColumnType("datetime2");
+                        .HasPrecision(7)
+                        .HasColumnType("datetime2(7)");
 
                     b.Property<string>("FiltersJson")
                         .HasColumnType("nvarchar(max)");
@@ -242,7 +237,8 @@ namespace GameTools.Server.Infrastructure.Migrations
 
                     b.Property<DateTime>("StartedAtUtc")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
+                        .HasPrecision(7)
+                        .HasColumnType("datetime2(7)")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
                     b.HasKey("RestoreId");
@@ -253,23 +249,17 @@ namespace GameTools.Server.Infrastructure.Migrations
 
                     b.HasIndex("Actor", "StartedAtUtc");
 
-                    b.ToTable("RestoreRun", (string)null);
+                    b.ToTable("RestoreHistory", (string)null);
                 });
 
-            modelBuilder.Entity("GameTools.Server.Domain.Entities.Item", b =>
+            modelBuilder.Entity("GameTools.Server.Domain.Features.Items.Entities.Item", b =>
                 {
-                    b.HasOne("GameTools.Server.Domain.Entities.Rarity", "Rarity")
-                        .WithMany("Items")
+                    b.HasOne("GameTools.Server.Domain.Features.Rarities.Entities.Rarity", null)
+                        .WithMany()
                         .HasForeignKey("RarityId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Rarity");
-                });
-
-            modelBuilder.Entity("GameTools.Server.Domain.Entities.Rarity", b =>
-                {
-                    b.Navigation("Items");
+                        .IsRequired()
+                        .HasConstraintName("FK_Items_Rarities_RarityId");
                 });
 #pragma warning restore 612, 618
         }

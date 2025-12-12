@@ -16,7 +16,7 @@ namespace GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity
     {
         public async Task<UpdateRarityResult> Handle(UpdateRarityCommand command, CancellationToken ct)
         {
-            var rarity = await rarityWriteStore.LoadForUpdateAsync(command.Spec.Id, ct)
+            var rarity = await rarityWriteStore.LoadForUpdateAsync(RarityId.From(command.Spec.Id), ct)
                 ?? throw new NotFoundException($"Rarity '{command.Spec.Id}' not found.");
 
             var newGrade = new RarityGrade(command.Spec.Grade);

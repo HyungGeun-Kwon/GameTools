@@ -4,7 +4,7 @@ namespace GameTools.Server.Api.Middlewares
 {
     public sealed class CurrentUserMiddleware(RequestDelegate next)
     {
-        public async Task Invoke(HttpContext ctx, ApiCurrentUser apiCurrentUser)
+        public async Task Invoke(HttpContext ctx, ICurrentUser currentUser)
         {
             // 인증 사용 시
             var actor = ctx.User?.Identity?.Name;
@@ -14,7 +14,7 @@ namespace GameTools.Server.Api.Middlewares
                 ? ctx.Request.Headers["X-Actor"].ToString()
                 : null;
 
-            apiCurrentUser.Set(actor ?? "api_unknown");
+            currentUser.Set(actor ?? "api_unknown");
             await next(ctx);
         }
     }
