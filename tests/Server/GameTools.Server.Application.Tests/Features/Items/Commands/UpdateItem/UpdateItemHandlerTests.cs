@@ -69,7 +69,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
 
             await act.Should().ThrowAsync<NotFoundException>();
 
-            itemWriteStoreMock.Verify(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()), Times.Once);
+            itemWriteStoreMock.Verify(x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()), Times.Once);
             rarityReadStoreMock.Verify(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
             namePolicyMock.Verify(x => x.EnsureUniqueAsync(It.IsAny<ItemName>(), It.IsAny<CancellationToken>()), Times.Never);
             uowMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -90,7 +90,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
             var existingItem = BuildItemFromSpec(spec);
 
             itemWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingItem);
 
             // Rarity는 null → NotFoundException
@@ -102,7 +102,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
 
             await act.Should().ThrowAsync<NotFoundException>();
 
-            itemWriteStoreMock.Verify(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()), Times.Once);
+            itemWriteStoreMock.Verify(x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()), Times.Once);
             rarityReadStoreMock.Verify(x => x.GetByIdAsync(spec.RarityId, It.IsAny<CancellationToken>()), Times.Once);
             namePolicyMock.Verify(x => x.EnsureUniqueAsync(It.IsAny<ItemName>(), It.IsAny<CancellationToken>()), Times.Never);
             uowMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -126,7 +126,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
             var rowVersion = ValidItemRowVersion();
 
             itemWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingItem);
 
             rarityReadStoreMock
@@ -172,7 +172,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.UpdateItem
             var rowVersion = new byte[] { 7, 7, 7, 7 };
 
             itemWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingItem);
 
             rarityReadStoreMock

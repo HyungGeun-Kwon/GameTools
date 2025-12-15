@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace GameTools.Server.Infrastructure.Persistence
 {
-    public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser currentUser) : DbContext(options)
+    public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser actor) : DbContext(options)
     {
         public DbSet<Item> Items => Set<Item>();
         public DbSet<Rarity> Rarities => Set<Rarity>();
@@ -41,7 +41,7 @@ namespace GameTools.Server.Infrastructure.Persistence
 
             try
             {
-                SetCurrentUser();
+                SetActor();
                 return base.SaveChanges();
             }
             finally
@@ -66,7 +66,7 @@ namespace GameTools.Server.Infrastructure.Persistence
 
             try
             {
-                await SetCurrentUserAsync(ct);
+                await SetActorAsync(ct);
                 return await base.SaveChangesAsync(ct);
             }
             finally
@@ -75,19 +75,19 @@ namespace GameTools.Server.Infrastructure.Persistence
                     connection.Close();
             }
         }
-        private void SetCurrentUser()
+        private void SetActor()
         {
-            var user = currentUser.UserIdOrName ?? "unknown";
+            var user = actor.UserIdOrName ?? "unknown";
 
             Database.ExecuteSqlInterpolated(
-                $"EXEC sys.sp_set_session_context @key=N'CurrentUser', @value={user}");
+                $"EXEC sys.sp_set_session_context @key=N'actor', @value={user}");
         }
-        private Task SetCurrentUserAsync(CancellationToken ct)
+        private Task SetActorAsync(CancellationToken ct)
         {
-            var user = currentUser.UserIdOrName ?? "unknown";
+            var user = actor.UserIdOrName ?? "unknown";
 
             return Database.ExecuteSqlInterpolatedAsync(
-                $"EXEC sys.sp_set_session_context @key=N'CurrentUser', @value={user}",
+                $"EXEC sys.sp_set_session_context @key=N'actor', @value={user}",
                 ct);
         }
 

@@ -12,7 +12,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Config
 
             b.HasKey(x => x.RestoreId);
 
-            b.Property(x => x.CurrentUser)
+            b.Property(x => x.Actor)
                 .IsRequired()
                 .HasMaxLength(128)
                 .HasDefaultValue("unknown");
@@ -33,7 +33,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Config
             b.Property(x => x.FiltersJson).HasColumnType("nvarchar(max)");
 
             b.HasIndex(x => x.StartedAtUtc);
-            b.HasIndex(x => new { x.CurrentUser, x.StartedAtUtc });
+            b.HasIndex(x => new { x.Actor, x.StartedAtUtc });
             b.HasIndex(x => x.DryRun);
         }
     }

@@ -13,7 +13,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores
             history => new ItemRestoreHistoriesReadModel(
                 history.RestoreId,
                     history.AsOfUtc,
-                    history.CurrentUser,
+                    history.Actor,
                     history.DryRun,
                     history.StartedAtUtc,
                     history.EndedAtUtc,
@@ -42,15 +42,15 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores
             {
                 var fromUtc = criteria.Filter.FromUtc;
                 var toUtc = criteria.Filter.ToUtc;
-                var currentUser = criteria.Filter.CurrentUser;
+                var actors = criteria.Filter.Actors;
                 var dryOnly = criteria.Filter.DryOnly;
 
                 if (fromUtc is not null) query = query.Where(h => h.StartedAtUtc >= fromUtc);
                 
                 if (toUtc is not null) query = query.Where(h => h.StartedAtUtc < toUtc);
                 
-                if (currentUser is { Count: > 0 })
-                    query = query.Where(h => currentUser.Contains(h.CurrentUser));
+                if (actors is { Count: > 0 })
+                    query = query.Where(h => actors.Contains(h.Actor));
 
                 if (dryOnly is not null)
                     query = query.Where(h => h.DryRun == dryOnly.Value);
@@ -87,7 +87,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores
             {
                 "id" => desc ? query.OrderByDescending(h => h.RestoreId) : query.OrderBy(i => i.RestoreId),
                 "asofutc" => desc ? query.OrderByDescending(h => h.AsOfUtc) : query.OrderBy(h => h.AsOfUtc),
-                "CurrentUser" => desc ? query.OrderByDescending(h => h.CurrentUser) : query.OrderBy(h => h.CurrentUser),
+                "actor" => desc ? query.OrderByDescending(h => h.Actor) : query.OrderBy(h => h.Actor),
                 "StartedAtUtc" => desc ? query.OrderByDescending(h => h.StartedAtUtc) : query.OrderBy(h => h.StartedAtUtc),
                 "EndedAtUtc" => desc ? query.OrderByDescending(h => h.EndedAtUtc) : query.OrderBy(h => h.EndedAtUtc),
                 "AffectedCounts" => desc ? query.OrderByDescending(h => h.AffectedCounts) : query.OrderBy(h => h.AffectedCounts),

@@ -55,6 +55,28 @@ namespace GameTools.Server.Infrastructure.Migrations
 
             // 2) Bulk Insert SP --------------------------------------------------
 
+            // dbo.Item.Id 컬럼에 DEFAULT NEWSEQUENTIALID() 가 없으면 추가
+            // (NEWSEQUENTIALID()는 DEFAULT 제약에서만 허용됨)
+            migrationBuilder.Sql(
+            """
+        IF OBJECT_ID(N'dbo.Item', 'U') IS NOT NULL
+        BEGIN
+            DECLARE @dfName sysname;
+            SELECT @dfName = dc.name
+            FROM sys.default_constraints dc
+            JOIN sys.columns c
+              ON c.object_id = dc.parent_object_id
+             AND c.column_id = dc.parent_column_id
+            WHERE dc.parent_object_id = OBJECT_ID(N'dbo.Item')
+              AND c.name = N'Id';
+
+            IF @dfName IS NULL
+            BEGIN
+                ALTER TABLE dbo.Item ADD DEFAULT NEWSEQUENTIALID() FOR Id;
+            END
+        END
+        """);
+
             migrationBuilder.Sql(
             """
         CREATE OR ALTER PROCEDURE dbo.usp_ItemBulkInsert
@@ -63,10 +85,12 @@ namespace GameTools.Server.Infrastructure.Migrations
         BEGIN
             SET NOCOUNT ON;
 
+            DECLARE @EMPTY uniqueidentifier = CONVERT(uniqueidentifier, 0x00000000000000000000000000000000);
+
             BEGIN TRY
                 DECLARE @R TABLE
                 (
-                    [Index]      int              NOT NULL,
+                    [Index]      int              NOT NULL PRIMARY KEY,
                     Id           uniqueidentifier NOT NULL,
                     RowVersion   varbinary(8)     NULL,
                     [Status]     tinyint          NOT NULL,
@@ -74,19 +98,18 @@ namespace GameTools.Server.Infrastructure.Migrations
                     ErrorMessage nvarchar(4000)   NULL
                 );
 
-                -- Work set: generate ids once (NEWSEQUENTIALID)
+                -- Work set (Id는 DB DEFAULT(NEWSEQUENTIALID)로 생성)
                 DECLARE @W TABLE
                 (
                     [Index]     int              NOT NULL PRIMARY KEY,
-                    Id          uniqueidentifier NOT NULL,
                     Name        nvarchar(100)    NOT NULL,
                     Price       int              NOT NULL,
                     Description nvarchar(1000)   NULL,
                     RarityId    uniqueidentifier NOT NULL
                 );
 
-                INSERT INTO @W([Index], Id, Name, Price, Description, RarityId)
-                SELECT i.[Index], NEWSEQUENTIALID(), i.Name, i.Price, i.Description, i.RarityId
+                INSERT INTO @W([Index], Name, Price, Description, RarityId)
+                SELECT i.[Index], i.Name, i.Price, i.Description, i.RarityId
                 FROM @Items i;
 
                 ;WITH BatchNameDup AS
@@ -123,13 +146,7 @@ namespace GameTools.Server.Infrastructure.Migrations
                 INSERT INTO @R([Index], Id, RowVersion, [Status], ErrorCode, ErrorMessage)
                 SELECT
                     w.[Index],
-                    CASE
-                        WHEN bp.[Index] IS NOT NULL THEN CONVERT(uniqueidentifier, 0x00000000000000000000000000000000)
-                        WHEN mr.[Index] IS NOT NULL THEN CONVERT(uniqueidentifier, 0x00000000000000000000000000000000)
-                        WHEN en.[Index] IS NOT NULL THEN CONVERT(uniqueidentifier, 0x00000000000000000000000000000000)
-                        WHEN bd.[Index] IS NOT NULL THEN CONVERT(uniqueidentifier, 0x00000000000000000000000000000000)
-                        ELSE w.Id
-                    END,
+                    @EMPTY,
                     NULL,
                     CASE
                         WHEN bp.[Index] IS NOT NULL THEN 3  -- ValidationFailed
@@ -151,32 +168,40 @@ namespace GameTools.Server.Infrastructure.Migrations
                 LEFT JOIN ExistingNameDup en ON en.[Index] = w.[Index]
                 LEFT JOIN BatchNameDup bd    ON bd.[Index] = w.[Index];
 
-                -- Insert only rows that are marked Succeeded(0) AND have non-empty Id
-                DECLARE @Inserted TABLE([Index] int NOT NULL PRIMARY KEY, Id uniqueidentifier NOT NULL, RowVersion varbinary(8) NOT NULL);
+                -- 성공 후보만 INSERT (Id는 DEFAULT로 생성됨)
+                DECLARE @Inserted TABLE
+                (
+                    Name       nvarchar(100)    NOT NULL PRIMARY KEY,
+                    Id         uniqueidentifier NOT NULL,
+                    RowVersion varbinary(8)     NOT NULL
+                );
 
-                INSERT INTO dbo.Item (Id, Name, Price, Description, RarityId)
-                OUTPUT w.[Index], inserted.Id, inserted.RowVersion
-                INTO @Inserted([Index], Id, RowVersion)
-                SELECT w.Id, w.Name, w.Price, w.Description, w.RarityId
+                INSERT INTO dbo.Item (Name, Price, Description, RarityId)
+                OUTPUT inserted.Name, inserted.Id, inserted.RowVersion
+                INTO @Inserted(Name, Id, RowVersion)
+                SELECT w.Name, w.Price, w.Description, w.RarityId
                 FROM @W w
                 JOIN @R r ON r.[Index] = w.[Index]
-                WHERE r.[Status] = 0 AND r.Id <> CONVERT(uniqueidentifier, 0x00000000000000000000000000000000);
+                WHERE r.[Status] = 0;
 
-                -- Fill RowVersion for successes
+                -- 결과 테이블(@R)에 Id/RowVersion 채우기 (Name은 유니크 인덱스가 있으므로 안전)
                 UPDATE r
-                SET r.RowVersion = ins.RowVersion
+                SET
+                    r.Id = ins.Id,
+                    r.RowVersion = ins.RowVersion
                 FROM @R r
-                JOIN @Inserted ins ON ins.[Index] = r.[Index];
+                JOIN @W w ON w.[Index] = r.[Index]
+                JOIN @Inserted ins ON ins.Name = w.Name
+                WHERE r.[Status] = 0;
 
                 SELECT [Index], Id, RowVersion, [Status], ErrorCode, ErrorMessage
                 FROM @R
                 ORDER BY [Index];
             END TRY
             BEGIN CATCH
-                -- Catastrophic error: return UnknownError for all input rows
                 SELECT
                     i.[Index],
-                    CONVERT(uniqueidentifier, 0x00000000000000000000000000000000) AS Id,
+                    @EMPTY AS Id,
                     CAST(NULL AS varbinary(8)) AS RowVersion,
                     CAST(5 AS tinyint) AS [Status],
                     CONVERT(nvarchar(50), ERROR_NUMBER()) AS ErrorCode,
@@ -405,6 +430,26 @@ namespace GameTools.Server.Infrastructure.Migrations
         IF TYPE_ID(N'dbo.ItemInsertTvp') IS NOT NULL DROP TYPE dbo.ItemInsertTvp;
         IF TYPE_ID(N'dbo.ItemUpdateTvp') IS NOT NULL DROP TYPE dbo.ItemUpdateTvp;
         IF TYPE_ID(N'dbo.ItemDeleteTvp') IS NOT NULL DROP TYPE dbo.ItemDeleteTvp;
+
+        -- 이 마이그레이션이 추가한 (NEWSEQUENTIALID) DEFAULT 제약만 제거
+        IF OBJECT_ID(N'dbo.Item', 'U') IS NOT NULL
+        BEGIN
+            DECLARE @dfName sysname, @dfDef nvarchar(max);
+            SELECT
+                @dfName = dc.name,
+                @dfDef  = dc.definition
+            FROM sys.default_constraints dc
+            JOIN sys.columns c
+              ON c.object_id = dc.parent_object_id
+             AND c.column_id = dc.parent_column_id
+            WHERE dc.parent_object_id = OBJECT_ID(N'dbo.Item')
+              AND c.name = N'Id';
+
+            IF @dfName IS NOT NULL AND LOWER(@dfDef) LIKE N'%newsequentialid%'
+            BEGIN
+                EXEC(N'ALTER TABLE dbo.Item DROP CONSTRAINT [' + @dfName + N']');
+            END
+        END
         """);
         }
     }

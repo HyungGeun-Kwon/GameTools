@@ -5,6 +5,6 @@ namespace GameTools.Server.Application.Abstractions.Stores.WriteStore
     public interface IRestoreItemWriteStore
     {
         Task<RestoreItemsStoreResult> RestoreItemsAsOfAsync(
-            RestoreItemsSpec payload, CancellationToken ct);
+            RestoreItemsSpec spec, CancellationToken ct);
     }
 }

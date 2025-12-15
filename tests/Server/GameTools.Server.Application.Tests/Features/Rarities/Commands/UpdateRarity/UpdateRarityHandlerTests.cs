@@ -63,7 +63,7 @@ namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.UpdateRa
 
             await act.Should().ThrowAsync<NotFoundException>();
 
-            rarityWriteStoreMock.Verify(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()), Times.Once);
+            rarityWriteStoreMock.Verify(x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()), Times.Once);
             gradePolicyMock.Verify(x => x.EnsureUniqueAsync(It.IsAny<RarityGrade>(), It.IsAny<CancellationToken>()), Times.Never);
             colorCodePolicyMock.Verify(x => x.EnsureUniqueAsync(It.IsAny<RarityColorCode>(), It.IsAny<CancellationToken>()), Times.Never);
             uowMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -91,7 +91,7 @@ namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.UpdateRa
             var rowVersion = ValidRarityRowVersion();
 
             rarityWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingRarity);
 
             rarityWriteStoreMock
@@ -144,7 +144,7 @@ namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.UpdateRa
             var rowVersion = ValidRarityRowVersion();
 
             rarityWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingRarity);
 
             gradePolicyMock
@@ -205,7 +205,7 @@ namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.UpdateRa
             var rowVersion = ValidRarityRowVersion();
 
             rarityWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingRarity);
 
             colorPolicyMock

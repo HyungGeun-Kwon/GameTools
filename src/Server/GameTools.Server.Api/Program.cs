@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using GameTools.Server.Infrastructure.Persistence.Catalog.Seed;
 using GameTools.Server.Api;
+using GameTools.Server.Application.Abstractions.Stores.WriteStore;
+using GameTools.Server.Application.Features.Restores.Commands.RestoreItems;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,7 @@ using (var scope = app.Services.CreateScope())
     var sp = scope.ServiceProvider;
     var db = sp.GetRequiredService<AppDbContext>();
     var user = sp.GetRequiredService<ICurrentUser>();
+    var restore = sp.GetRequiredService<IRestoreItemWriteStore>();
     user.Set("api_Seed");
 
     if (app.Environment.IsDevelopment())
@@ -42,6 +45,16 @@ using (var scope = app.Services.CreateScope())
 
         foreach (var seeder in sp.GetServices<ISeeder>())
             await seeder.SeedAsync(CancellationToken.None);
+
+        await restore.RestoreItemsAsOfAsync(
+            new RestoreItemsSpec
+            (
+                AsOfUtc: DateTime.UtcNow.AddMinutes(-20),
+                ItemIds: null,
+                Notes: "초기 시드 데이터 복구 테스트",
+                DryRun: false
+            ), 
+            CancellationToken.None);
     }
 }
 

@@ -4,10 +4,12 @@ using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.UnitOfWorks;
 using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
 using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
-using Moq;
-using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
-using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 using GameTools.Server.Domain.Features.Items.Entities;
+using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using Moq;
+using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
+using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
 namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
 {
@@ -43,7 +45,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
             await act.Should().ThrowAsync<NotFoundException>();
 
             itemWriteStoreMock.Verify(
-                x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()),
+                x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()),
                 Times.Once);
 
             itemWriteStoreMock.Verify(
@@ -72,7 +74,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
             var item = BuildItem(id: ValidItemId(spec.Id));
 
             itemWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(item);
 
             uowMock
@@ -84,7 +86,7 @@ namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
             result.Should().NotBeNull();
 
             itemWriteStoreMock.Verify(
-                x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()),
+                x => x.LoadForUpdateAsync(ItemId.From(spec.Id), It.IsAny<CancellationToken>()),
                 Times.Once);
 
             itemWriteStoreMock.Verify(

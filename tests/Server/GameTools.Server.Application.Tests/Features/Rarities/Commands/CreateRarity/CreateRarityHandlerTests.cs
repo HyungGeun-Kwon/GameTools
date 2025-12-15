@@ -4,10 +4,11 @@ using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.UnitOfWorks;
 using GameTools.Server.Application.Features.Rarities.Commands.Common.Specs;
 using GameTools.Server.Application.Features.Rarities.Commands.DeleteRarity;
-using Moq;
-using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
-using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 using GameTools.Server.Domain.Features.Rarities.Entities;
+using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using Moq;
+using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
+using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
 namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.CreateRarity
 {
@@ -43,7 +44,7 @@ namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.CreateRa
             await act.Should().ThrowAsync<NotFoundException>();
 
             itemWriteStoreMock.Verify(
-                x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()),
+                x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()),
                 Times.Once);
 
             itemWriteStoreMock.Verify(
@@ -72,7 +73,7 @@ namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.CreateRa
             var item = BuildRarity(id: ValidRarityId(spec.Id));
 
             itemWriteStoreMock
-                .Setup(x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(item);
 
             uowMock
@@ -84,7 +85,7 @@ namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.CreateRa
             result.Should().NotBeNull();
 
             itemWriteStoreMock.Verify(
-                x => x.LoadForUpdateAsync(spec.Id, It.IsAny<CancellationToken>()),
+                x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()),
                 Times.Once);
 
             itemWriteStoreMock.Verify(

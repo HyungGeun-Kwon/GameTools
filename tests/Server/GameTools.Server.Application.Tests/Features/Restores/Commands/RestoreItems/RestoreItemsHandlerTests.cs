@@ -31,7 +31,8 @@ namespace GameTools.Server.Application.Tests.Features.Restores.Commands.RestoreI
                 RestoreId: restoreId,
                 Deleted: 0,
                 Inserted: 0,
-                Updated: 0);
+                Updated: 0,
+                IsChanged: false);
 
             writeStoreMock
                 .Setup(x => x.RestoreItemsAsOfAsync(spec, It.IsAny<CancellationToken>()))
@@ -63,7 +64,8 @@ namespace GameTools.Server.Application.Tests.Features.Restores.Commands.RestoreI
                 RestoreId: restoreId,
                 Deleted: 1,
                 Inserted: 2,
-                Updated: 3);
+                Updated: 3,
+                IsChanged: true);
 
             writeStoreMock
                 .Setup(x => x.RestoreItemsAsOfAsync(spec, It.IsAny<CancellationToken>()))

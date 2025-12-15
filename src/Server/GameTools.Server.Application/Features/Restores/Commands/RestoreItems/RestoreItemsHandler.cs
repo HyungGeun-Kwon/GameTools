@@ -10,14 +10,13 @@ namespace GameTools.Server.Application.Features.Restores.Commands.RestoreItems
         {
             var storeResult = await restoreItemWriteStore.RestoreItemsAsOfAsync(request.Spec, ct);
 
-            bool isChanged = storeResult.Deleted + storeResult.Inserted + storeResult.Updated > 0;
 
             return new RestoreItemsResult(
                 storeResult.RestoreId,
                 storeResult.Deleted,
                 storeResult.Inserted,
                 storeResult.Updated,
-                isChanged);
+                storeResult.IsChanged);
         }
     }
 }

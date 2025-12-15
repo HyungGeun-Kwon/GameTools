@@ -4,7 +4,7 @@
     {
         public Guid RestoreId { get; set; }
         public DateTime AsOfUtc { get; set; }
-        public string CurrentUser { get; set; } = "unknown";
+        public string Actor { get; set; } = "unknown";
         public bool DryRun { get; set; }
         public DateTime StartedAtUtc { get; set; }
         public DateTime? EndedAtUtc { get; set; }

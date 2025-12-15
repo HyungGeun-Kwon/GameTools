@@ -1,335 +1,100 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System.Data;
+using System.Data.Common;
+using System.Text.Json;
+using GameTools.Server.Application.Abstractions.Stores.WriteStore;
+using GameTools.Server.Application.Abstractions.Users;
+using GameTools.Server.Application.Features.Restores.Commands.RestoreItems;
+using Microsoft.EntityFrameworkCore;
 
-#nullable disable
-
-namespace GameTools.Server.Infrastructure.Migrations
+namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores.WriteStores
 {
-    /// <inheritdoc />
-    public partial class AddItemRestoreRunAndHistoryTriggerAndProc : Migration
+    public sealed class RestoreItemWriteStore(AppDbContext db, ICurrentUser currentUser) : IRestoreItemWriteStore
     {
-        protected override void Up(MigrationBuilder migrationBuilder)
+        public async Task<RestoreItemsStoreResult> RestoreItemsAsOfAsync(RestoreItemsSpec spec, CancellationToken ct)
         {
-            // 1) RestoreRun 테이블 (내부 실행 로그용)
-            migrationBuilder.Sql(
-            """
-            IF OBJECT_ID(N'dbo.RestoreRun', N'U') IS NULL
-            BEGIN
-                CREATE TABLE dbo.RestoreRun
-                (
-                    RestoreId      uniqueidentifier NOT NULL CONSTRAINT PK_RestoreRun PRIMARY KEY,
-                    AsOfUtc        datetime2(7)     NOT NULL,
-                    Actor          nvarchar(128)    NOT NULL CONSTRAINT DF_RestoreRun_Actor DEFAULT N'unknown',
-                    DryRun         bit              NOT NULL,
-                    StartedAtUtc   datetime2(7)     NOT NULL CONSTRAINT DF_RestoreRun_StartedAtUtc DEFAULT SYSUTCDATETIME(),
-                    EndedAtUtc     datetime2(7)     NULL,
-                    AffectedCounts nvarchar(max)    NULL,
-                    Notes          nvarchar(max)    NULL,
-                    FiltersJson    nvarchar(max)    NULL
-                );
+            if (!db.Database.IsRelational())
+                throw new NotSupportedException("RestoreItemsAsOf is only supported for relational databases.");
 
-                CREATE INDEX IX_RestoreRun_StartedAtUtc ON dbo.RestoreRun(StartedAtUtc);
-                CREATE INDEX IX_RestoreRun_DryRun ON dbo.RestoreRun(DryRun);
-                CREATE INDEX IX_RestoreRun_Actor_StartedAtUtc ON dbo.RestoreRun(Actor, StartedAtUtc);
-            END
-            """);
+            var itemIdsJson = spec.ItemIds is null ? null : JsonSerializer.Serialize(spec.ItemIds);
 
-            // 2) RestoreRun -> RestoreHistory 동기화 트리거
-            //    RestoreHistory는 Init에서 이미 생성되어 있다고 가정 (Actor 컬럼)
-            migrationBuilder.Sql(
-            """
-            IF OBJECT_ID(N'dbo.RestoreHistory', N'U') IS NOT NULL
-            BEGIN
-                CREATE OR ALTER TRIGGER dbo.trg_RestoreRun_ToHistory
-                ON dbo.RestoreRun
-                AFTER INSERT, UPDATE
-                AS
-                BEGIN
-                    SET NOCOUNT ON;
+            var conn = db.Database.GetDbConnection();
+            var openedHere = false;
 
-                    -- INSERT 된 행들: RestoreHistory에 없으면 생성
-                    INSERT INTO dbo.RestoreHistory
-                    (
-                        RestoreId, AsOfUtc, Actor, DryRun, StartedAtUtc, EndedAtUtc,
-                        AffectedCounts, Notes, FiltersJson
-                    )
-                    SELECT
-                        i.RestoreId, i.AsOfUtc, i.Actor, i.DryRun, i.StartedAtUtc, i.EndedAtUtc,
-                        i.AffectedCounts, i.Notes, i.FiltersJson
-                    FROM inserted i
-                    WHERE NOT EXISTS (
-                        SELECT 1 FROM dbo.RestoreHistory h WHERE h.RestoreId = i.RestoreId
-                    );
+            if (conn.State != ConnectionState.Open)
+            {
+                await conn.OpenAsync(ct);
+                openedHere = true;
+            }
 
-                    -- UPDATE 된 행들: RestoreHistory에 반영
-                    UPDATE h
-                    SET
-                        h.AsOfUtc        = i.AsOfUtc,
-                        h.Actor          = i.Actor,
-                        h.DryRun         = i.DryRun,
-                        h.StartedAtUtc   = i.StartedAtUtc,
-                        h.EndedAtUtc     = i.EndedAtUtc,
-                        h.AffectedCounts = i.AffectedCounts,
-                        h.Notes          = i.Notes,
-                        h.FiltersJson    = i.FiltersJson
-                    FROM dbo.RestoreHistory h
-                    JOIN inserted i ON i.RestoreId = h.RestoreId;
-                END
-            END
-            """);
+            try
+            {
+                await SetSessionActorAsync(conn, ct);
 
-            // 3) Item Restore AsOf 프로시저
-            //    - 세션 컨텍스트에서 CurrentUser 키를 읽고 -> RestoreRun.Actor에 저장
-            //    - audit_skip=1 세팅 (※ 감사 트리거가 audit_skip 가드를 가져야 효과 있음!)
-            //    - applock으로 동시 실행 방지
-            migrationBuilder.Sql(
-            """
-            CREATE OR ALTER PROCEDURE dbo.usp_ItemRestore_AsOf
-                @AsOfUtc     datetime2(7),
-                @ItemIdsJson nvarchar(max) = NULL, -- NULL: 전체, JSON array: 특정 아이템들
-                @DryRun      bit           = 1,
-                @Notes       nvarchar(max) = NULL
-            AS
-            BEGIN
-                SET NOCOUNT ON;
-                SET XACT_ABORT ON;
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText = "dbo.usp_ItemRestore_AsOf";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 60;
 
-                DECLARE @RestoreId uniqueidentifier = NEWSEQUENTIALID();
+                AddParam(cmd, "@AsOfUtc", DbType.DateTime2, spec.AsOfUtc);
+                AddParam(cmd, "@ItemIdsJson", DbType.String, (object?)itemIdsJson ?? DBNull.Value);
+                AddParam(cmd, "@DryRun", DbType.Boolean, spec.DryRun);
+                AddParam(cmd, "@Notes", DbType.String, (object?)spec.Notes ?? DBNull.Value);
 
-                -- 세션에서 사용자 읽기 (키는 CurrentUser로 통일)
-                DECLARE @actorName nvarchar(128) =
-                    COALESCE(TRY_CAST(SESSION_CONTEXT(N'CurrentUser') AS nvarchar(128)), SUSER_SNAME());
+                await using var reader = await cmd.ExecuteReaderAsync(ct);
 
-                DECLARE @filters nvarchar(max) =
-                    CASE
-                        WHEN @ItemIdsJson IS NULL THEN N'{"ItemIds":null}'
-                        ELSE (SELECT @ItemIdsJson AS ItemIds FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
-                    END;
+                // 결과 1셋: RestoreId, Deleted, Inserted, Updated, IsChanged
+                if (!await reader.ReadAsync(ct))
+                    throw new InvalidOperationException("Restore proc returned no result set.");
 
-                -- 실행 헤더: RestoreRun에 기록 (History는 트리거가 동기화)
-                INSERT dbo.RestoreRun (RestoreId, AsOfUtc, Actor, DryRun, Notes, FiltersJson)
-                VALUES (@RestoreId, @AsOfUtc, @actorName, @DryRun, @Notes, @filters);
+                var restoreId = reader.GetGuid(0);
+                var deleted = reader.GetInt32(1);
+                var inserted = reader.GetInt32(2);
+                var updated = reader.GetInt32(3);
+                var isChanged = reader.GetBoolean(4);
 
-                BEGIN TRAN;
+                return new RestoreItemsStoreResult(restoreId, deleted, inserted, updated, isChanged);
+            }
+            finally
+            {
+                // 커넥션 풀 재사용 대비: actor 키 제거
+                try { await ClearSessionActorAsync(conn, ct); } catch { }
 
-                -- 동시 실행 방지 (프로시저 단위)
-                DECLARE @lockResult int;
-                EXEC @lockResult = sys.sp_getapplock
-                    @Resource    = N'usp_ItemRestore_AsOf',
-                    @LockMode    = N'Exclusive',
-                    @LockOwner   = N'Transaction',
-                    @LockTimeout = 30000,
-                    @DbPrincipal = N'public';
-                IF (@lockResult < 0)
-                BEGIN
-                    ROLLBACK;
-                    RAISERROR('usp_ItemRestore_AsOf: failed to acquire applock (timeout)', 16, 1);
-                    RETURN;
-                END
-
-                -- 대상 ItemId 집합 (옵션)
-                DECLARE @TargetIds TABLE (Id uniqueidentifier NOT NULL PRIMARY KEY);
-
-                IF (@ItemIdsJson IS NOT NULL)
-                BEGIN
-                    INSERT INTO @TargetIds(Id)
-                    SELECT TRY_CAST([value] AS uniqueidentifier)
-                    FROM OPENJSON(@ItemIdsJson)
-                    WHERE TRY_CAST([value] AS uniqueidentifier) IS NOT NULL;
-                END
-
-                -- AsOf 이후 변경 로그 스냅샷 (ItemAudit: AuditId uniqueidentifier 가정)
-                CREATE TABLE #Logs
-                (
-                    AuditId      uniqueidentifier NOT NULL,
-                    ItemId       uniqueidentifier NOT NULL,
-                    Action       nvarchar(10)     NOT NULL,
-                    BeforeJson   nvarchar(max)    NULL,
-                    AfterJson    nvarchar(max)    NULL,
-                    ChangedAtUtc datetime2(7)     NOT NULL
-                );
-
-                INSERT #Logs(AuditId, ItemId, Action, BeforeJson, AfterJson, ChangedAtUtc)
-                SELECT a.AuditId, a.ItemId, a.Action, a.BeforeJson, a.AfterJson, a.ChangedAtUtc
-                FROM dbo.ItemAudit a WITH (READCOMMITTEDLOCK)
-                WHERE a.ChangedAtUtc > @AsOfUtc
-                  AND (
-                        @ItemIdsJson IS NULL
-                        OR EXISTS (SELECT 1 FROM @TargetIds t WHERE t.Id = a.ItemId)
-                  );
-
-                IF NOT EXISTS (SELECT 1 FROM #Logs)
-                BEGIN
-                    UPDATE dbo.RestoreRun
-                       SET EndedAtUtc = SYSUTCDATETIME(),
-                           AffectedCounts = N'{"Delete":0,"Insert":0,"Update":0}'
-                     WHERE RestoreId = @RestoreId;
-
-                    COMMIT;
-
-                    SELECT @RestoreId AS RestoreId, 0 AS Deleted, 0 AS Inserted, 0 AS Updated,
-                           CAST(0 AS bit) AS IsChanged;
-                    RETURN;
-                END
-
-                -- 감사 억제 (트리거에 audit_skip 가드가 있어야 실제 억제됨)
-                EXEC sys.sp_set_session_context @key=N'audit_skip', @value=1;
-
-                DECLARE @DelApplied TABLE(Id uniqueidentifier PRIMARY KEY);
-                DECLARE @InsApplied TABLE(Id uniqueidentifier PRIMARY KEY);
-                DECLARE @UpdApplied TABLE(Id uniqueidentifier PRIMARY KEY);
-
-                -- 최신 -> 과거 순으로 역연산
-                DECLARE cur CURSOR LOCAL FAST_FORWARD FOR
-                SELECT Action, BeforeJson, AfterJson, ItemId, ChangedAtUtc, AuditId
-                FROM #Logs
-                ORDER BY ChangedAtUtc DESC, AuditId DESC;
-
-                DECLARE
-                    @act nvarchar(10),
-                    @bj nvarchar(max),
-                    @aj nvarchar(max),
-                    @id uniqueidentifier,
-                    @ts datetime2(7),
-                    @aid uniqueidentifier;
-
-                BEGIN TRY
-                    OPEN cur;
-                    FETCH NEXT FROM cur INTO @act, @bj, @aj, @id, @ts, @aid;
-
-                    WHILE @@FETCH_STATUS = 0
-                    BEGIN
-                        IF @act = N'INSERT'
-                        BEGIN
-                            DELETE FROM dbo.Item WHERE Id = @id;
-
-                            IF @@ROWCOUNT > 0 AND NOT EXISTS (SELECT 1 FROM @DelApplied WHERE Id=@id)
-                                INSERT INTO @DelApplied(Id) VALUES(@id);
-                        END
-                        ELSE IF @act = N'DELETE'
-                        BEGIN
-                            IF @bj IS NOT NULL AND ISJSON(@bj) = 1
-                            BEGIN
-                                DECLARE @Name nvarchar(100), @Desc nvarchar(1000), @Price int, @RarityId uniqueidentifier, @JsonId uniqueidentifier;
-
-                                SELECT
-                                    @JsonId  = Id,
-                                    @Name    = Name,
-                                    @Price   = Price,
-                                    @Desc    = Description,
-                                    @RarityId = RarityId
-                                FROM OPENJSON(@bj)
-                                WITH (
-                                    Id          uniqueidentifier  '$.Id',
-                                    Name        nvarchar(100)     '$.Name',
-                                    Price       int               '$.Price',
-                                    Description nvarchar(1000)    '$.Description',
-                                    RarityId    uniqueidentifier  '$.RarityId'
-                                );
-
-                                IF @JsonId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM dbo.Item WHERE Id=@JsonId)
-                                BEGIN
-                                    INSERT dbo.Item(Id, Name, Price, Description, RarityId)
-                                    VALUES(@JsonId, @Name, @Price, @Desc, @RarityId);
-
-                                    IF NOT EXISTS (SELECT 1 FROM @InsApplied WHERE Id=@JsonId)
-                                        INSERT INTO @InsApplied(Id) VALUES(@JsonId);
-                                END
-                            END
-                        END
-                        ELSE IF @act = N'UPDATE'
-                        BEGIN
-                            IF @bj IS NOT NULL AND ISJSON(@bj) = 1
-                            BEGIN
-                                DECLARE @UName nvarchar(100), @UDesc nvarchar(1000), @UPrice int, @URarityId uniqueidentifier, @UId uniqueidentifier;
-
-                                SELECT
-                                    @UId     = Id,
-                                    @UName   = Name,
-                                    @UPrice  = Price,
-                                    @UDesc   = Description,
-                                    @URarityId = RarityId
-                                FROM OPENJSON(@bj)
-                                WITH (
-                                    Id          uniqueidentifier  '$.Id',
-                                    Name        nvarchar(100)     '$.Name',
-                                    Price       int               '$.Price',
-                                    Description nvarchar(1000)    '$.Description',
-                                    RarityId    uniqueidentifier  '$.RarityId'
-                                );
-
-                                IF @UId IS NOT NULL
-                                BEGIN
-                                    UPDATE t
-                                       SET Name = @UName,
-                                           Price = @UPrice,
-                                           Description = @UDesc,
-                                           RarityId = @URarityId
-                                    FROM dbo.Item t
-                                    WHERE t.Id = @UId;
-
-                                    IF @@ROWCOUNT > 0 AND NOT EXISTS (SELECT 1 FROM @UpdApplied WHERE Id=@UId)
-                                        INSERT INTO @UpdApplied(Id) VALUES(@UId);
-                                END
-                            END
-                        END
-
-                        FETCH NEXT FROM cur INTO @act, @bj, @aj, @id, @ts, @aid;
-                    END
-
-                    CLOSE cur;
-                    DEALLOCATE cur;
-                END TRY
-                BEGIN CATCH
-                    BEGIN TRY CLOSE cur; END TRY BEGIN CATCH END CATCH;
-                    BEGIN TRY DEALLOCATE cur; END TRY BEGIN CATCH END CATCH;
-
-                    -- audit_skip 정리
-                    BEGIN TRY EXEC sys.sp_set_session_context @key=N'audit_skip', @value=NULL; END TRY BEGIN CATCH END CATCH;
-
-                    IF XACT_STATE() <> 0 ROLLBACK;
-                    THROW;
-                END CATCH
-
-                DECLARE @cd int = (SELECT COUNT(*) FROM @DelApplied);
-                DECLARE @ci int = (SELECT COUNT(*) FROM @InsApplied);
-                DECLARE @cu int = (SELECT COUNT(*) FROM @UpdApplied);
-
-                IF @DryRun = 1
-                    ROLLBACK;
-                ELSE
-                    COMMIT;
-
-                -- audit_skip 정리
-                BEGIN TRY EXEC sys.sp_set_session_context @key=N'audit_skip', @value=NULL; END TRY BEGIN CATCH END CATCH;
-
-                UPDATE dbo.RestoreRun
-                   SET EndedAtUtc = SYSUTCDATETIME(),
-                       AffectedCounts = CONCAT(N'{"Delete":', @cd, N',"Insert":', @ci, N',"Update":', @cu, N'}')
-                 WHERE RestoreId = @RestoreId;
-
-                SELECT
-                    @RestoreId AS RestoreId,
-                    @cd AS Deleted,
-                    @ci AS Inserted,
-                    @cu AS Updated,
-                    CAST(CASE WHEN (@cd + @ci + @cu) > 0 THEN 1 ELSE 0 END AS bit) AS IsChanged;
-            END
-            """);
+                if (openedHere)
+                    await conn.CloseAsync();
+            }
         }
 
-        protected override void Down(MigrationBuilder migrationBuilder)
+        private async Task SetSessionActorAsync(DbConnection conn, CancellationToken ct)
         {
-            migrationBuilder.Sql(
-            """
-            IF OBJECT_ID(N'dbo.usp_ItemRestore_AsOf', 'P') IS NOT NULL
-                DROP PROCEDURE dbo.usp_ItemRestore_AsOf;
+            var actor = currentUser.UserIdOrName ?? "unknown";
 
-            IF OBJECT_ID(N'dbo.trg_RestoreRun_ToHistory', 'TR') IS NOT NULL
-                DROP TRIGGER dbo.trg_RestoreRun_ToHistory;
+            await using var cmd = conn.CreateCommand();
+            cmd.CommandText = "EXEC sys.sp_set_session_context @key=N'actor', @value=@p0";
+            cmd.CommandType = CommandType.Text;
 
-            IF OBJECT_ID(N'dbo.RestoreRun', 'U') IS NOT NULL
-                DROP TABLE dbo.RestoreRun;
-            """);
+            var p0 = cmd.CreateParameter();
+            p0.ParameterName = "@p0";
+            p0.Value = actor;
+            cmd.Parameters.Add(p0);
+
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+
+        private async Task ClearSessionActorAsync(DbConnection conn, CancellationToken ct)
+        {
+            await using var cmd = conn.CreateCommand();
+            cmd.CommandText = "EXEC sys.sp_set_session_context @key=N'actor', @value=NULL";
+            cmd.CommandType = CommandType.Text;
+            await cmd.ExecuteNonQueryAsync(ct);
+        }
+
+        private static void AddParam(DbCommand cmd, string name, DbType dbType, object value)
+        {
+            var p = cmd.CreateParameter();
+            p.ParameterName = name;
+            p.DbType = dbType;
+            p.Value = value;
+            cmd.Parameters.Add(p);
         }
     }
 }
