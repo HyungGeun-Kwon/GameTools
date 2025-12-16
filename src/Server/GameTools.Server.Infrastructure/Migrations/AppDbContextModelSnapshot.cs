@@ -25,7 +25,9 @@ namespace GameTools.Server.Infrastructure.Migrations
             modelBuilder.Entity("GameTools.Server.Domain.Catalog.Items.Entities.Item", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -82,6 +84,7 @@ namespace GameTools.Server.Infrastructure.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
+                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 

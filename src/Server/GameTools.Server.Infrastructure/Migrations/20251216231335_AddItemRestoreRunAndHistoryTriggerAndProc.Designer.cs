@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameTools.Server.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251216075540_Init")]
-    partial class Init
+    [Migration("20251216231335_AddItemRestoreRunAndHistoryTriggerAndProc")]
+    partial class AddItemRestoreRunAndHistoryTriggerAndProc
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,7 +28,9 @@ namespace GameTools.Server.Infrastructure.Migrations
             modelBuilder.Entity("GameTools.Server.Domain.Catalog.Items.Entities.Item", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -85,6 +87,7 @@ namespace GameTools.Server.Infrastructure.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
+                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
