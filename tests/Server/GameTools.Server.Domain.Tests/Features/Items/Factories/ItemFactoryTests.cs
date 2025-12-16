@@ -1,13 +1,12 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Items.Exceptions;
-using GameTools.Server.Domain.Features.Items.Factories;
-using GameTools.Server.Domain.Features.Items.Policies;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Domain.Catalog.Items.Exceptions;
+using GameTools.Server.Domain.Catalog.Items.Factories;
+using GameTools.Server.Domain.Catalog.Items.Policies;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 using Moq;
 using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
-namespace GameTools.Server.Domain.Tests.Features.Items.Factories
+namespace GameTools.Server.Domain.Tests.Catalog.Items.Factories
 {
     public class ItemFactoryTests
     {

@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using FluentValidation.Results;
-using GameTools.Server.Application.Features.Rarities.Commands.Common.Validations;
-using GameTools.Server.Application.Features.Rarities.Commands.DeleteRarity;
+using GameTools.Server.Application.Catalog.Rarities.Commands.DeleteRarity;
+using GameTools.Server.Application.Catalog.Rarities.Commands.Common.Validations;
 using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.DeleteRarity
+namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.DeleteRarity
 {
     public class DeleteRarityValidatorTests
     {

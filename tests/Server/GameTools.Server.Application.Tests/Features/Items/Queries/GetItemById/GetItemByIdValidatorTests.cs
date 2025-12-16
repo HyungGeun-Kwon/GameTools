@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Application.Features.Items.Queries.GetItemById;
+using GameTools.Server.Application.Catalog.Items.Queries.GetItemById;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Queries.GetItemById
+namespace GameTools.Server.Application.Tests.Catalog.Items.Queries.GetItemById
 {
     public class GetItemByIdValidatorTests
     {

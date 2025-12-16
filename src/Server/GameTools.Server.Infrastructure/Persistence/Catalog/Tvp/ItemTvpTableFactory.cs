@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Specs;
 
 namespace GameTools.Server.Infrastructure.Persistence.Catalog.Tvp
 {

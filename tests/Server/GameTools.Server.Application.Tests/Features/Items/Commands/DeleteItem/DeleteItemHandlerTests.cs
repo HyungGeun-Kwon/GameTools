@@ -2,16 +2,15 @@
 using GameTools.Server.Application.Abstractions.Exceptions;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.UnitOfWorks;
-using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
-using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
-using GameTools.Server.Domain.Features.Items.Entities;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Items.Commands.DeleteItem;
+using GameTools.Server.Domain.Catalog.Items.Entities;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 using Moq;
 using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Commands.DeleteItem
+namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.DeleteItem
 {
     public class DeleteItemHandlerTests
     {

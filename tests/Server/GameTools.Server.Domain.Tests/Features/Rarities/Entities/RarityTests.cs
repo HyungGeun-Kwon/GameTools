@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Rarities.Entities;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
-using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
+using GameTools.Server.Domain.Catalog.Rarities.Entities;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
-namespace GameTools.Server.Domain.Tests.Features.Rarities.Entities
+namespace GameTools.Server.Domain.Tests.Catalog.Rarities.Entities
 {
     public class RarityTests
     {

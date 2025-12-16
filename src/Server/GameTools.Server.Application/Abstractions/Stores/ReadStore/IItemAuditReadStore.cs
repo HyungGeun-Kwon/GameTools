@@ -1,5 +1,5 @@
-﻿using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage;
+﻿using GameTools.Server.Application.Auditing.Queries.GetItemAuditPage;
+using GameTools.Server.Application.Common.Paging;
 
 namespace GameTools.Server.Application.Abstractions.Stores.ReadStore
 {

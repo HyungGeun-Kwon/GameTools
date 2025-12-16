@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Features.Items.Commands.BulkInsertItems;
-using GameTools.Server.Application.Features.Items.Commands.Common.Bulk;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Bulk;
+using GameTools.Server.Application.Catalog.Items.Commands.BulkInsertItems;
 using Moq;
 using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Commands.BulkInsertItems
+namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.BulkInsertItems
 {
     public class BulkInsertItemsHandlerTests
     {

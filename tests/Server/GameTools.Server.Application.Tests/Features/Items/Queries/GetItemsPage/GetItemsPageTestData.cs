@@ -1,8 +1,8 @@
-﻿using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Items.Models;
-using GameTools.Server.Application.Features.Items.Queries.GetItemsPage;
+﻿using GameTools.Server.Application.Catalog.Items.Models;
+using GameTools.Server.Application.Catalog.Items.Queries.GetItemsPage;
+using GameTools.Server.Application.Common.Paging;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Queries.GetItemsPage
+namespace GameTools.Server.Application.Tests.Catalog.Items.Queries.GetItemsPage
 {
     public static class GetItemsPageTestData
     {

@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Features.Items.Commands.BulkDeleteItems;
-using GameTools.Server.Application.Features.Items.Commands.Common.Bulk;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Bulk;
+using GameTools.Server.Application.Catalog.Items.Commands.BulkDeleteItems;
 using Moq;
 using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Commands.BulkDeleteItems
+namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.BulkDeleteItems
 {
     public class BulkDeleteItemsHandlerTests
     {

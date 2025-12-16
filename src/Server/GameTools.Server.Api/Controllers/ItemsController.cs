@@ -11,16 +11,16 @@
 //using GameTools.Contracts.Items.UpdateItem;
 //using GameTools.Server.Api.Mapper;
 //using GameTools.Server.Application.Common.Results;
-//using GameTools.Server.Application.Features.Items.Commands.CreateItem;
-//using GameTools.Server.Application.Features.Items.Commands.DeleteItem;
-//using GameTools.Server.Application.Features.Items.Commands.DeleteItemsTvp;
-//using GameTools.Server.Application.Features.Items.Commands.InsertItemsTvp;
-//using GameTools.Server.Application.Features.Items.Commands.RestoreItemsAsOf;
-//using GameTools.Server.Application.Features.Items.Commands.UpdateItem;
-//using GameTools.Server.Application.Features.Items.Commands.UpdateItemsTvp;
-//using GameTools.Server.Application.Features.Items.Models;
-//using GameTools.Server.Application.Features.Items.Queries.GetItemById;
-//using GameTools.Server.Application.Features.Items.Queries.GetItemPage;
+//using GameTools.Server.Application.Catalog.Items.Commands.CreateItem;
+//using GameTools.Server.Application.Catalog.Items.Commands.DeleteItem;
+//using GameTools.Server.Application.Catalog.Items.Commands.DeleteItemsTvp;
+//using GameTools.Server.Application.Catalog.Items.Commands.InsertItemsTvp;
+//using GameTools.Server.Application.Catalog.Items.Commands.RestoreItemsAsOf;
+//using GameTools.Server.Application.Catalog.Items.Commands.UpdateItem;
+//using GameTools.Server.Application.Catalog.Items.Commands.UpdateItemsTvp;
+//using GameTools.Server.Application.Catalog.Items.Models;
+//using GameTools.Server.Application.Catalog.Items.Queries.GetItemById;
+//using GameTools.Server.Application.Catalog.Items.Queries.GetItemPage;
 //using MediatR;
 //using Microsoft.AspNetCore.Mvc;
 

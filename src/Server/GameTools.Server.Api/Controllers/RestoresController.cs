@@ -2,7 +2,7 @@
 //using GameTools.Contracts.Common;
 //using GameTools.Contracts.Restores.GetRestoresPage;
 //using GameTools.Server.Api.Mapper;
-//using GameTools.Server.Application.Features.Restores.Queries.GetRestoreRunsPage;
+//using GameTools.Server.Application.Catalog.Restores.Queries.GetRestoreRunsPage;
 //using MediatR;
 //using Microsoft.AspNetCore.Mvc;
 

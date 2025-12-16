@@ -1,13 +1,13 @@
 ﻿using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
+using GameTools.Server.Application.Catalog.Items.Models;
+using GameTools.Server.Application.Catalog.Items.Queries.GetItemsPage;
 using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Items.Models;
-using GameTools.Server.Application.Features.Items.Queries.GetItemsPage;
 using Moq;
-using static GameTools.Server.Application.Tests.Features.Items.Queries.GetItemsPage.GetItemsPageTestData;
+using static GameTools.Server.Application.Tests.Catalog.Items.Queries.GetItemsPage.GetItemsPageTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Queries.GetItemsPage
+namespace GameTools.Server.Application.Tests.Catalog.Items.Queries.GetItemsPage
 {
     public class ItemsPageCriteriaValidatorTests
     {

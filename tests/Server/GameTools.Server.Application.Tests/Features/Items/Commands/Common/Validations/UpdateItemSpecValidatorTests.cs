@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
-using GameTools.Server.Application.Features.Items.Commands.Common.Validations;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Validations;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Commands.Common.Validations
+namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.Common.Validations
 {
     public class UpdateItemSpecValidatorTests
     {

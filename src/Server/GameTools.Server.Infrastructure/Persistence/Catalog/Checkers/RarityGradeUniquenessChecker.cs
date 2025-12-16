@@ -1,5 +1,5 @@
-﻿using GameTools.Server.Domain.Features.Rarities.Services;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+﻿using GameTools.Server.Domain.Catalog.Rarities.Services;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Infrastructure.Persistence.Catalog.Checkers

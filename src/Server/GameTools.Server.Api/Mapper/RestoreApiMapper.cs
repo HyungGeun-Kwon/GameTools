@@ -2,7 +2,7 @@
 //using GameTools.Contracts.Restores.Common;
 //using GameTools.Contracts.Restores.GetRestoresPage;
 //using GameTools.Server.Application.Common.Paging;
-//using GameTools.Server.Application.Features.Restores.Queries.GetRestoreRunsPage;
+//using GameTools.Server.Application.Catalog.Restores.Queries.GetRestoreRunsPage;
 
 //namespace GameTools.Server.Api.Mapper
 //{

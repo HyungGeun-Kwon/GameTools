@@ -3,9 +3,9 @@
 //using GameTools.Contracts.Rarities.GetAllRarities;
 //using GameTools.Contracts.Rarities.UpdateRarity;
 //using GameTools.Server.Api.Extensions;
-//using GameTools.Server.Application.Features.Rarities.Commands.CreateRarity;
-//using GameTools.Server.Application.Features.Rarities.Commands.UpdateRarity;
-//using GameTools.Server.Application.Features.Rarities.Models;
+//using GameTools.Server.Application.Catalog.Rarities.Commands.CreateRarity;
+//using GameTools.Server.Application.Catalog.Rarities.Commands.UpdateRarity;
+//using GameTools.Server.Application.Catalog.Rarities.Models;
 
 //namespace GameTools.Server.Api.Mapper
 //{

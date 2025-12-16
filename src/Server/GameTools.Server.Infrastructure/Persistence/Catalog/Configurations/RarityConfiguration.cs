@@ -1,5 +1,5 @@
-﻿using GameTools.Server.Domain.Features.Rarities.Entities;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+﻿using GameTools.Server.Domain.Catalog.Rarities.Entities;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -44,7 +44,9 @@ namespace GameTools.Server.Infrastructure.Persistence.Catalog.Configurations
                 .HasMaxLength(RarityColorCode.Length)
                 .IsRequired();
 
-            b.Property<byte[]>("RowVersion").IsRowVersion();
+            b.Property<byte[]>("RowVersion")
+                .IsRowVersion()
+                .IsRequired();
 
             b.HasIndex(r => r.Grade).IsUnique();
         }

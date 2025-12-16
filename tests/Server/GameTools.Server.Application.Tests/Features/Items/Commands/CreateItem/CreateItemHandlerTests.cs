@@ -3,17 +3,17 @@ using GameTools.Server.Application.Abstractions.Exceptions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.UnitOfWorks;
-using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
-using GameTools.Server.Application.Features.Items.Commands.CreateItem;
-using GameTools.Server.Domain.Features.Items.Entities;
-using GameTools.Server.Domain.Features.Items.Factories;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Items.Commands.CreateItem;
+using GameTools.Server.Domain.Catalog.Items.Entities;
+using GameTools.Server.Domain.Catalog.Items.Factories;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using Moq;
 using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
+namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.CreateItem
 {
     public class CreateItemHandlerTests
     {

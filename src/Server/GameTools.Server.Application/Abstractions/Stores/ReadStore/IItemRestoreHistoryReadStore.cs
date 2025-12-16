@@ -1,5 +1,5 @@
 ﻿using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Restores.Queries.GetItemRestoreHistoriesPage;
+using GameTools.Server.Application.Operations.Restores.Queries.GetItemRestoreHistoriesPage;
 
 namespace GameTools.Server.Application.Abstractions.Stores.ReadStore
 {

@@ -2,7 +2,7 @@
 //using GameTools.Contracts.Common;
 //using GameTools.Contracts.Items.GetItemAuditPage;
 //using GameTools.Server.Api.Mapper;
-//using GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage;
+//using GameTools.Server.Application.Catalog.Audit.Queries.GetItemAuditPage;
 //using MediatR;
 //using Microsoft.AspNetCore.Mvc;
 

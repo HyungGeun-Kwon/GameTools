@@ -2,15 +2,15 @@
 using GameTools.Server.Application.Abstractions.Exceptions;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.UnitOfWorks;
-using GameTools.Server.Application.Features.Rarities.Commands.Common.Specs;
-using GameTools.Server.Application.Features.Rarities.Commands.DeleteRarity;
 using Moq;
-using GameTools.Server.Domain.Features.Rarities.Entities;
+using GameTools.Server.Domain.Catalog.Rarities.Entities;
 using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
+using GameTools.Server.Application.Catalog.Rarities.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Rarities.Commands.DeleteRarity;
 
-namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.DeleteRarity
+namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.DeleteRarity
 {
     public class DeleteRarityHandlerTests
     {

@@ -1,7 +1,7 @@
-﻿using GameTools.Server.Domain.Features.Items.Factories;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
-using GameTools.Server.Domain.Features.Rarities.Factories;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+﻿using GameTools.Server.Domain.Catalog.Items.Factories;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.Factories;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Infrastructure.Persistence.Catalog.Seed

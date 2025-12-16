@@ -1,7 +1,7 @@
-﻿using GameTools.Server.Application.Features.Items.Commands.Common.Bulk;
-using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
-using GameTools.Server.Domain.Features.Items.Entities;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
+﻿using GameTools.Server.Application.Catalog.Items.Commands.Common.Bulk;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Specs;
+using GameTools.Server.Domain.Catalog.Items.Entities;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 
 namespace GameTools.Server.Application.Abstractions.Stores.WriteStore
 {

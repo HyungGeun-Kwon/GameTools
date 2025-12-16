@@ -1,11 +1,11 @@
 ﻿using System.Linq.Expressions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
+using GameTools.Server.Application.Catalog.Items.Models;
+using GameTools.Server.Application.Catalog.Items.Queries.GetItemsPage;
 using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Items.Models;
-using GameTools.Server.Application.Features.Items.Queries.GetItemsPage;
-using GameTools.Server.Domain.Features.Items.Entities;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Domain.Catalog.Items.Entities;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Infrastructure.Persistence.Catalog.Stores.ReadStore
@@ -92,8 +92,10 @@ namespace GameTools.Server.Infrastructure.Persistence.Catalog.Stores.ReadStore
 
             return sortBy switch
             {
-                "name" => desc ? query.OrderByDescending(i => i.Name) : query.OrderBy(i => i.Name),
-                "price" => desc ? query.OrderByDescending(i => i.Price) : query.OrderBy(i => i.Price),
+                "name" => desc ? query.OrderByDescending(i => EF.Property<string>(i, "Name"))
+                                : query.OrderBy(i => EF.Property<string>(i, "Name")),
+                "price" => desc ? query.OrderByDescending(i => EF.Property<int>(i, "Price"))
+                                : query.OrderBy(i => EF.Property<int>(i, "Price")),
                 _ => desc ? query.OrderByDescending(i => i.Id) : query.OrderBy(i => i.Id),
             };
         }

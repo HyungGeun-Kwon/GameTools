@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Features.Restores.Commands.RestoreItems;
+using GameTools.Server.Application.Operations.Restores.Commands.RestoreItems;
 using Moq;
 using static GameTools.Server.TestUtilities.Application.Restores.AppRestoreItemTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Restores.Commands.RestoreItems
+namespace GameTools.Server.Application.Tests.Catalog.Restores.Commands.RestoreItems
 {
     public class RestoreItemsHandlerTests
     {

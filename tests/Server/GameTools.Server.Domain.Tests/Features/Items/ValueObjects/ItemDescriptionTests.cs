@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Items.Exceptions;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Domain.Catalog.Items.Exceptions;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
-namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
+namespace GameTools.Server.Domain.Tests.Catalog.Items.ValueObjects
 {
     public class ItemDescriptionTests
     {

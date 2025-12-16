@@ -22,7 +22,7 @@ namespace GameTools.Server.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GameTools.Server.Domain.Features.Items.Entities.Item", b =>
+            modelBuilder.Entity("GameTools.Server.Domain.Catalog.Items.Entities.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -65,7 +65,7 @@ namespace GameTools.Server.Infrastructure.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("GameTools.Server.Domain.Features.Rarities.Entities.Rarity", b =>
+            modelBuilder.Entity("GameTools.Server.Domain.Catalog.Rarities.Entities.Rarity", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -252,9 +252,9 @@ namespace GameTools.Server.Infrastructure.Migrations
                     b.ToTable("RestoreHistory", (string)null);
                 });
 
-            modelBuilder.Entity("GameTools.Server.Domain.Features.Items.Entities.Item", b =>
+            modelBuilder.Entity("GameTools.Server.Domain.Catalog.Items.Entities.Item", b =>
                 {
-                    b.HasOne("GameTools.Server.Domain.Features.Rarities.Entities.Rarity", null)
+                    b.HasOne("GameTools.Server.Domain.Catalog.Rarities.Entities.Rarity", null)
                         .WithMany()
                         .HasForeignKey("RarityId")
                         .OnDelete(DeleteBehavior.Restrict)

@@ -1,14 +1,13 @@
+using GameTools.Server.Api;
 using GameTools.Server.Api.Middlewares;
+using GameTools.Server.Application.Abstractions.Stores.WriteStore;
 using GameTools.Server.Application.Abstractions.Users;
 using GameTools.Server.Application.Extensions;
-using GameTools.Server.Infrastructure.Persistence;
 using GameTools.Server.Infrastructure.Extensions;
+using GameTools.Server.Infrastructure.Persistence;
+using GameTools.Server.Infrastructure.Persistence.Catalog.Seed;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using GameTools.Server.Infrastructure.Persistence.Catalog.Seed;
-using GameTools.Server.Api;
-using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Features.Restores.Commands.RestoreItems;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,16 +44,6 @@ using (var scope = app.Services.CreateScope())
 
         foreach (var seeder in sp.GetServices<ISeeder>())
             await seeder.SeedAsync(CancellationToken.None);
-
-        await restore.RestoreItemsAsOfAsync(
-            new RestoreItemsSpec
-            (
-                AsOfUtc: DateTime.UtcNow.AddMinutes(-20),
-                ItemIds: null,
-                Notes: "초기 시드 데이터 복구 테스트",
-                DryRun: false
-            ), 
-            CancellationToken.None);
     }
 }
 
@@ -82,3 +71,4 @@ app.Run();
 
 // DB에 반영
 // dotnet ef database update -p GameTools.Server.Infrastructure/GameTools.Server.Infrastructure.csproj -s GameTools.Server.Api/GameTools.Server.Api.csproj
+

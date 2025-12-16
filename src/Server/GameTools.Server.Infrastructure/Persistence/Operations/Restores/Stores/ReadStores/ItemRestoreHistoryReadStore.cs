@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
 using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Restores.Queries.GetItemRestoreHistoriesPage;
+using GameTools.Server.Application.Operations.Restores.Queries.GetItemRestoreHistoriesPage;
 using GameTools.Server.Infrastructure.Persistence.Operations.Restores.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -88,9 +88,9 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores
                 "id" => desc ? query.OrderByDescending(h => h.RestoreId) : query.OrderBy(i => i.RestoreId),
                 "asofutc" => desc ? query.OrderByDescending(h => h.AsOfUtc) : query.OrderBy(h => h.AsOfUtc),
                 "actor" => desc ? query.OrderByDescending(h => h.Actor) : query.OrderBy(h => h.Actor),
-                "StartedAtUtc" => desc ? query.OrderByDescending(h => h.StartedAtUtc) : query.OrderBy(h => h.StartedAtUtc),
-                "EndedAtUtc" => desc ? query.OrderByDescending(h => h.EndedAtUtc) : query.OrderBy(h => h.EndedAtUtc),
-                "AffectedCounts" => desc ? query.OrderByDescending(h => h.AffectedCounts) : query.OrderBy(h => h.AffectedCounts),
+                "startedatutc" => desc ? query.OrderByDescending(h => h.StartedAtUtc) : query.OrderBy(h => h.StartedAtUtc),
+                "endedatutc" => desc ? query.OrderByDescending(h => h.EndedAtUtc) : query.OrderBy(h => h.EndedAtUtc),
+                "affectedcounts" => desc ? query.OrderByDescending(h => h.AffectedCounts) : query.OrderBy(h => h.AffectedCounts),
                 _ => desc ? query.OrderByDescending(h => h.RestoreId) : query.OrderBy(h => h.RestoreId),
             };
         }

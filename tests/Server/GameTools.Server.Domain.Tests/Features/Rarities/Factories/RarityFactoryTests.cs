@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Rarities.Exceptions;
-using GameTools.Server.Domain.Features.Rarities.Factories;
-using GameTools.Server.Domain.Features.Rarities.Policies;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.Exceptions;
+using GameTools.Server.Domain.Catalog.Rarities.Factories;
+using GameTools.Server.Domain.Catalog.Rarities.Policies;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using Moq;
 using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
-namespace GameTools.Server.Domain.Tests.Features.Rarities.Factories
+namespace GameTools.Server.Domain.Tests.Catalog.Rarities.Factories
 {
     public class RarityFactoryTests
     {

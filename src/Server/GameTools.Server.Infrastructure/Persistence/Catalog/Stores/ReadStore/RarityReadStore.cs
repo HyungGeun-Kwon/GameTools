@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
-using GameTools.Server.Application.Features.Rarities.Models;
-using GameTools.Server.Domain.Features.Rarities.Entities;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Application.Catalog.Rarities.Models;
+using GameTools.Server.Domain.Catalog.Rarities.Entities;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Infrastructure.Persistence.Catalog.Stores.ReadStore

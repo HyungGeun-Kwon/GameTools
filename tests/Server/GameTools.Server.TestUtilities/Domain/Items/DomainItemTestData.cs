@@ -1,6 +1,6 @@
-﻿using GameTools.Server.Domain.Features.Items.Entities;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+﻿using GameTools.Server.Domain.Catalog.Items.Entities;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 
 namespace GameTools.Server.TestUtilities.Domain.Items
 {

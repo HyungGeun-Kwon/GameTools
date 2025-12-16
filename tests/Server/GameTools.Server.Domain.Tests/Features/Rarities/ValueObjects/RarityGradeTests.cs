@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Rarities.Exceptions;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.Exceptions;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
-namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
+namespace GameTools.Server.Domain.Tests.Catalog.Rarities.ValueObjects
 {
     public class RarityGradeTests
     {

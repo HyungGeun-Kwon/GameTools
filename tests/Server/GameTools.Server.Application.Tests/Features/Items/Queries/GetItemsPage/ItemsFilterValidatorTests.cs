@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Application.Features.Items.Queries.GetItemsPage;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Application.Catalog.Items.Queries.GetItemsPage;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Queries.GetItemsPage
+namespace GameTools.Server.Application.Tests.Catalog.Items.Queries.GetItemsPage
 {
     public class ItemsFilterValidatorTests
     {

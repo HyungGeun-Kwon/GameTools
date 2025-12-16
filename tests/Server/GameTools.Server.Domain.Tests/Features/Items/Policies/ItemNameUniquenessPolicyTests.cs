@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Items.Exceptions;
-using GameTools.Server.Domain.Features.Items.Policies;
-using GameTools.Server.Domain.Features.Items.Services;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Domain.Catalog.Items.Exceptions;
+using GameTools.Server.Domain.Catalog.Items.Policies;
+using GameTools.Server.Domain.Catalog.Items.Services;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 using Moq;
 using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
-namespace GameTools.Server.Domain.Tests.Features.Items.Policies
+namespace GameTools.Server.Domain.Tests.Catalog.Items.Policies
 {
     public class ItemNameUniquenessPolicyTests
     {

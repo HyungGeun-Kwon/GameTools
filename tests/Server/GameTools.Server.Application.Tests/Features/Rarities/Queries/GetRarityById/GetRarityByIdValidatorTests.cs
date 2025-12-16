@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Application.Features.Rarities.Queries.GetRarityById;
+using GameTools.Server.Application.Catalog.Rarities.Queries.GetRarityById;
 
-namespace GameTools.Server.Application.Tests.Features.Rarities.Queries.GetRarityById
+namespace GameTools.Server.Application.Tests.Catalog.Rarities.Queries.GetRarityById
 {
     public class GetRarityByIdValidatorTests
     {

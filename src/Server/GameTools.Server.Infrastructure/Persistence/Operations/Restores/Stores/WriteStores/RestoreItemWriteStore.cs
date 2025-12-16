@@ -2,13 +2,13 @@
 using System.Data.Common;
 using System.Text.Json;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Abstractions.Users;
-using GameTools.Server.Application.Features.Restores.Commands.RestoreItems;
+using GameTools.Server.Application.Operations.Restores.Commands.RestoreItems;
+using GameTools.Server.Infrastructure.Persistence.Catalog.Stores.WriteStore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores.WriteStores
 {
-    public sealed class RestoreItemWriteStore(AppDbContext db, ICurrentUser currentUser) : IRestoreItemWriteStore
+    public sealed class RestoreItemWriteStore(AppDbContext db) : IRestoreItemWriteStore
     {
         public async Task<RestoreItemsStoreResult> RestoreItemsAsOfAsync(RestoreItemsSpec spec, CancellationToken ct)
         {
@@ -17,23 +17,16 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores
 
             var itemIdsJson = spec.ItemIds is null ? null : JsonSerializer.Serialize(spec.ItemIds);
 
-            var conn = db.Database.GetDbConnection();
-            var openedHere = false;
-
-            if (conn.State != ConnectionState.Open)
+            return await db.WithSessionActorAsync(async conn =>
             {
-                await conn.OpenAsync(ct);
-                openedHere = true;
-            }
-
-            try
-            {
-                await SetSessionActorAsync(conn, ct);
-
                 await using var cmd = conn.CreateCommand();
                 cmd.CommandText = "dbo.usp_ItemRestore_AsOf";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 60;
+
+                var efTx = db.Database.CurrentTransaction;
+                if (efTx != null)
+                    cmd.Transaction = efTx.GetDbTransaction();
 
                 AddParam(cmd, "@AsOfUtc", DbType.DateTime2, spec.AsOfUtc);
                 AddParam(cmd, "@ItemIdsJson", DbType.String, (object?)itemIdsJson ?? DBNull.Value);
@@ -42,7 +35,6 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores
 
                 await using var reader = await cmd.ExecuteReaderAsync(ct);
 
-                // 결과 1셋: RestoreId, Deleted, Inserted, Updated, IsChanged
                 if (!await reader.ReadAsync(ct))
                     throw new InvalidOperationException("Restore proc returned no result set.");
 
@@ -53,39 +45,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Operations.Restores.Stores
                 var isChanged = reader.GetBoolean(4);
 
                 return new RestoreItemsStoreResult(restoreId, deleted, inserted, updated, isChanged);
-            }
-            finally
-            {
-                // 커넥션 풀 재사용 대비: actor 키 제거
-                try { await ClearSessionActorAsync(conn, ct); } catch { }
-
-                if (openedHere)
-                    await conn.CloseAsync();
-            }
-        }
-
-        private async Task SetSessionActorAsync(DbConnection conn, CancellationToken ct)
-        {
-            var actor = currentUser.UserIdOrName ?? "unknown";
-
-            await using var cmd = conn.CreateCommand();
-            cmd.CommandText = "EXEC sys.sp_set_session_context @key=N'actor', @value=@p0";
-            cmd.CommandType = CommandType.Text;
-
-            var p0 = cmd.CreateParameter();
-            p0.ParameterName = "@p0";
-            p0.Value = actor;
-            cmd.Parameters.Add(p0);
-
-            await cmd.ExecuteNonQueryAsync(ct);
-        }
-
-        private async Task ClearSessionActorAsync(DbConnection conn, CancellationToken ct)
-        {
-            await using var cmd = conn.CreateCommand();
-            cmd.CommandText = "EXEC sys.sp_set_session_context @key=N'actor', @value=NULL";
-            cmd.CommandType = CommandType.Text;
-            await cmd.ExecuteNonQueryAsync(ct);
+            }, ct);
         }
 
         private static void AddParam(DbCommand cmd, string name, DbType dbType, object value)

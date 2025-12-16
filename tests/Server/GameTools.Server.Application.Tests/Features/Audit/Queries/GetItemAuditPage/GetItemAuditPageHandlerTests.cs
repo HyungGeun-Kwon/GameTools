@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
+using GameTools.Server.Application.Auditing.Queries.GetItemAuditPage;
 using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage;
 using Moq;
 
-namespace GameTools.Server.Application.Tests.Features.Audit.Queries.GetItemAuditPage
+namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditPage
 {
     public class GetItemAuditPageHandlerTests
     {

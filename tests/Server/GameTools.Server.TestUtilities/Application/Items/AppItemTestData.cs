@@ -1,5 +1,5 @@
-﻿using GameTools.Server.Application.Features.Items.Commands.Common.Specs;
-using GameTools.Server.Application.Features.Items.Models;
+﻿using GameTools.Server.Application.Catalog.Items.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Items.Models;
 using static GameTools.Server.TestUtilities.Domain.Items.DomainItemTestData;
 
 namespace GameTools.Server.TestUtilities.Application.Items

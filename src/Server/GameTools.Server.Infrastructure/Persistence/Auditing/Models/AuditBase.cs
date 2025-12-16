@@ -1,4 +1,6 @@
-﻿namespace GameTools.Server.Infrastructure.Persistence.Auditing.Models
+﻿using GameTools.Server.Application.Auditing.Common;
+
+namespace GameTools.Server.Infrastructure.Persistence.Auditing.Models
 {
     public abstract class AuditBase
     {

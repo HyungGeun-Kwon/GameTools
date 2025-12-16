@@ -1,5 +1,5 @@
-﻿using GameTools.Server.Domain.Features.Rarities.Entities;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+﻿using GameTools.Server.Domain.Catalog.Rarities.Entities;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 
 namespace GameTools.Server.Application.Abstractions.Stores.WriteStore
 {

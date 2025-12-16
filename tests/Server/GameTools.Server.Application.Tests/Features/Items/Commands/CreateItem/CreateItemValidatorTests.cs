@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using FluentValidation.Results;
-using GameTools.Server.Application.Features.Items.Commands.Common.Validations;
-using GameTools.Server.Application.Features.Items.Commands.CreateItem;
+using GameTools.Server.Application.Catalog.Items.Commands.CreateItem;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Validations;
 using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Items.Commands.CreateItem
+namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.CreateItem
 {
     public class CreateItemValidatorTests
     {

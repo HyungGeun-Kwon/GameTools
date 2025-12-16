@@ -1,5 +1,5 @@
-﻿using GameTools.Server.Application.Features.Rarities.Commands.Common.Specs;
-using GameTools.Server.Application.Features.Rarities.Models;
+﻿using GameTools.Server.Application.Catalog.Rarities.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Rarities.Models;
 using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
 namespace GameTools.Server.TestUtilities.Application.Rarities

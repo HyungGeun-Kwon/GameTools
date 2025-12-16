@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 
-namespace GameTools.Server.Domain.Tests.Features.Rarities.ValueObjects
+namespace GameTools.Server.Domain.Tests.Catalog.Rarities.ValueObjects
 {
     public class RarityIdTests
     {

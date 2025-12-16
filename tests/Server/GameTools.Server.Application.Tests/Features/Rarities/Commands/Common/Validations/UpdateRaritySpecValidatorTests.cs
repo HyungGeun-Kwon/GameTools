@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Application.Features.Rarities.Commands.Common.Specs;
-using GameTools.Server.Application.Features.Rarities.Commands.Common.Validations;
-using GameTools.Server.Domain.Features.Rarities.ValueObjects;
+using GameTools.Server.Application.Catalog.Rarities.Commands.Common.Specs;
+using GameTools.Server.Application.Catalog.Rarities.Commands.Common.Validations;
+using GameTools.Server.Domain.Catalog.Rarities.ValueObjects;
 using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 using static GameTools.Server.TestUtilities.Domain.Rarities.DomainRarityTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Rarities.Commands.Common.Validations
+namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.Common.Validations
 {
     public class UpdateRaritySpecValidatorTests
     {

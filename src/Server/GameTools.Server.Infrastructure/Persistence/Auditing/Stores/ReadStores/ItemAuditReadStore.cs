@@ -1,8 +1,9 @@
 ﻿using System.Data;
 using System.Linq.Expressions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
+using GameTools.Server.Application.Auditing.Common;
+using GameTools.Server.Application.Auditing.Queries.GetItemAuditPage;
 using GameTools.Server.Application.Common.Paging;
-using GameTools.Server.Application.Features.Audit.Queries.GetItemAuditPage;
 using GameTools.Server.Infrastructure.Persistence.Auditing.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,7 @@ namespace GameTools.Server.Infrastructure.Persistence.Auditing.Stores.ReadStores
             itemAudit => new ItemAuditReadModel(
                 itemAudit.AuditId,
                 itemAudit.ItemId,
-                itemAudit.Action.ToString(),
+                itemAudit.Action,
                 itemAudit.BeforeJson,
                 itemAudit.AfterJson,
                 itemAudit.ChangedAtUtc,
@@ -50,7 +51,24 @@ namespace GameTools.Server.Infrastructure.Persistence.Auditing.Stores.ReadStores
                 if (toUtc is not null) query = query.Where(i => i.ChangedAtUtc < toUtc);
                 
                 if (actions is { Count: > 0 })
-                    query = query.Where(i => actions.Contains(i.Action.ToString()));
+                {
+                    var parsed = actions
+                        .Select(a => a?.Trim())
+                        .Where(a => !string.IsNullOrWhiteSpace(a))
+                        .Select(a =>
+                        {
+                            if (Enum.TryParse<AuditAction>(a, ignoreCase: true, out var v))
+                                return (AuditAction?)v;
+                            return null;
+                        })
+                        .Where(v => v.HasValue)
+                        .Select(v => v!.Value)
+                        .Distinct()
+                        .ToArray();
+
+                    if (parsed.Length > 0)
+                        query = query.Where(i => parsed.Contains(i.Action));
+                }
             }
 
             var skip = (criteria.Pagination.PageNumber - 1) * criteria.Pagination.PageSize;

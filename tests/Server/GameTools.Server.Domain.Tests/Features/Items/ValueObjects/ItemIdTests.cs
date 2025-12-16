@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using GameTools.Server.Domain.Features.Items.ValueObjects;
+using GameTools.Server.Domain.Catalog.Items.ValueObjects;
 
-namespace GameTools.Server.Domain.Tests.Features.Items.ValueObjects
+namespace GameTools.Server.Domain.Tests.Catalog.Items.ValueObjects
 {
     public class ItemIdTests
     {

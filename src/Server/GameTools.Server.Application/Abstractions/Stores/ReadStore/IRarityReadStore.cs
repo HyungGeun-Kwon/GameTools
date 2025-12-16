@@ -1,4 +1,4 @@
-﻿using GameTools.Server.Application.Features.Rarities.Models;
+﻿using GameTools.Server.Application.Catalog.Rarities.Models;
 
 namespace GameTools.Server.Application.Abstractions.Stores.ReadStore
 {

@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
-using GameTools.Server.Application.Features.Rarities.Models;
-using GameTools.Server.Application.Features.Rarities.Queries.GetAllRarities;
+using GameTools.Server.Application.Catalog.Rarities.Models;
+using GameTools.Server.Application.Catalog.Rarities.Queries.GetAllRarities;
 using Moq;
 using static GameTools.Server.TestUtilities.Application.Rarities.AppRarityTestData;
 
-namespace GameTools.Server.Application.Tests.Features.Rarities.Queries.GetAllRarities
+namespace GameTools.Server.Application.Tests.Catalog.Rarities.Queries.GetAllRarities
 {
     public class GetAllRaritiesHandlerTests
     {
