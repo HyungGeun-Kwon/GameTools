@@ -1,5 +1,42 @@
 # GameTools
 
+> ⚠️ **Refactoring in progress (this branch)**
+>
+> - **Server**: API 제외 대부분 구성 완료 ✅  
+> - **Client**: 기존 WPF 클라이언트 삭제됨 ❌ (새 클라이언트로 재구현 예정)  
+> - 이 브랜치의 README는 리팩토링 상황에 맞춰 갱신 중이며, 기존 문서는 아래 Legacy 섹션에 접어두었습니다.
+> - 메인 버전은 main 브랜치에 있습니다.
+
+## Refactor Status
+
+- [x] Server Domain
+- [x] Server Domain Test
+- [x] Server Application
+- [x] Server Application Test
+- [x] Server Infrastructure
+- [ ] Server Infrastructure Test
+- [ ] Server API (ASP.NET Core)
+- [ ] Client rebuild (TBD)
+- [ ] End-to-end integration
+- [ ] Updated screenshots / docs
+
+## What works right now
+
+- Server core modules (Application/Domain/Infrastructure) 빌드
+- DB 스키마/마이그레이션
+
+## What is broken / missing
+
+- API 미구현(또는 미완성)으로 인해 클라이언트/통합 실행 불가
+
+---
+
+<details>
+  <summary><strong>Legacy README (before refactor)</strong></summary>
+
+
+# GameTools
+
 MSSQL 기반 서버와 WPF 클라이언트로 구성된 CRUD/일괄처리 데스크톱 앱입니다.  
 **서버**는 데이터 처리·감사(Audit)·복구(Restore)를 담당하고, **클라이언트(WPF)** 는 조회·편집·CSV 일괄처리를 편리하게 제공합니다.
 
@@ -82,3 +119,4 @@ MSSQL 기반 서버와 WPF 클라이언트로 구성된 CRUD/일괄처리 데스
 - **API**: ASP.NET Core Web API  
 - **UI**: WPF + MVVM (CommunityToolkit.Mvvm) + MahApps
 - **파일 I/O**: CSV Import/Export
+</details>
