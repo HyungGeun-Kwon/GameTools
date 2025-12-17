@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.WriteStore;
-using GameTools.Server.Application.Catalog.Items.Commands.Common.Bulk;
+using GameTools.Server.Application.Abstractions.UnitOfWorks;
 using GameTools.Server.Application.Catalog.Items.Commands.BulkUpdateItems;
+using GameTools.Server.Application.Catalog.Items.Commands.Common.Bulk;
 using Moq;
 using static GameTools.Server.TestUtilities.Application.Items.AppItemTestData;
 
@@ -13,7 +14,11 @@ namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.BulkUpdateIt
         public async Task Handle_Should_Call_BulkUpdateAsync_And_Return_Result()
         {
             var writeStoreMock = new Mock<IItemWriteStore>();
-            var handler = new BulkUpdateItemsHandler(writeStoreMock.Object);
+            var uowMock = new Mock<IUnitOfWork>();
+            var txMock = new Mock<IUnitOfWorkTransaction>();
+            uowMock
+                .Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(txMock.Object);
 
             var specs = new[]
             {
@@ -28,6 +33,11 @@ namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.BulkUpdateIt
                 .Setup(x => x.BulkUpdateAsync(specs, ct))
                 .ReturnsAsync(bulkResultRows);
 
+            txMock
+                .Setup(x => x.CommitAsync(ct))
+                .Returns(Task.CompletedTask);
+
+            var handler = new BulkUpdateItemsHandler(writeStoreMock.Object, uowMock.Object);
             var command = new BulkUpdateItemsCommand(specs);
 
             var result = await handler.Handle(command, ct);
@@ -35,8 +45,14 @@ namespace GameTools.Server.Application.Tests.Catalog.Items.Commands.BulkUpdateIt
             result.Should().NotBeNull();
             result.BulkResultRows.Should().BeSameAs(bulkResultRows);
 
+            uowMock.Verify(x => x.BeginTransactionAsync(ct), Times.Once);
+            writeStoreMock.Verify(x => x.BulkUpdateAsync(specs, ct), Times.Once);
+            txMock.Verify(x => x.CommitAsync(ct), Times.Once);
+            txMock.Verify(x => x.DisposeAsync(), Times.Once);
+
             writeStoreMock.Verify(x => x.BulkUpdateAsync(specs, ct), Times.Once);
             writeStoreMock.VerifyNoOtherCalls();
+            txMock.VerifyNoOtherCalls();
         }
     }
 }

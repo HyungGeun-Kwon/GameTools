@@ -5,7 +5,7 @@ using GameTools.Server.Application.Auditing.Queries.GetItemAuditPage;
 using GameTools.Server.Application.Common.Paging;
 using Moq;
 
-namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditPage
+namespace GameTools.Server.Application.Tests.Auditing.Queries.GetItemAuditPage
 {
     public class ItemAuditPageCriteriaValidatorTests
     {

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Auditing.Queries.GetItemAuditPage;
 
-namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditPage
+namespace GameTools.Server.Application.Tests.Auditing.Queries.GetItemAuditPage
 {
     public class ItemAuditFilterValidatorTests
     {

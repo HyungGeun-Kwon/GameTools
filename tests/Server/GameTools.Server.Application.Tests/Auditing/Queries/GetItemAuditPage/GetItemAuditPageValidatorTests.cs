@@ -4,7 +4,7 @@ using FluentValidation.Results;
 using GameTools.Server.Application.Auditing.Queries.GetItemAuditPage;
 using Moq;
 
-namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditPage
+namespace GameTools.Server.Application.Tests.Auditing.Queries.GetItemAuditPage
 {
     public class GetItemAuditPageValidatorTests
     {
@@ -22,7 +22,7 @@ namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditP
         private static GetItemAuditPageQuery BuildValidQuery()
         {
             var criteria = new ItemAuditPageCriteria(
-                Pagination: new GameTools.Server.Application.Common.Paging.Pagination(),
+                Pagination: new Application.Common.Paging.Pagination(),
                 Filter: null,
                 SortBy: nameof(ItemAuditReadModel.Id),
                 Desc: true);

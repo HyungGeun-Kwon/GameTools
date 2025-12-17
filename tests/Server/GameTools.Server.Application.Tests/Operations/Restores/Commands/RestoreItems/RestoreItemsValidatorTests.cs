@@ -3,7 +3,7 @@ using FluentValidation.Results;
 using GameTools.Server.Application.Operations.Restores.Commands.RestoreItems;
 using static GameTools.Server.TestUtilities.Application.Restores.AppRestoreItemTestData;
 
-namespace GameTools.Server.Application.Tests.Catalog.Restores.Commands.RestoreItems
+namespace GameTools.Server.Application.Tests.Operations.Restores.Commands.RestoreItems
 {
     public class RestoreItemsValidatorTests
     {

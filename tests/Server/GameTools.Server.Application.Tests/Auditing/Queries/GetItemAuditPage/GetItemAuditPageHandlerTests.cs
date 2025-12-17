@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using GameTools.Server.Application.Abstractions.Stores.ReadStore;
+using GameTools.Server.Application.Auditing.Common;
 using GameTools.Server.Application.Auditing.Queries.GetItemAuditPage;
 using GameTools.Server.Application.Common.Paging;
 using Moq;
 
-namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditPage
+namespace GameTools.Server.Application.Tests.Auditing.Queries.GetItemAuditPage
 {
     public class GetItemAuditPageHandlerTests
     {
@@ -34,7 +35,7 @@ namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditP
                 new ItemAuditReadModel(
                     Id: Guid.NewGuid(),
                     ItemId: Guid.NewGuid(),
-                    Action: "INSERT",
+                    Action: AuditAction.INSERT,
                     BeforeJson: null,
                     AfterJson: "{}",
                     ChangedAtUtc: DateTime.UtcNow,
@@ -42,7 +43,7 @@ namespace GameTools.Server.Application.Tests.Catalog.Audit.Queries.GetItemAuditP
                 new ItemAuditReadModel(
                     Id: Guid.NewGuid(),
                     ItemId: Guid.NewGuid(),
-                    Action: "UPDATE",
+                    Action: AuditAction.UPDATE,
                     BeforeJson: "{}",
                     AfterJson: "{\"name\":\"changed\"}",
                     ChangedAtUtc: DateTime.UtcNow,
