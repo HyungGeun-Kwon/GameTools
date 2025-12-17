@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Server.Applicatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Server.TestUtilities", "tests\Server\GameTools.Server.TestUtilities\GameTools.Server.TestUtilities.csproj", "{C61774BB-10A8-6E6B-CEF0-CEF11653AF4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTools.Server.Infrastructure.IntegrationTests", "tests\Server\GameTools.Server.Infrastructure.IntegrationTests\GameTools.Server.Infrastructure.IntegrationTests.csproj", "{56CE9203-3884-4998-BA87-F92638A1FA5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{C61774BB-10A8-6E6B-CEF0-CEF11653AF4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C61774BB-10A8-6E6B-CEF0-CEF11653AF4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C61774BB-10A8-6E6B-CEF0-CEF11653AF4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56CE9203-3884-4998-BA87-F92638A1FA5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56CE9203-3884-4998-BA87-F92638A1FA5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56CE9203-3884-4998-BA87-F92638A1FA5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56CE9203-3884-4998-BA87-F92638A1FA5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{F6AC884A-EF33-07CD-06B0-04197D76395E} = {C7DAB2CA-95C2-450B-8747-0C59023C0769}
 		{D86720CB-6486-4326-8AF1-92463B603106} = {C7DAB2CA-95C2-450B-8747-0C59023C0769}
 		{C61774BB-10A8-6E6B-CEF0-CEF11653AF4E} = {C7DAB2CA-95C2-450B-8747-0C59023C0769}
+		{56CE9203-3884-4998-BA87-F92638A1FA5C} = {C7DAB2CA-95C2-450B-8747-0C59023C0769}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD17BD98-BF71-4260-A218-434FCE0CB15E}

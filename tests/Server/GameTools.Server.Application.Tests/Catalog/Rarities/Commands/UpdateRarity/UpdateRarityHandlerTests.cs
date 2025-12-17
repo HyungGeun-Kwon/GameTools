@@ -30,18 +30,15 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
         private static UpdateRarityHandler CreateHandler(
             out Mock<IRarityWriteStore> rarityWriteStoreMock,
             out Mock<IRarityGradeUniquenessPolicy> gradePolicyMock,
-            out Mock<IRarityColorCodeUniquenessPolicy> colorCodePolicyMock,
             out Mock<IUnitOfWork> uowMock)
         {
             rarityWriteStoreMock = new Mock<IRarityWriteStore>();
             gradePolicyMock = new Mock<IRarityGradeUniquenessPolicy>();
-            colorCodePolicyMock = new Mock<IRarityColorCodeUniquenessPolicy>();
             uowMock = new Mock<IUnitOfWork>();
 
             return new UpdateRarityHandler(
                 rarityWriteStoreMock.Object,
                 gradePolicyMock.Object,
-                colorCodePolicyMock.Object,
                 uowMock.Object);
         }
 
@@ -51,7 +48,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
             var handler = CreateHandler(
                 out var rarityWriteStoreMock,
                 out var gradePolicyMock,
-                out var colorCodePolicyMock,
                 out var uowMock);
 
             var spec = BuildDefaultUpdateRaritySpec();
@@ -65,7 +61,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
 
             rarityWriteStoreMock.Verify(x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()), Times.Once);
             gradePolicyMock.Verify(x => x.EnsureUniqueAsync(It.IsAny<RarityGrade>(), It.IsAny<CancellationToken>()), Times.Never);
-            colorCodePolicyMock.Verify(x => x.EnsureUniqueAsync(It.IsAny<RarityColorCode>(), It.IsAny<CancellationToken>()), Times.Never);
             uowMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
@@ -75,7 +70,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
             var handler = CreateHandler(
                 out var rarityWriteStoreMock,
                 out var gradePolicyMock,
-                out var colorPolicyMock,
                 out var uowMock);
 
             var grade = ValidRarityGradeValue('A');
@@ -110,10 +104,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
             gradePolicyMock.Verify(
                 x => x.EnsureUniqueAsync(It.IsAny<RarityGrade>(), It.IsAny<CancellationToken>()),
                 Times.Never);
-
-            colorPolicyMock.Verify(
-                x => x.EnsureUniqueAsync(It.IsAny<RarityColorCode>(), It.IsAny<CancellationToken>()),
-                Times.Never);
         }
 
         [Fact]
@@ -122,7 +112,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
             var handler = CreateHandler(
                 out var rarityWriteStoreMock,
                 out var gradePolicyMock,
-                out var colorPolicyMock,
                 out var uowMock);
 
             var originalGrade = ValidRarityGradeValue('A');
@@ -171,11 +160,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
                     It.Is<RarityGrade>(g => g.Value == newGrade),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
-
-            // Color는 안 바뀌었으므로 호출되면 안 됨
-            colorPolicyMock.Verify(
-                x => x.EnsureUniqueAsync(It.IsAny<RarityColorCode>(), It.IsAny<CancellationToken>()),
-                Times.Never);
         }
 
         [Fact]
@@ -184,7 +168,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
             var handler = CreateHandler(
                 out var rarityWriteStoreMock,
                 out var gradePolicyMock,
-                out var colorPolicyMock,
                 out var uowMock);
 
             var grade = ValidRarityGradeValue('A');
@@ -208,12 +191,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
                 .Setup(x => x.LoadForUpdateAsync(RarityId.From(spec.Id), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingRarity);
 
-            colorPolicyMock
-                .Setup(x => x.EnsureUniqueAsync(
-                    It.Is<RarityColorCode>(c => c.Value == spec.NormalizedColorCode),
-                    It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
             rarityWriteStoreMock
                 .Setup(x => x.GetRowVersion(existingRarity))
                 .Returns(rowVersion);
@@ -231,12 +208,6 @@ namespace GameTools.Server.Application.Tests.Catalog.Rarities.Commands.UpdateRar
             gradePolicyMock.Verify(
                 x => x.EnsureUniqueAsync(It.IsAny<RarityGrade>(), It.IsAny<CancellationToken>()),
                 Times.Never);
-
-            colorPolicyMock.Verify(
-                x => x.EnsureUniqueAsync(
-                    It.Is<RarityColorCode>(c => c.Value == spec.NormalizedColorCode),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
         }
     }
 }

@@ -106,10 +106,4 @@ namespace GameTools.Server.Infrastructure.Persistence.Catalog.Stores.WriteStore
             return results;
         }
     }
-
-    internal static class EfTxExtensions
-    {
-        public static DbTransaction GetDbTransaction(this IDbContextTransaction tx)
-            => tx.GetDbTransaction();
-    }
 }

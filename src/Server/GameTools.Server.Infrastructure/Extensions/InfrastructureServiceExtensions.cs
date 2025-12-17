@@ -40,9 +40,7 @@ namespace GameTools.Server.Infrastructure.Extensions
             services.AddScoped<IItemFactory, ItemFactory>();
 
             services.AddScoped<IRarityGradeUniquenessChecker, RarityGradeUniquenessChecker>();
-            services.AddScoped<IRarityColorCodeUniquenessChecker, RarityColorCodeUniquenessChecker>();
             services.AddScoped<IRarityGradeUniquenessPolicy, RarityGradeUniquenessPolicy>();
-            services.AddScoped<IRarityColorCodeUniquenessPolicy, RarityColorCodeUniquenessPolicy>();
             services.AddScoped<IRarityFactory, RarityFactory>();
 
             services.AddScoped<IItemWriteStore, ItemWriteStore>();

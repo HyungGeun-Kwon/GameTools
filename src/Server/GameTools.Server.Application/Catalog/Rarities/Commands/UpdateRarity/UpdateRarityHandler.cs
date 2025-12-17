@@ -10,7 +10,6 @@ namespace GameTools.Server.Application.Catalog.Rarities.Commands.UpdateRarity
     public sealed class UpdateRarityHandler(
         IRarityWriteStore rarityWriteStore,
         IRarityGradeUniquenessPolicy rarityGradeUniquenessPolicy,
-        IRarityColorCodeUniquenessPolicy rarityColorCodeUniquenessPolicy,
         IUnitOfWork uow)
         : IRequestHandler<UpdateRarityCommand, UpdateRarityResult>
     {
@@ -24,9 +23,6 @@ namespace GameTools.Server.Application.Catalog.Rarities.Commands.UpdateRarity
 
             if (rarity.Grade != newGrade)
                 await rarityGradeUniquenessPolicy.EnsureUniqueAsync(newGrade, ct);
-
-            if (rarity.ColorCode != newColorCode)
-                await rarityColorCodeUniquenessPolicy.EnsureUniqueAsync(newColorCode, ct);
 
             rarityWriteStore.SetOriginalRowVersion(rarity, command.Spec.RowVersion);
 
