@@ -37,13 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Operations\" />
-    <Folder Include="Auditing\" />
-    <Folder Include="Catalog\Items\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\src\Server\GameTools.Server.Infrastructure\GameTools.Server.Infrastructure.csproj" />
+    <ProjectReference Include="..\GameTools.Server.TestUtilities\GameTools.Server.TestUtilities.csproj" />
   </ItemGroup>
 
 </Project>

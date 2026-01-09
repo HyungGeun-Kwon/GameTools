@@ -3,7 +3,7 @@
     public sealed record ItemRestoreHistoriesReadModel(
         Guid Id,
         DateTime AsOfUtc,
-        string CurrentUser,
+        string Actor,
         bool DryRun,
         DateTime StartedAtUtc,
         DateTime? EndedAtUtc,

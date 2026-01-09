@@ -43,7 +43,7 @@ namespace GameTools.Server.Application.Tests.Operations.Restores.Queries.GetItem
                 new ItemRestoreHistoriesReadModel(
                     Id: Guid.NewGuid(),
                     AsOfUtc: DateTime.UtcNow.AddMinutes(-10),
-                    CurrentUser: "tester",
+                    Actor: "tester",
                     DryRun: true,
                     StartedAtUtc: DateTime.UtcNow.AddMinutes(-10),
                     EndedAtUtc: DateTime.UtcNow.AddMinutes(-9),
@@ -53,7 +53,7 @@ namespace GameTools.Server.Application.Tests.Operations.Restores.Queries.GetItem
                 new ItemRestoreHistoriesReadModel(
                     Id: Guid.NewGuid(),
                     AsOfUtc: DateTime.UtcNow.AddMinutes(-5),
-                    CurrentUser: "tester2",
+                    Actor: "tester2",
                     DryRun: false,
                     StartedAtUtc: DateTime.UtcNow.AddMinutes(-5),
                     EndedAtUtc: null,
